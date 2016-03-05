@@ -46,7 +46,7 @@ Sobre o dicionário de dados e o esquema:
 
 Sobre a criação e inserção em tabelas:
 	Para criar uma tabela é necessário uma estrutura do tipo 'table'. Esta estrutura armazenará os dados da tabela a ser criada.
-	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabla a ser criada usando a função iniciaTabela(nomeTabela):
+	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabela a ser criada usando a função iniciaTabela(nomeTabela):
 
 		table *t = NULL;
 		t = iniciaTabela("Pessoa");
@@ -59,7 +59,7 @@ Sobre a criação e inserção em tabelas:
 	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finalizaTabela(t);
 
 	Criada a tabela, pode-se inserir os dados.
-	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados a tabela.
+	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados à tabela.
 	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo):
 
 		column *c = NULL;
@@ -79,7 +79,7 @@ Sobre inserir uma tupla no buffer:
 
 
 Sobre excluir uma tupla do buffer e recuperar uma página do buffer:
-	Para excluir uma tupla e obter a mesma para impressão, basta chamar a função com o buffer,  esquema, a página a excluir uma tupla e a tupla a ser excluida:
+	Para excluir uma tupla e obter a mesma para impressão, basta chamar a função com o buffer, esquema, a página a excluir uma tupla e a tupla a ser excluida:
 
 		column *tuplaE = excluirTuplaBuffer(buffer, esquema, objeto, 0, 2); // '2' é a posição da tupla relativa a página do buffer
 
@@ -315,7 +315,7 @@ Para isso, basta executar o comando 'make' no bash quando estiver na pasta onde 
 
 Para compilar o projeto inteiro, basta executar o comando 'make' na pasta /Fonte/. Isso irá gerar o executável 'Ibetres'.
 
-Ao executar, o programa conecta-se com o banco "ibetres" por default, 
+Ao executar, o programa conecta-se com o banco "ibetres" por default,
 Para conectar-se a outro banco, utiliza-se o comando:
 	\c <nomedo banco>.
 
@@ -346,6 +346,6 @@ A ordem das colunas especificadas não precisa ser na mesma ordem da criação e
 não especificar a coluna o SGBD colocará um valor nulo, de acordo com o tipo de dado.
 
 Os comandos SQL e os objetos das relações (i.e. <NomeTabelas>, <NomeCampos> ...) NÃO são case-sensitive.
-	ex: 
+	ex:
 		<TABELA> e <tabela> se referem a mesma relação.
 		<INSERT> e <insert> se referem ao mesmo comando SQL.
