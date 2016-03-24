@@ -1,0 +1,95 @@
++ Avisos de erros repetidos. Exemplo:
+
+    uffsdb=# create databasea baba;
+    ERROR: syntax error.
+    uffsdb=# ERROR: syntax error.
+
++ Alinhamento das colunas errado no comando \l
+
++ Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
+
+    CREATE TABLE tbl(
+	   cod INTEGER PRIMARY KEY,
+	   name VARCHAR(10),
+	   sex char
+    );
+    insert into tbl values (4, 'Luiz', 'Masculino');
+
++ Reclama ao criar um banco de nome com 19 caracteres, mas o nome não é truncado. Exemplo:
+
+    create database a123456789b12345678;
+    WARNING: database name is too long, it will be truncate
+    \c a123456789b12345678;
+
++ Digita vários ; numa mesma linha e dê enter, é engraçado. E tem comportamento estranho com [] e outros simbolos que não são letras.
+
+    uffsdb=# ;;;;;;;
+    uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
+    uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+    [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
+
++ Erro ao deletar um banco. Primeiro tento excluir o banco estando conectado a ele, depois conecto a outro e repito o comando. Da um erro no rm. Exemplo:
+
+    uffsdb=# \c a123456789b12345678
+    You are now connected to database "a123456789b12345678" as user "uffsdb".
+    a123456789b12345678=# drop database a123456789b12345678
+    a123456789b12345678-# ;
+    ERROR: You can not delete the database that you are connected.
+    a123456789b12345678=# \c uffsdb
+    You are now connected to database "uffsdb" as user "uffsdb".
+    uffsdb=# drop database a123456789b12345678;
+    rm: não foi possível remover “data/a123456789b12345678/\241\266Hh\321\177”: Arquivo ou diretório não encontrado
+    DROP DATABASE
+    uffsdb=#
+
++ Ao tentar recriar o banco...
+
+uffsdb=# create database a123456789b12345678
+uffsdb-# ;
+WARNING: database name is too long, it will be truncated
+mkdir: é impossível criar o diretório “data/a123456789b12345678”: Arquivo existe
+CREATE DATABASE
+uffsdb=#
+
++ *** stack smashing detected ***. Com o banco resetado, faça:
+
+    CREATE DATABASE a123456789b12345678;
+    \c a123456789b12345678
+    CREATE TABLE tbl(
+     	cod INTEGER PRIMARY KEY,
+    	name VARCHAR(10),
+    	sex char
+    );
+    insert into tbl values (4, 'Luiz', 'Ab');
+    drop database a123456789b12345678;
+    drop table tbl;
+    drop database a123456789b12345678;
+    \c uffsdb
+    drop database a123456789b12345678;
+    CREATE DATABASE a123456789b12345678;
+    \d
+    CREATE TABLE tbl(
+    	 cod INTEGER PRIMARY KEY,
+    	name VARCHAR(10),
+    	sex char
+    );
+    \d
+    \c a123456789b12345678
+    \d
+    CREATE TABLE tbl(
+     	cod INTEGER PRIMARY KEY,
+    	name VARCHAR(10),
+    	sex char
+    );
+    drop database a123456789b12345678;
+    \c uffsdb
+    drop database a123456789b12345678;
+    CREATE DATABASE a123456789b12345678;
+    \d
+    \c a123456789b12345678
+    \d
+    CREATE TABLE tbl(
+     	cod INTEGER PRIMARY KEY,
+    	name VARCHAR(10),
+    	sex char
+    );
