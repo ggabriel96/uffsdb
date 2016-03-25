@@ -213,30 +213,32 @@ int interface() {
         pthread_create(&pth, NULL, (void *) yyparse, &GLOBAL_PARSER);
         pthread_join(pth, NULL);
 
-        if (GLOBAL_PARSER.noerror && GLOBAL_PARSER.mode != 0) {
-            switch(GLOBAL_PARSER.mode) {
-                case OP_INSERT:
-                    if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
-                    else printf("WARNING: Nothing to be inserted. Command ignored.\n");
-                    break;
-                case OP_SELECT_ALL:
-                    imprime(GLOBAL_DATA.objName);
-                    break;
-                case OP_CREATE_TABLE:
-                    createTable(&GLOBAL_DATA);
-                    break;
-                case OP_CREATE_DATABASE:
-                    createDB(GLOBAL_DATA.objName);
-                    break;
-                case OP_DROP_TABLE:
-                    excluirTabela(GLOBAL_DATA.objName);
-                    break;
-                case OP_DROP_DATABASE:
-                    dropDatabase(GLOBAL_DATA.objName);
-                    break;
-                default:
-                    printf("\ndefault @ parser.interface().while.if\n");
-                    break;
+        if (GLOBAL_PARSER.noerror) {
+            if (GLOBAL_PARSER.mode != 0) {
+                switch(GLOBAL_PARSER.mode) {
+                    case OP_INSERT:
+                        if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
+                        else printf("WARNING: Nothing to be inserted. Command ignored.\n");
+                        break;
+                    case OP_SELECT_ALL:
+                        imprime(GLOBAL_DATA.objName);
+                        break;
+                    case OP_CREATE_TABLE:
+                        createTable(&GLOBAL_DATA);
+                        break;
+                    case OP_CREATE_DATABASE:
+                        createDB(GLOBAL_DATA.objName);
+                        break;
+                    case OP_DROP_TABLE:
+                        excluirTabela(GLOBAL_DATA.objName);
+                        break;
+                    case OP_DROP_DATABASE:
+                        dropDatabase(GLOBAL_DATA.objName);
+                        break;
+                    default:
+                        printf("\ndefault @ parser.interface().while.if\n");
+                        break;
+                }
             }
         }
         else {
@@ -250,7 +252,7 @@ int interface() {
                 case OP_INSERT:
                     if (GLOBAL_PARSER.step == 1) {
                         GLOBAL_PARSER.consoleFlag = 0;
-                        printf("ERROR: rxpected object name.\n");
+                        printf("ERROR: expected object name.\n");
                     }
                     break;
                 default:
