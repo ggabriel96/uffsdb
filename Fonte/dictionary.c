@@ -888,4 +888,3 @@ void freeColumn(column *colunas) {
 		free(colunas);
 	}
 }
-

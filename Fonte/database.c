@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 ////
-#ifndef FMACROS // garante que macros.h não seja reincluída
+// #ifndef FMACROS // garante que macros.h não seja reincluída
    #include "macros.h"
-#endif
+// #endif
 ///
 #ifndef FTYPES // garante que types.h não seja reincluída
   #include "types.h"
@@ -15,114 +15,92 @@
 #endif
 
 char connectDB(char *db_name) {
+    int i;
 	FILE *DB;
-	int i;
-	char vec_name 				[QTD_DB][LEN_DB_NAME],
-		 vec_directory 			[QTD_DB][LEN_DB_NAME],
-		 valid,
-		 directory 				[LEN_DB_NAME*2] = "data/";
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], valid, directory[LEN_DB_NAME * 2] = "data/";
 
-    if((DB = fopen("data/DB.dat","rb")) == NULL) {
-       	return ERRO_ABRIR_ARQUIVO;
+    if ((DB = fopen("data/DB.dat", "rb")) == NULL) {
+        return ERRO_ABRIR_ARQUIVO;
     }
 
-    for(i=0; fgetc (DB) != EOF; i++) {
-    	fseek(DB, -1, 1);
-
-    	fread(&valid			,sizeof(char), 			 1, DB);
-        fread(vec_name[i]  		,sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i] 	,sizeof(char), LEN_DB_NAME, DB);
-
-        if(objcmp(vec_name[i], db_name) == 0) {				//verifica se encontrou o banco
-        	if(valid) {
-        		strcat(directory, vec_directory[i]); 			// atualiza o diretorio do banco que esta conectado
-	        	strcpylower(connected.db_directory, directory);
-	        	fclose(DB);
-	        	return SUCCESS;
-	        }
+    for (i = 0; fgetc(DB) != EOF; i++) {
+        // o fgetc na condição do for anda um char no arquivo
+        // então tem que fazer ele voltar esse char, caso não seja EOF
+    	fseek(DB, -1, SEEK_CUR);
+    	fread(&valid, sizeof (char), 1, DB);
+        fread(vec_name[i], sizeof (char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof (char), LEN_DB_NAME, DB);
+        // verifica se encontrou o banco
+        if (strcasecmp(vec_name[i], db_name) == 0 && valid) {
+            // atualiza o diretorio do banco que está conectado
+    		strcat(directory, vec_directory[i]);
+        	strcpylower(connected.db_directory, directory);
+        	fclose(DB);
+        	return SUCCESS;
         }
     }
     fclose(DB);
-
     return DB_NOT_EXISTS;
-
 }
 
 void createDB(char *db_name) {
+    int i;
 	FILE *DB;
-	int i, len;
-	char vec_name 				[QTD_DB][LEN_DB_NAME],
-		 vec_directory 			[QTD_DB][LEN_DB_NAME],
-		 create 				[LEN_DB_NAME+6] = "mkdir data/",
-         *aux_name_tolower,
-         valid;
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], create[LEN_DB_NAME + 6] = "mkdir data/", valid;
 
-    if((DB = fopen("data/DB.dat","a+b")) == NULL) {
-       	printf("ERROR: cannot open file\n");
-		return;
+    if ((DB = fopen("data/DB.dat", "a+b")) == NULL) {
+        printf("ERROR: could not open data/DB.dat.\n");
+        return;
     }
 
-    if(strlen(db_name) >= LEN_DB_NAME-1) {
-    	printf("WARNING: database name is too long, it will be truncated\n");
-    	db_name[LEN_DB_NAME-1] = '\0';
+    if (strlen(db_name) > LEN_DB_NAME) {
+    	printf("WARNING: database name is too long, it will be truncated to 20 chars.\n");
+    	db_name[LEN_DB_NAME] = '\0';
     }
 
-    for(i=0; fgetc (DB) != EOF; i++) {
-    	fseek(DB, -1, 1);
-
-    	fread(&valid			,sizeof(char), 			 1, DB);
-        fread(vec_name[i]  		,sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i] 	,sizeof(char), LEN_DB_NAME, DB);
-
-        if(objcmp(vec_name[i], db_name) == 0) {
-        	if(valid) {
-	        	fclose(DB);
-				if(objcmp(db_name, "uffsdb") != 0) 			// banco de dados ja existe
-	        		printf("ERROR: database already exists\n");
-	            return;
-	        }
+    for (i = 0; fgetc(DB) != EOF; i++) {
+        // o fgetc na condição do for anda um char no arquivo
+        // então tem que fazer ele voltar esse char, caso não seja EOF
+    	fseek(DB, -1, SEEK_CUR);
+    	fread(&valid, sizeof (char), 1, DB);
+        fread(vec_name[i], sizeof (char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof (char), LEN_DB_NAME, DB);
+        if (strcasecmp(vec_name[i], db_name) == 0 && valid) {
+        	fclose(DB);
+			if (strcasecmp(db_name, "uffsdb") != 0)
+        		printf("ERROR: database already exists.\n");
+            return;
         }
     }
 
-    if(i >= QTD_DB) {
+    // >= porque o 'i' vai parar uma posição
+    // após a quantidade de bancos existentes
+    if (i >= QTD_DB) {
     	fclose(DB);
-    	printf("ERROR: The amount of databases in this machine exceeded the limit.\n");
-    	return;
+        printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
+        return;
     }
 
-    data_base *SGBD;
+    data_base *SGBD = (data_base *) malloc(sizeof (data_base));;
+    SGBD -> valid = 1;
+    strcpylower(SGBD -> db_name, db_name);
+	strcpylower(SGBD -> db_directory, db_name);
+	strcat(SGBD -> db_directory, "/");
+	fwrite(SGBD, sizeof (data_base), 1, DB);
 
-	SGBD = (data_base*)malloc(sizeof(data_base));
-	len = strlen(db_name);
-	memset(SGBD->db_name 		, 0, LEN_DB_NAME);
-	memset(SGBD->db_directory 	, 0, LEN_DB_NAME);
-
-
-	SGBD->valid = 1;
-	strcpylower(SGBD->db_name		, db_name);
-	strcpylower(SGBD->db_directory	, db_name);
-	strcat(SGBD->db_directory	, "/");
-	SGBD->db_name[len] 			= '\0';
-	SGBD->db_directory[len+1] 	= '\0';
-	fwrite(SGBD ,sizeof(data_base), 1, DB);
-
-    aux_name_tolower = (char *)malloc(sizeof(char) * (strlen(db_name)+1));
-    strcpylower(aux_name_tolower, db_name);
-    strcat(create, aux_name_tolower);
-    free(aux_name_tolower);
-
-	if(system(create) == -1) {			//verifica se foi possivel criar o diretorio
-		printf("ERROR: It was not possible to create the database\n");
+    strcat(create, SGBD -> db_name);
+    // verifica se foi possivel criar o diretório
+	if (system(create) == -1) {
+		printf("ERROR: failed to create database %s.\n", SGBD -> db_name);
 		fclose(DB);
 		return;
 	}
 
     fclose(DB);
     free(SGBD);
+    SGBD = NULL;
 
-
-    if(objcmp(db_name, "uffsdb") != 0)
-        printf("CREATE DATABASE\n");
+    if (strcasecmp(db_name, "uffsdb") != 0) printf("CREATE DATABASE\n");
 }
 
 void dropDatabase(char *db_name) {
@@ -205,18 +183,17 @@ void showDB() {
     printf("(%d %s)\n\n\n\n", qtdDB, (1 >= qtdDB)? "row": "rows");
     fclose(DB);
 }
-///
+
 void dbInit(char *db) {
 	char *name;
-	if(system("mkdir data > /dev/null 2>&1") == -1)
-		printf("ERROR: It was not possible to initialize uffsdb\n");
-    if (db==NULL)
-    {
-		name=(char *)malloc(sizeof(char)*7);
-		name[0]='u';name[1]='f';name[2]='f';name[3]='s';
-		name[4]='d';name[5]='b';name[6]=0;
-    } else name=db;
-    
+    // here in the system command, 0, 1 and 2 stand for
+    // STDIN, STDOUT and STDERR, respectively.
+    // "> /dev/null 2>&1" is redirecting "mkdir data" STDOUT
+    // to /dev/null and STDERR to STDOUT
+	if (system("mkdir data > /dev/null 2>&1") == -1)
+		printf("ERROR: It was not possible to initialize uffsdb.\n");
+    else if (db == NULL)
+        name = "uffsdb";
+    else name = db;
 	createDB(name);
 }
-

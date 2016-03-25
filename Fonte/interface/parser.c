@@ -31,17 +31,15 @@ rc_insert GLOBAL_DATA;
 rc_parser GLOBAL_PARSER;
 
 void connect(char *nome) {
-    int r;
-    r = connectDB(nome);
+    int r = connectDB(nome);
 	if (r == SUCCESS) {
-        connected.db_name = malloc(sizeof(char)*((strlen(nome)+1)));
-
+        connected.db_name = malloc(sizeof (char) * ((strlen(nome))));
         strcpylower(connected.db_name, nome);
-
         connected.conn_active = 1;
-        printf("You are now connected to database \"%s\" as user \"uffsdb\".\n", nome);
-    } else {
-    	printf("ERROR: Failed to establish connection with database named \"%s\". (Error code: %d)\n", nome, r);
+        printf("You are now connected to database \"%s\".\n", connected.db_name);
+    }
+    else {
+    	printf("ERROR: failed to establish connection with database \"%s\" (error code: %d).\n", nome, r);
     }
 }
 
@@ -159,14 +157,10 @@ void clearGlobalStructs() {
     }
 
     for (i = 0; i < GLOBAL_DATA.N; i++ ) {
-        if (GLOBAL_DATA.columnName)
-            free(GLOBAL_DATA.columnName[i]);
-        if (GLOBAL_DATA.values)
-            free(GLOBAL_DATA.values[i]);
-        if (GLOBAL_DATA.fkTable)
-            free(GLOBAL_DATA.fkTable[i]);
-        if (GLOBAL_DATA.fkColumn)
-            free(GLOBAL_DATA.fkColumn[i]);
+        if (GLOBAL_DATA.columnName) free(GLOBAL_DATA.columnName[i]);
+        if (GLOBAL_DATA.values) free(GLOBAL_DATA.values[i]);
+        if (GLOBAL_DATA.fkTable) free(GLOBAL_DATA.fkTable[i]);
+        if (GLOBAL_DATA.fkColumn) free(GLOBAL_DATA.fkColumn[i]);
     }
 
     free(GLOBAL_DATA.columnName);
@@ -182,21 +176,20 @@ void clearGlobalStructs() {
     GLOBAL_DATA.fkColumn = NULL;
 
     free(GLOBAL_DATA.type);
-    GLOBAL_DATA.type = (char *)malloc(sizeof(char));
+    GLOBAL_DATA.type = (char *) malloc(sizeof (char));
 
     free(GLOBAL_DATA.attribute);
-    GLOBAL_DATA.attribute = (int *)malloc(sizeof(int));
+    GLOBAL_DATA.attribute = (int *) malloc(sizeof (int));
 
     yylex_destroy();
 
     GLOBAL_DATA.N = 0;
-
-    GLOBAL_PARSER.mode              = 0;
-    GLOBAL_PARSER.parentesis        = 0;
-    GLOBAL_PARSER.noerror           = 1;
-    GLOBAL_PARSER.col_count         = 0;
-    GLOBAL_PARSER.val_count         = 0;
-    GLOBAL_PARSER.step              = 0;
+    GLOBAL_PARSER.mode = 0;
+    GLOBAL_PARSER.step = 0;
+    GLOBAL_PARSER.noerror = 1;
+    GLOBAL_PARSER.col_count = 0;
+    GLOBAL_PARSER.val_count = 0;
+    GLOBAL_PARSER.parentesis = 0;
 }
 
 void setMode(char mode) {
@@ -208,57 +201,47 @@ void setMode(char mode) {
 int interface() {
     pthread_t pth;
 
-    pthread_create(&pth, NULL, (void*)clearGlobalStructs, NULL);
+    pthread_create(&pth, NULL, (void*) clearGlobalStructs, NULL);
     pthread_join(pth, NULL);
 
     connect("uffsdb"); // conecta automaticamente no banco padrão
 
-    while(1){
-        if (!connected.conn_active) {
-            printf(">");
-        } else {
-            printf("%s=# ", connected.db_name);
-        }
+    while (1) {
+        if (!connected.conn_active) return -1;
+        else printf("%s=# ", connected.db_name);
 
-        pthread_create(&pth, NULL, (void*)yyparse, &GLOBAL_PARSER);
+        pthread_create(&pth, NULL, (void *) yyparse, &GLOBAL_PARSER);
         pthread_join(pth, NULL);
 
-        if (GLOBAL_PARSER.noerror) {
-            if (GLOBAL_PARSER.mode != 0) {
-                if (!connected.conn_active) {
-                    notConnected();
-                } else {
-                    switch(GLOBAL_PARSER.mode) {
-                        case OP_INSERT:
-                            if (GLOBAL_DATA.N > 0) {
-                                insert(&GLOBAL_DATA);
-                            }
-                            else
-                                printf("WARNING: Nothing to be inserted. Command ignored.\n");
-                            break;
-                        case OP_SELECT_ALL:
-                            imprime(GLOBAL_DATA.objName);
-                            break;
-                        case OP_CREATE_TABLE:
-                            createTable(&GLOBAL_DATA);
-                            break;
-                        case OP_CREATE_DATABASE:
-                            createDB(GLOBAL_DATA.objName);
-                            break;
-                        case OP_DROP_TABLE:
-                            excluirTabela(GLOBAL_DATA.objName);
-                            break;
-                        case OP_DROP_DATABASE:
-                            dropDatabase(GLOBAL_DATA.objName);
-                            break;
-                        default: break;
-                    }
-
-                }
-            }
-        } else {
-            GLOBAL_PARSER.consoleFlag = 1;
+        if (GLOBAL_PARSER.noerror && GLOBAL_PARSER.mode != 0) {
             switch(GLOBAL_PARSER.mode) {
+                case OP_INSERT:
+                    if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
+                    else printf("WARNING: Nothing to be inserted. Command ignored.\n");
+                    break;
+                case OP_SELECT_ALL:
+                    imprime(GLOBAL_DATA.objName);
+                    break;
+                case OP_CREATE_TABLE:
+                    createTable(&GLOBAL_DATA);
+                    break;
+                case OP_CREATE_DATABASE:
+                    createDB(GLOBAL_DATA.objName);
+                    break;
+                case OP_DROP_TABLE:
+                    excluirTabela(GLOBAL_DATA.objName);
+                    break;
+                case OP_DROP_DATABASE:
+                    dropDatabase(GLOBAL_DATA.objName);
+                    break;
+                default:
+                    printf("\ndefault @ parser.interface().while.if\n");
+                    break;
+            }
+        }
+        else {
+            GLOBAL_PARSER.consoleFlag = 1;
+            switch (GLOBAL_PARSER.mode) {
                 case OP_CREATE_DATABASE:
                 case OP_DROP_DATABASE:
                 case OP_CREATE_TABLE:
@@ -267,21 +250,23 @@ int interface() {
                 case OP_INSERT:
                     if (GLOBAL_PARSER.step == 1) {
                         GLOBAL_PARSER.consoleFlag = 0;
-                        printf("Expected object name.\n");
+                        printf("ERROR: rxpected object name.\n");
                     }
-                break;
-
-                default: break;
+                    break;
+                default:
+                    printf("\ndefault @ parser.interface().while.else\n");
+                    break;
             }
 
             if (GLOBAL_PARSER.mode == OP_CREATE_TABLE) {
                 if (GLOBAL_PARSER.step == 2) {
-                    printf("Column not specified correctly.\n");
+                    printf("ERROR: column not specified correctly.\n");
                     GLOBAL_PARSER.consoleFlag = 0;
                 }
-            } else if (GLOBAL_PARSER.mode == OP_INSERT) {
+            }
+            else if (GLOBAL_PARSER.mode == OP_INSERT) {
                 if (GLOBAL_PARSER.step == 2) {
-                    printf("Expected token \"VALUES\" after object name.\n");
+                    printf("ERROR: expected token \"VALUES\" after object name.\n");
                     GLOBAL_PARSER.consoleFlag = 0;
                 }
             }
@@ -291,7 +276,7 @@ int interface() {
         }
 
         if (GLOBAL_PARSER.mode != 0) {
-            pthread_create(&pth, NULL, (void*)clearGlobalStructs, NULL);
+            pthread_create(&pth, NULL, (void *) clearGlobalStructs, NULL);
             pthread_join(pth, NULL);
         }
     }

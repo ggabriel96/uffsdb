@@ -1,3 +1,4 @@
+#include "macros.h"
 #define FTYPES 1 // flag para identificar se types.h já foi incluída
 
 struct fs_objects { // Estrutura usada para carregar fs_objects.dat
@@ -65,9 +66,9 @@ typedef struct data_base {
 }data_base;
 
 typedef struct db_connected {
-	char db_directory[LEN_DB_NAME*2];
     char *db_name;
     int conn_active;
+	char db_directory[LEN_DB_NAME * 2];
 }db_connected;
 
 // Union's utilizados na conversão de variáveis do tipo inteiro e double.
