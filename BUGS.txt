@@ -51,6 +51,8 @@ mkdir: é impossível criar o diretório “data/a123456789b12345678”: Arquivo
 CREATE DATABASE
 uffsdb=#
 
++ *** stack smashing detected *** também com:
+    create database a123456789b123456789;
 + *** stack smashing detected ***. Com o banco resetado, faça:
 
     CREATE DATABASE a123456789b12345678;
