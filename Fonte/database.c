@@ -54,7 +54,7 @@ void createDB(char *db_name) {
     }
 
     if (strlen(db_name) > LEN_DB_NAME) {
-    	printf("WARNING: database name is too long, it will be truncated to 20 chars.\n");
+    	printf("WARNING: database name is too long, it will be truncated to %d chars.\n", LEN_DB_NAME);
     	db_name[LEN_DB_NAME] = '\0';
     }
 
