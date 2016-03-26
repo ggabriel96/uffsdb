@@ -164,23 +164,22 @@ void showDB() {
 		return;
     }
 
-    printf(" 					List of databases\n");
-    printf("       Name  	    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges  \n");
-    printf("--------------------+----------+----------+-------------+-------------+-----------------------\n");
-    for(i=0; fgetc (DB) != EOF; i++) {
+    printf(" List of databases:\n");
+    for (i = 0; i < LEN_DB_NAME; i++) printf("-");
+    printf("\n");
+    for (i = 0; fgetc(DB) != EOF; i++) {
     	fseek(DB, -1, 1);
-
     	fread(&valid			,sizeof(char), 			 1, DB);
         fread(vec_name[i]  		,sizeof(char), LEN_DB_NAME, DB);
         fread(vec_directory[i] 	,sizeof(char), LEN_DB_NAME, DB);
 
-       	if(valid) {
-       		printf("%-20s| uffsdb  | UTF8     | pt_BR.UTF-8 | pt_BR.UTF-8 | \n", vec_name[i]);
-       		qtdDB++;
+        if (valid) {
+            printf("%s\n", vec_name[i]);
+            qtdDB++;
         }
     }
 
-    printf("(%d %s)\n\n\n\n", qtdDB, (1 >= qtdDB)? "row": "rows");
+    printf("(%d %s)\n\n", qtdDB, qtdDB > 1 ? "rows": "row");
     fclose(DB);
 }
 
