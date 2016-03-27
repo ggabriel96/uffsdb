@@ -134,30 +134,26 @@ void dropDatabase(char *db_name) {
 }
 
 void showDB() {
-	FILE *DB;
-	int i, qtdDB=0;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_DIR], valid;
+	FILE *DB = NULL;
+	int i = 0, qtty = 0;
+	char name[LEN_DB_NAME], valid = 0;
 
-    if((DB = fopen("data/DB.dat","r+b")) == NULL) {
-       	printf("ERROR: cannot open file\n");
-		return;
+    if ((DB = fopen("data/DB.dat", "r+b")) == NULL) {
+        printf("ERROR: could not open 'data/DB.dat' file.\n");
+        return;
     }
 
-    printf("\n List of databases:\n");
-    for (i = 0; i < LEN_DB_NAME; i++) printf("-");
+    printf("\n List of databases\n");
+    for (i = 0; i < LEN_DB_NAME + 1; i++) printf("-");
     printf("\n");
-    for (i = 0; fgetc(DB) != EOF; i++) {
-    	fseek(DB, -1, 1);
-    	fread(&valid, sizeof(char), 1, DB);
-        fread(vec_name[i], sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof(char), LEN_DB_DIR, DB);
-
+    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+        fread(name, sizeof (char), LEN_DB_NAME, DB);
+        fseek(DB, LEN_DB_DIR, SEEK_CUR);
         if (valid) {
-            printf("%s\n", vec_name[i]);
-            qtdDB++;
+            printf(" %s\n", name);
+            qtty++;
         }
     }
-
-    printf("(%d %s)\n\n", qtdDB, qtdDB > 1 ? "rows": "row");
+    printf("(%d %s)\n\n", qtty, qtty > 1 ? "rows": "row");
     fclose(DB);
 }

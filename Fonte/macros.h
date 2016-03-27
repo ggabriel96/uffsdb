@@ -1,7 +1,8 @@
 #define FMACROS 0 // flag para identificar se macros.h já foi incluída
 
-// TRATAMENTO DE ERROS
-#define SUCCESS 0
+// ERRORS
+#define DB_EXISTS 1
+#define DB_NOT_EXISTS 24
 #define ERRO_ABRIR_ARQUIVO -6
 #define ERRO_ABRIR_DICIONARIO -11
 #define ERRO_ABRIR_ESQUEMA NULL
@@ -29,15 +30,13 @@
 #define ERRO_REMOVER_ARQUIVO_OBJECT -18
 #define ERRO_REMOVER_ARQUIVO_SCHEMA -19
 #define ERRO_VAZIO -7
+#define SUCCESS 0
 
-//tratamento PK e FK
 #define FK 2
 #define NPK 0
 #define PK 1
-////
+
 #define DEFAULT_DB "uffsdb"
-#define DB_EXISTS 1
-#define DB_NOT_EXISTS 24
 #define LEN_DB_NAME 21
 #define LEN_DB_DIR LEN_DB_NAME + 1
 #define PAGES 1024              // Número de páginas.
