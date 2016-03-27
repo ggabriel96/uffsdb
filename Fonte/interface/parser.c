@@ -204,7 +204,7 @@ int interface() {
     pthread_create(&pth, NULL, (void*) clearGlobalStructs, NULL);
     pthread_join(pth, NULL);
 
-    connect("uffsdb"); // conecta automaticamente no banco padrão
+    connect(DEFAULT_DB); //Conecta ao banco padrão
 
     while (1) {
         if (!connected.conn_active) return -1;

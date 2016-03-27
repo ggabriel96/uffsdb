@@ -35,9 +35,10 @@
 #define NPK 0
 #define PK 1
 ////
+#define DEFAULT_DB "uffsdb"
 #define DB_EXISTS 1
 #define DB_NOT_EXISTS 24
-#define LEN_DB_NAME 20
+#define LEN_DB_NAME 21
 #define LEN_DB_DIR LEN_DB_NAME + 1
 #define PAGES 1024              // Número de páginas.
 #define QTD_DB 100
