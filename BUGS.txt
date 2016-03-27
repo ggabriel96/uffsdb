@@ -4,7 +4,9 @@
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
 
-+ Alinhamento das colunas errado no comando \l
++ Alinhamento das colunas errado no comando \l [DONE]
+
++ Falta de '\n' no select *?
 
 + Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
 
