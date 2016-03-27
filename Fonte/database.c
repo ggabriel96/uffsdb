@@ -15,22 +15,25 @@
 #endif
 
 int seekdb(FILE *DB, char *dbname, char *dbdir) {
-    if (DB == NULL) return -1;
-    if (dbname == NULL) return -2;
-    if (dbdir == NULL) return -3;
+    if (DB == NULL) return SEEKDB_NULL_DB;
+    if (dbname == NULL) return SEEKDB_NULL_DBNAME;
+    int qtty = 0;
     long oldpos = ftell(DB);
     char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
     while (fread(&valid, sizeof (char), 1, DB) > 0) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         fread(dir, sizeof (char), LEN_DB_DIR, DB);
-        if (!strcmp(dbname, name) && valid) {
-            strcpy(dbdir, dir);
-            fseek(DB, -(LEN_DB_DIR + LEN_DB_NAME + 1), SEEK_CUR);
-            return 1;
+        if (valid) {
+            qtty++;
+            if (!strcmp(dbname, name)) {
+                fseek(DB, -(LEN_DB_DIR + LEN_DB_NAME + 1), SEEK_CUR);
+                if (dbdir == NULL) return SEEKDB_FOUND_NULL;
+                else { strcpy(dbdir, dir); return SEEKDB_FOUND; }
+            }
         }
     }
     fseek(DB, oldpos, SEEK_SET);
-    return 0;
+    return qtty;
 }
 
 int connectDB(char *dbname) {
@@ -41,19 +44,22 @@ int connectDB(char *dbname) {
     dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR);
     status = seekdb(DB, dbname, dbdir);
     fclose(DB);
-    if (status == 1) {
+    if (status == SEEKDB_FOUND) {
         strcpy(connected.db_directory, "data/");
         strcat(connected.db_directory, dbdir);
-        return SUCCESS;
+        status = SUCCESS;
     }
-    if (status == -3) return MALLOC_FAILED;
-    return DB_NOT_EXISTS;
+    else if (status == SEEKDB_FOUND_NULL) status = MALLOC_FAILED;
+    else status = DB_NOT_EXISTS;
+    free(dbdir); dbdir = NULL;
+    return status;
 }
 
 void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrão
-    FILE *DB;
     int qtdb = 0;
-    char name[LEN_DB_NAME], valid, mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
+    FILE *DB = NULL;
+    data_base *SGBD = NULL;
+    char mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
     if (dbname == NULL) { first = 1; dbname = DEFAULT_DB; }
 
     // Forço sempre a criação da pasta data
@@ -70,37 +76,31 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     	dbname[LEN_DB_NAME - 1] = '\0';
     }
 
-    // Percorre a lista de bancos para ver se o banco que está sendo criado já não existe
-    for (qtdb = 0; fread(&valid, sizeof (char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)) {
-        fread(name, sizeof (char), LEN_DB_NAME, DB);
-        if (valid) qtdb++;
-        if (strcmp(name, dbname) == 0 && valid) {
-            if(!first) printf("ERROR: database already exists.\n");
-            fclose(DB); return;
+    qtdb = seekdb(DB, dbname, NULL);
+    if (qtdb == SEEKDB_FOUND_NULL && !first) printf("ERROR: database '%s' already exists.\n", dbname);
+    // Se não existe o banco ainda, mas a quantidade de bancos
+    // for maior ou igual ao limite, o banco não é criado
+    // O first está ali para permitir a criação do banco padrão,
+    // mesmo ultrapassando o limite
+    else if (qtdb >= QTD_DB && !first) printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
+    else if (qtdb >= 0) {
+        SGBD = (data_base *) malloc(sizeof (data_base));;
+        SGBD -> valid = 1;
+        strcpy(SGBD -> db_name, dbname);
+    	strcpy(SGBD -> db_directory, dbname);
+    	strcat(SGBD -> db_directory, "/");
+        strcat(mkdir, SGBD -> db_name); strcat(mkdir, "> /dev/null 2>&1");
+
+        //Cria a pasta do banco e só escreve o banco no arquivo se foi possível criar a pasta
+        if (system(mkdir) == -1) printf("ERROR: failed to create database %s.\n", SGBD -> db_name);
+        else {
+            fwrite(SGBD, sizeof (data_base), 1, DB);
+            if (!first) printf("CREATE DATABASE\n");
         }
     }
-
-    // Se não existe o banco ainda, mas a quantidade de bancos for maior ou igual ao limite, o banco não é criado
-    // O first está ali para permitir a criação do banco padrão, mesmo ultrapassando o limite
-    if (qtdb >= QTD_DB) {
-        printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
-        fclose(DB); return;
-    }
-
-    data_base *SGBD = (data_base *) malloc(sizeof (data_base));;
-    SGBD -> valid = 1;
-    strcpy(SGBD -> db_name, dbname);
-	strcpy(SGBD -> db_directory, dbname);
-	strcat(SGBD -> db_directory, "/");
-    strcat(mkdir, SGBD -> db_name); strcat(mkdir, "> /dev/null 2>&1");
-
-    //Cria a pasta do banco e só escreve o banco no arquivo se foi possível criar a pasta
-    if (system(mkdir) == -1) printf("ERROR: failed to create database %s.\n", SGBD -> db_name);
-    else {
-        fwrite(SGBD, sizeof (data_base), 1, DB);
-        if (!first) printf("CREATE DATABASE\n");
-    }
-    fclose(DB); free(SGBD); SGBD = NULL;
+    else printf("ERROR: failed to create database \"%s\" (error code: %d).\n", dbname, qtdb);
+    fclose(DB);
+    free(SGBD); SGBD = NULL;
 }
 
 void dropDatabase(char *dbname) {
@@ -121,9 +121,7 @@ void dropDatabase(char *dbname) {
 
     dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR);
     status = seekdb(DB, dbname, dbdir);
-    if (status == 1) {
-        // strcpy(connected.db_directory, "data/");
-        // strcat(connected.db_directory, dbdir);
+    if (status == SEEKDB_FOUND) {
         char directory[LEN_DB_NAME * 2] = "rm -Rf data/";
         strcat(directory, dbdir);
         if (system(directory) != -1) {
@@ -133,8 +131,8 @@ void dropDatabase(char *dbname) {
         }
         else printf("ERROR: could not delete database folder '%s'.", directory);
     }
-    else if (status == -3) printf("ERROR: could not allocate memory for database directory path.\n");
-    else if (!status) printf("ERROR: database does not exist.\n");
+    else if (status == -2) printf("ERROR: could not allocate memory for database directory path.\n");
+    else if (status > 0) printf("ERROR: database '%s' does not exist.\n", dbname);
     else printf("ERROR: could not delete database '%s' (error code: %d).\n", dbname, status);
     fclose(DB);
 }

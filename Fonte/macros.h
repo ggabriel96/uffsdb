@@ -33,6 +33,12 @@
 #define MALLOC_FAILED 73
 #define SUCCESS 0
 
+// seekdb
+#define SEEKDB_FOUND -1
+#define SEEKDB_FOUND_NULL -2
+#define SEEKDB_NULL_DB -3
+#define SEEKDB_NULL_DBNAME -4
+
 #define FK 2
 #define NPK 0
 #define PK 1
@@ -41,7 +47,7 @@
 #define LEN_DB_NAME 21
 #define LEN_DB_DIR LEN_DB_NAME + 1
 #define PAGES 1024              // Número de páginas.
-#define QTD_DB 100
+#define QTD_DB 2
 #define SIZE 512                // Tamanho da página.
 #define TAMANHO_NOME_CAMPO 40   // Tamanho do nome dos campos de uma tabela.
 #define TAMANHO_NOME_TABELA 20  // Tamanho do nome da tabela.
