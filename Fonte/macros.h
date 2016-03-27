@@ -38,6 +38,7 @@
 #define DB_EXISTS 1
 #define DB_NOT_EXISTS 24
 #define LEN_DB_NAME 20
+#define LEN_DB_DIR LEN_DB_NAME + 1
 #define PAGES 1024              // Número de páginas.
 #define QTD_DB 100
 #define SIZE 512                // Tamanho da página.

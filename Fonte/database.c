@@ -46,7 +46,7 @@ char connectDB(char *db_name) {
 void createDB(char *db_name) {
     int i;
 	FILE *DB;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], create[LEN_DB_NAME + 12] = "mkdir data/", valid;
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_DIR], create[LEN_DB_NAME + 12] = "mkdir data/", valid;
 
     if ((DB = fopen("data/DB.dat", "a+b")) == NULL) {
         printf("ERROR: could not open data/DB.dat.\n");
@@ -64,7 +64,7 @@ void createDB(char *db_name) {
     	fseek(DB, -1, SEEK_CUR);
     	fread(&valid, sizeof (char), 1, DB);
         fread(vec_name[i], sizeof (char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof (char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof (char), LEN_DB_DIR, DB);
         if (strcasecmp(vec_name[i], db_name) == 0 && valid) {
         	fclose(DB);
 			if (strcasecmp(db_name, "uffsdb") != 0)
@@ -122,12 +122,12 @@ void dropDatabase(char *db_name) {
     	fseek(DB, -1, 1);
     	fread(&valid, sizeof(char), 1, DB);
         fread(vec_name[i], sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof(char), LEN_DB_NAME + 1, DB);
+        fread(vec_directory[i], sizeof(char), LEN_DB_DIR, DB);
 
         if(!objcmp(vec_name[i], db_name) && valid) {
         	valid = 0;
         	// fseek(DB, ((LEN_DB_NAME*2+1)*i), SEEK_SET); 	// posiciona o cabecote sobre o byte de validade -> FOrmula antiga
-        	fseek(DB, (LEN_DB_NAME * 2 + 2) * i, SEEK_SET); 	// posiciona o cabecote sobre o byte de validade
+        	fseek(DB, (LEN_DB_NAME + LEN_DB_DIR + 1) * i, SEEK_SET); 	// posiciona o cabecote sobre o byte de validade
         	fwrite(&valid, sizeof(char), 1, DB);			   // do banco e apaga ele
 
         	char directory[LEN_DB_NAME * 2] = "rm data/";
@@ -146,12 +146,9 @@ void dropDatabase(char *db_name) {
 }
 
 void showDB() {
-
 	FILE *DB;
 	int i, qtdDB=0;
-	char vec_name 				[QTD_DB][LEN_DB_NAME],
-		 vec_directory 			[QTD_DB][LEN_DB_NAME],
-		 valid;
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_DIR], valid;
 
     if((DB = fopen("data/DB.dat","r+b")) == NULL) {
        	printf("ERROR: cannot open file\n");
@@ -163,9 +160,9 @@ void showDB() {
     printf("\n");
     for (i = 0; fgetc(DB) != EOF; i++) {
     	fseek(DB, -1, 1);
-    	fread(&valid			,sizeof(char), 			 1, DB);
-        fread(vec_name[i]  		,sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i] 	,sizeof(char), LEN_DB_NAME, DB);
+    	fread(&valid, sizeof(char), 1, DB);
+        fread(vec_name[i], sizeof(char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof(char), LEN_DB_DIR, DB);
 
         if (valid) {
             printf("%s\n", vec_name[i]);
