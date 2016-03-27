@@ -17,7 +17,7 @@
 char connectDB(char *db_name) {
     int i;
 	FILE *DB;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], valid, directory[LEN_DB_NAME * 2] = "data/";
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_DIR], valid, directory[LEN_DB_NAME * 2] = "data/";
 
     if ((DB = fopen("data/DB.dat", "rb")) == NULL) {
         return ERRO_ABRIR_ARQUIVO;
@@ -29,7 +29,7 @@ char connectDB(char *db_name) {
     	fseek(DB, -1, SEEK_CUR);
     	fread(&valid, sizeof (char), 1, DB);
         fread(vec_name[i], sizeof (char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof (char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof (char), LEN_DB_DIR, DB);
         // verifica se encontrou o banco
         if (strcasecmp(vec_name[i], db_name) == 0 && valid) {
             // atualiza o diretorio do banco que está conectado
