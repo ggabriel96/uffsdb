@@ -142,7 +142,7 @@ void showDB() {
 		return;
     }
 
-    printf(" List of databases:\n");
+    printf("\n List of databases:\n");
     for (i = 0; i < LEN_DB_NAME; i++) printf("-");
     printf("\n");
     for (i = 0; fgetc(DB) != EOF; i++) {

@@ -1,3 +1,4 @@
+#include <ctype.h> // tolower
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -197,6 +198,23 @@ void setMode(char mode) {
     GLOBAL_PARSER.step++;
 }
 
+void strtolower(char *s) {
+    int i;
+    if (s != NULL)
+        for (i = 0; i < strlen(s); i++)
+            s[i] = tolower(s[i]);
+}
+
+void lowerinput() {
+    strtolower(GLOBAL_DATA.objName);
+    if (GLOBAL_DATA.columnName != NULL) strtolower(*(GLOBAL_DATA.columnName));
+    // não faz sentido dar lower nos dados que serão inseridos
+    // no banco. Além disso, o tipo de dado é tratato com letra maiúscula...
+    // if (GLOBAL_DATA.values != NULL) strtolower(*(GLOBAL_DATA.values));
+    // strtolower(GLOBAL_DATA.type);
+    if (GLOBAL_DATA.fkTable != NULL) strtolower(*(GLOBAL_DATA.fkTable));
+    if (GLOBAL_DATA.fkColumn != NULL) strtolower(*(GLOBAL_DATA.fkColumn));
+}
 
 int interface() {
     pthread_t pth;
@@ -215,7 +233,8 @@ int interface() {
 
         if (GLOBAL_PARSER.noerror) {
             if (GLOBAL_PARSER.mode != 0) {
-                switch(GLOBAL_PARSER.mode) {
+                lowerinput();
+                switch (GLOBAL_PARSER.mode) {
                     case OP_INSERT:
                         if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
                         else printf("WARNING: Nothing to be inserted. Command ignored.\n");
