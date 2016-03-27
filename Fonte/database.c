@@ -47,7 +47,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     FILE *DB;
     int qtdb = 0;
     char name[LEN_DB_NAME], valid, mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
-    if(dbname == NULL) { first = 1; dbname = DEFAULT_DB;}
+    if (dbname == NULL) { first = 1; dbname = DEFAULT_DB; }
 
     //Forço sempre a criação da pasta data
     system("mkdir data > /dev/null 2>&1");
@@ -64,7 +64,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     }
 
     //Percorre a lista de bancos para ver se o banco que está sendo criado já não existe
-    for(qtdb = 0; fread(&valid, sizeof(char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)){
+    for (qtdb = 0; fread(&valid, sizeof (char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         if(valid) qtdb++;
         if (strcasecmp(name, dbname) == 0 && valid) {
@@ -97,45 +97,40 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
 }
 
 void dropDatabase(char *db_name) {
-    int i;
-	FILE *DB;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], valid;
+    int i = 0;
+	FILE *DB = NULL;
+	char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
 
-	if(!strcmp(db_name, connected.db_name)) {
+	if (!strcmp(db_name, connected.db_name)) {
 		printf("ERROR: You can not delete the database that you are connected.\n");
 		return;
 	}
 
-    if((DB = fopen("data/DB.dat","r+b")) == NULL) {
-       	printf("ERROR: cannot open file\n");
-		return;
+    if ((DB = fopen("data/DB.dat", "r+b")) == NULL) {
+        printf("ERROR: could not open 'data/DB.dat' file.\n");
+        return;
     }
 
-    for(i = 0; fgetc(DB) != EOF; i++) {
-    	fseek(DB, -1, 1);
-    	fread(&valid, sizeof(char), 1, DB);
-        fread(vec_name[i], sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof(char), LEN_DB_DIR, DB);
+    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+        fread(name, sizeof (char), LEN_DB_NAME, DB);
+        fread(dir, sizeof (char), LEN_DB_DIR, DB);
 
-        if(!objcmp(vec_name[i], db_name) && valid) {
-        	valid = 0;
-        	// fseek(DB, ((LEN_DB_NAME*2+1)*i), SEEK_SET); 	// posiciona o cabecote sobre o byte de validade -> FOrmula antiga
-        	fseek(DB, (LEN_DB_NAME + LEN_DB_DIR + 1) * i, SEEK_SET); 	// posiciona o cabecote sobre o byte de validade
-        	fwrite(&valid, sizeof(char), 1, DB);			   // do banco e apaga ele
-
-        	char directory[LEN_DB_NAME * 2] = "rm data/";
-        	strcat(directory, vec_directory[i]);
-        	strcat(directory, " -R");
-
-        	system(directory);
-
+        if (!strcmp(name, db_name) && valid) {
+        	char directory[LEN_DB_NAME * 2] = "rm -Rf data/";
+        	strcat(directory, dir);
+        	if (system(directory) != -1) {
+                valid = 0;
+                fseek(DB, -(LEN_DB_DIR + LEN_DB_NAME + 1), SEEK_CUR);
+            	fwrite(&valid, sizeof (char), 1, DB); // do banco e apaga ele
+                printf("DROP DATABASE\n");
+            }
+            else printf("ERROR: could not delete database folder '%s'.", directory);
         	fclose(DB);
-        	printf("DROP DATABASE\n");
         	return;
         }
     }
     fclose(DB);
-    printf("ERROR: database does not exist\n");
+    printf("ERROR: database does not exist.\n");
 }
 
 void showDB() {
