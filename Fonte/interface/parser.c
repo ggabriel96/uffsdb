@@ -234,7 +234,7 @@ int interface() {
         if (GLOBAL_PARSER.noerror) {
             if (GLOBAL_PARSER.mode != 0) {
                 lowerinput();
-                switch(GLOBAL_PARSER.mode) {
+                switch (GLOBAL_PARSER.mode) {
                     case OP_INSERT:
                         if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
                         else printf("WARNING: Nothing to be inserted. Command ignored.\n");

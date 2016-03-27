@@ -22,7 +22,7 @@
   #include "dictionary.h"
 #endif
 
-/* ---------------------------------------------------------------------------------------------- 
+/* ----------------------------------------------------------------------------------------------
     Objetivo:   Recebe o nome de uma tabela e engloba as funções leObjeto() e leSchema().
     Parametros: Nome da Tabela, Objeto da Tabela e tabela.
     Retorno:    tp_table
@@ -523,60 +523,67 @@ int finalizaInsert(char *nome, column *c){
  */
 void insert(rc_insert *s_insert) {
 	int i;
-	table *tabela = (table *)malloc(sizeof(table));
-	tabela->esquema = NULL;
-	memset(tabela, 0, sizeof(table));
-	column *colunas = NULL;
-	tp_table *esquema = NULL;
+    char flag = 0;
+    column *colunas = NULL;
+    tp_table *esquema = NULL;
 	struct fs_objects objeto;
-	memset(&objeto, 0, sizeof(struct fs_objects));
-	char  flag=0;
+	memset(&objeto, 0, sizeof (struct fs_objects));
+    table *tabela = (table *) malloc(sizeof (table));
+	tabela -> esquema = NULL;
+	memset(tabela, 0, sizeof (table));
 
-	abreTabela(s_insert->objName, &objeto, &tabela->esquema); //retorna o esquema para a insere valor
-	strcpylower(tabela->nome, s_insert->objName);
+	abreTabela(s_insert -> objName, &objeto, &tabela -> esquema); //retorna o esquema para a insere valor
+	// strcpylower(tabela->nome, s_insert->objName);
+    strcpy(tabela -> nome, s_insert -> objName);
 
-	if(s_insert->columnName != NULL) {
+	if (s_insert -> columnName != NULL) {
 		if (allColumnsExists(s_insert, tabela)) {
-			for (esquema = tabela->esquema; esquema != NULL; esquema = esquema->next) {
-				if(typesCompatible(esquema->tipo,getInsertedType(s_insert, esquema->nome, tabela))) {
-					colunas = insereValor(tabela, colunas, esquema->nome, getInsertedValue(s_insert, esquema->nome, tabela));
-				} else {
-					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", esquema->nome, tabela->nome, esquema->tipo, getInsertedType(s_insert, esquema->nome, tabela));
-					flag=1;
+			for (esquema = tabela -> esquema; esquema != NULL; esquema = esquema -> next) {
+				if (typesCompatible(esquema -> tipo, getInsertedType(s_insert, esquema -> nome, tabela))) {
+					colunas = insereValor(tabela, colunas, esquema -> nome, getInsertedValue(s_insert, esquema -> nome, tabela));
+				}
+                else {
+					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", esquema -> nome, tabela -> nome, esquema -> tipo, getInsertedType(s_insert, esquema -> nome, tabela));
+					flag = 1;
 				}
 			}
-		} else {
+		}
+        else {
 			flag = 1;
 		}
-	} else {
-		if (s_insert->N == objeto.qtdCampos) {
-			for(i=0; i < objeto.qtdCampos; i++) {
+	}
+    else {
+		if (s_insert -> N == objeto.qtdCampos) {
+			for (i = 0; i < objeto.qtdCampos; i++) {
 
-				if(s_insert->type[i] == 'S' && tabela->esquema[i].tipo == 'C') {
-					s_insert->values[i][1] = '\0';
-					s_insert->type[i] = 'C';
+                // bug da inserção de string no tipo char
+				// if (s_insert -> type[i] == 'S' && tabela -> esquema[i].tipo == 'C') {
+				// 	s_insert -> values[i][1] = '\0';
+				// 	s_insert -> type[i] = 'C';
+				// }
+
+                // precisa disso? '0' não é considerado Double, caso tente inserir?
+				if (s_insert -> type[i] == 'I' && tabela -> esquema[i].tipo == 'D') {
+					s_insert -> type[i] = 'D';
 				}
 
-				if(s_insert->type[i] == 'I' && tabela->esquema[i].tipo == 'D') {
-
-					s_insert->type[i] = 'D';
-				}
-
-				if(s_insert->type[i] == tabela->esquema[i].tipo)
-					colunas = insereValor(tabela, colunas, tabela->esquema[i].nome, s_insert->values[i]);
+				if (s_insert -> type[i] == tabela -> esquema[i].tipo) {
+					colunas = insereValor(tabela, colunas, tabela -> esquema[i].nome, s_insert -> values[i]);
+                }
 				else {
-					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", tabela->esquema[i].nome, tabela->nome, tabela->esquema[i].tipo, s_insert->type[i]);
-					flag=1;
+					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", tabela -> esquema[i].nome, tabela -> nome, tabela -> esquema[i].tipo, s_insert -> type[i]);
+					flag = 1;
 				}
 			}
-		} else {
+		}
+        else {
 			printf("ERROR: INSERT has more expressions than target columns.\n");
 			flag = 1;
 		}
 	}
 
 	if (!flag)
-		if (finalizaInsert(s_insert->objName, colunas) == SUCCESS)
+		if (finalizaInsert(s_insert -> objName, colunas) == SUCCESS)
 			printf("INSERT 0 1\n");
 
 	//freeTp_table(&esquema, objeto.qtdCampos);
@@ -588,20 +595,16 @@ void insert(rc_insert *s_insert) {
 
 ///////////////
 void imprime(char nomeTabela[]) {
-
-    int j,erro, x, p, cont=0;
     struct fs_objects objeto;
+    int j, erro, x, p, cont = 0;
 
-    if(!verificaNomeTabela(nomeTabela)){
+    if (!verificaNomeTabela(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
     }
-
     objeto = leObjeto(nomeTabela);
-
     tp_table *esquema = leSchema(objeto);
-
-    if(esquema == ERRO_ABRIR_ESQUEMA){
+    if (esquema == ERRO_ABRIR_ESQUEMA){
         printf("ERROR: schema cannot be created.\n");
         free(esquema);
         return;
@@ -609,7 +612,7 @@ void imprime(char nomeTabela[]) {
 
     tp_buffer *bufferpoll = initbuffer();
 
-    if(bufferpoll == ERRO_DE_ALOCACAO){
+    if (bufferpoll == ERRO_DE_ALOCACAO){
         free(bufferpoll);
         free(esquema);
         printf("ERROR: no memory available to allocate buffer.\n");
@@ -617,34 +620,30 @@ void imprime(char nomeTabela[]) {
     }
 
     erro = SUCCESS;
-    for(x = 0; erro == SUCCESS; x++)
+    for (x = 0; erro == SUCCESS; x++)
         erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 
-    int ntuples = --x;
 	p = 0;
-	while(x){
+    int ntuples = --x;
+	while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
-	    if(pagina == ERRO_PARAMETRO){
+	    if (pagina == ERRO_PARAMETRO){
             printf("ERROR: could not open the table.\n");
             free(bufferpoll);
             free(esquema);
             return;
 	    }
 
-	    if(!cont) {
-	        for(j=0; j < objeto.qtdCampos; j++){
-	            if(pagina[j].tipoCampo == 'S')
-	                printf(" %-20s ", pagina[j].nomeCampo);
-	        	else
-	                printf(" %-10s ", pagina[j].nomeCampo);
-	            if(j<objeto.qtdCampos-1)
-	            	printf("|");
+	    if (!cont) {
+	        for (j = 0; j < objeto.qtdCampos; j++) {
+	            if (pagina[j].tipoCampo == 'S') printf(" %-20s ", pagina[j].nomeCampo);
+	        	else printf(" %-10s ", pagina[j].nomeCampo);
+	            if (j < objeto.qtdCampos - 1) printf("|");
 	        }
 	        printf("\n");
-	        for(j=0; j < objeto.qtdCampos; j++){
+	        for (j = 0; j < objeto.qtdCampos; j++){
 	            printf("%s",(pagina[j].tipoCampo == 'S')? "----------------------": "------------");
-	            if(j<objeto.qtdCampos-1)
-	            	printf("+");
+	            if (j < objeto.qtdCampos - 1) printf("+");
 	        }
 	        printf("\n");
 	    }
