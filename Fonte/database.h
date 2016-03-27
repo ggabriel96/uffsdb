@@ -1,3 +1,15 @@
+// Procura pelo banco de nome 'dbname' no arquivo 'DB'
+// e coloca no ponteiro 'dbdir' o diretório do banco, caso
+// o tenha encontrado. 'DB' deve ter passado previamente
+// por fopen e 'dbdir' deve ter sido previamente alocado
+// retorna:
+// -1, caso DB seja NULL
+// -2, caso dbname seja NULL
+// -3, caso dbdir seja NULL
+//  0, caso não tenha entrado o banco (e retorna à posição original do arquivo DB)
+//  1, caso tenha encontrado (voltando à posição inicial do registro encontrado, &valid)
+int seekdb(FILE *, char *, char *);
+
 /* createDB: Recebe um nome para criar um banco de dados
  *           cria o banco, caso ainda não exista
  */

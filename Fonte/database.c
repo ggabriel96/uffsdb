@@ -14,16 +14,6 @@
   #include "misc.h"
 #endif
 
-// Procura pelo banco de nome 'dbname' no arquivo 'DB'
-// e coloca no ponteiro 'dbdir' o diretório do banco, caso
-// o tenha encontrado. 'DB' deve ter passado previamente
-// por fopen e 'dbdir' deve ter sido previamente alocado
-// retorna:
-// -1, caso DB seja NULL
-// -2, caso dbname seja NULL
-// -3, caso dbdir seja NULL
-//  0, caso não tenha entrado o banco (e retorna à posição original do arquivo DB)
-//  1, caso tenha encontrado (mantendo a posição do arquivo após a busca)
 int seekdb(FILE *DB, char *dbname, char *dbdir) {
     if (DB == NULL) return -1;
     if (dbname == NULL) return -2;
@@ -35,6 +25,7 @@ int seekdb(FILE *DB, char *dbname, char *dbdir) {
         fread(dir, sizeof (char), LEN_DB_DIR, DB);
         if (!strcmp(dbname, name) && valid) {
             strcpy(dbdir, dir);
+            fseek(DB, -(LEN_DB_DIR + LEN_DB_NAME + 1), SEEK_CUR);
             return 1;
         }
     }
@@ -47,7 +38,7 @@ int connectDB(char *dbname) {
     char *dbdir = NULL;
     FILE *DB = fopen("data/DB.dat", "rb");
     if (DB == NULL) return ERRO_ABRIR_ARQUIVO;
-    dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR); dbdir[0] = '\0';
+    dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR);
     status = seekdb(DB, dbname, dbdir);
     fclose(DB);
     if (status == 1) {
@@ -83,8 +74,8 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     for (qtdb = 0; fread(&valid, sizeof (char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         if (valid) qtdb++;
-        if (strcasecmp(name, dbname) == 0 && valid) {
-            if(!first) printf("ERROR: database already exists\n");
+        if (strcmp(name, dbname) == 0 && valid) {
+            if(!first) printf("ERROR: database already exists.\n");
             fclose(DB); return;
         }
     }
@@ -112,11 +103,13 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     fclose(DB); free(SGBD); SGBD = NULL;
 }
 
-void dropDatabase(char *db_name) {
+void dropDatabase(char *dbname) {
+    int status = 0;
+    char valid = 0;
 	FILE *DB = NULL;
-	char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
+    char *dbdir = NULL;
 
-	if (!strcmp(db_name, connected.db_name)) {
+	if (!strcmp(dbname, connected.db_name)) {
 		printf("ERROR: You can not delete the database that you are connected.\n");
 		return;
 	}
@@ -126,26 +119,24 @@ void dropDatabase(char *db_name) {
         return;
     }
 
-    while (fread(&valid, sizeof (char), 1, DB) > 0) {
-        fread(name, sizeof (char), LEN_DB_NAME, DB);
-        fread(dir, sizeof (char), LEN_DB_DIR, DB);
-
-        if (!strcmp(name, db_name) && valid) {
-        	char directory[LEN_DB_NAME * 2] = "rm -Rf data/";
-        	strcat(directory, dir);
-        	if (system(directory) != -1) {
-                valid = 0;
-                fseek(DB, -(LEN_DB_DIR + LEN_DB_NAME + 1), SEEK_CUR);
-            	fwrite(&valid, sizeof (char), 1, DB); // do banco e apaga ele
-                printf("DROP DATABASE\n");
-            }
-            else printf("ERROR: could not delete database folder '%s'.", directory);
-        	fclose(DB);
-        	return;
+    dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR);
+    status = seekdb(DB, dbname, dbdir);
+    if (status == 1) {
+        // strcpy(connected.db_directory, "data/");
+        // strcat(connected.db_directory, dbdir);
+        char directory[LEN_DB_NAME * 2] = "rm -Rf data/";
+        strcat(directory, dbdir);
+        if (system(directory) != -1) {
+            valid = 0;
+            fwrite(&valid, sizeof (char), 1, DB); // do banco e apaga ele
+            printf("DROP DATABASE\n");
         }
+        else printf("ERROR: could not delete database folder '%s'.", directory);
     }
+    else if (status == -3) printf("ERROR: could not allocate memory for database directory path.\n");
+    else if (!status) printf("ERROR: database does not exist.\n");
+    else printf("ERROR: could not delete database '%s' (error code: %d).\n", dbname, status);
     fclose(DB);
-    printf("ERROR: database does not exist.\n");
 }
 
 void showDB() {
