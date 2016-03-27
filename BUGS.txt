@@ -100,3 +100,19 @@ uffsdb=#
 
 + [DONE] Criar banco chamado uffsdb não retorna mensagem de "sucesso"
 + Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
+
++ Algum problema com os atributos de uma tabela:
+    ./uffsdb
+    create database d;
+    \c d
+    create table t (c char);
+    \t t
+Printou:
+    Table "public.t"
+    Column             | Type         | Modifiers
+   --------------------+--------------+-----------
+                       | null
+                       | null
+                       | null
+                       | null
+                       ...
