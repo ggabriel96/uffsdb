@@ -14,7 +14,7 @@ int existeAtributo(char *, column *);
     Parametros: Objeto da tabela.
     Retorno:    Vetor de esquemas vetEsqm
    ---------------------------------------------------------------------------------------------*/
-tp_table *procuraAtributoFK(struct fs_objects);
+tp_table *procuraAtributoFK(fs_objects);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Copia todas as informações menos a tabela com nome NomeTabela, que será removida.
     Parametros: Nome da tabela que será removida do object.dat.
@@ -30,7 +30,7 @@ int procuraObjectArquivo(char *);
 
     *nTabela - Nome da tabela a ser buscado no dicionário de dados
 */
-struct fs_objects leObjeto(char *);
+fs_objects leObjeto(char *);
 /*
     Esta função busca, no arquivo fs_schema.dat, pelas informações do objeto, carregando o esquema
     da tabela que é retornadado em tp_table.
@@ -38,7 +38,7 @@ struct fs_objects leObjeto(char *);
     *objeto - Objeto, já previamente inicializado em leObjeto(nTabela), que contém as informações
               sobre uma determinada tabela.
 */
-tp_table *leSchema (struct fs_objects );
+tp_table *leSchema (fs_objects );
 /*
     Esta função calcula, usando o esquema e o dicionário de dados, o tamanho da tupla de uma
     tabela, retornando o mesmo.
@@ -48,7 +48,7 @@ tp_table *leSchema (struct fs_objects );
                tabela, etc)
 
 */
-int tamTupla(tp_table *, struct fs_objects);
+int tamTupla(tp_table *, fs_objects);
 /*
     Esta função conta quantas tabelas já estão inseridas dentro do dicionario, para poder colocar
     um código válido para a próxima tabela. Retorna a quantidade exata de tabelas.
@@ -114,16 +114,3 @@ void printTable(char *);
 void freeTp_table(tp_table **, int );
 void freeTable(table *);
 void freeColumn(column *);
-
-
-
-
-
-
-
-
-
-
-
-
-

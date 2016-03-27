@@ -60,7 +60,7 @@ int existeAtributo(char *nomeTabela, column *c){
         return ERRO_DE_PARAMETRO;
 
     for(x = 0; colocaTuplaBuffer(bufferpoll, x, tabela, objeto) == SUCCESS; x++);
-        
+
     pagina = getPage(bufferpoll, tabela, objeto, 0);
     if(pagina == NULL) pagina = getPage(bufferpoll, tabela, objeto, 1);
 
@@ -195,7 +195,7 @@ char retornaTamanhoTipoDoCampo(char *nomeCampo, table  *tab) {
     Retorno:    Vetor de esquemas vetEsqm
    ---------------------------------------------------------------------------------------------*/
 
-tp_table *procuraAtributoFK(struct fs_objects objeto){
+tp_table *procuraAtributoFK(fs_objects objeto){
     FILE *schema;
     int cod = 0, chave, i = 0;
     char *tupla = (char *)malloc(sizeof(char) * 109);
@@ -265,7 +265,7 @@ int procuraObjectArquivo(char *nomeTabela){
     int teste        = 0,
         cont         = 0,
         achou        = 0,
-        tamanhoTotal = sizeof(struct fs_objects);
+        tamanhoTotal = sizeof(fs_objects);
 
     char *table = (char *)malloc(sizeof(char) * tamanhoTotal);
     FILE *dicionario, *fp;
@@ -325,15 +325,15 @@ int procuraObjectArquivo(char *nomeTabela){
     return SUCCESS;
 }
 //
-struct fs_objects leObjeto(char *nTabela) {
+fs_objects leObjeto(char *nTabela) {
     int cod;
-    struct fs_objects objeto;
+    fs_objects objeto;
     char directory[LEN_DB_NAME * 2];
-    FILE *dicionario = fopen(directory, "a+b"); // Abre o dicionario de dados
     char *tupla = (char *) malloc(sizeof (char) * TAMANHO_NOME_TABELA);
     memset(tupla, '\0', TAMANHO_NOME_TABELA);
     strcpy(directory, connected.db_directory);
     strcat(directory, "fs_object.dat");
+    FILE *dicionario = fopen(directory, "a+b"); // Abre o dicionario de dados
 
     if (!verificaNomeTabela(nTabela)) {
         printf("ERROR: relation \"%s\" was not found.\n", nTabela);
@@ -373,7 +373,7 @@ struct fs_objects leObjeto(char *nTabela) {
 }
 //
 // LEITURA DE DICIONARIO E ESQUEMA
-tp_table *leSchema (struct fs_objects objeto){
+tp_table *leSchema (fs_objects objeto){
     FILE *schema;
     int i = 0, cod = 0;
     char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_CAMPO);
@@ -445,7 +445,7 @@ tp_table *leSchema (struct fs_objects objeto){
     return esquema;
 }
 ////
-int tamTupla(tp_table *esquema, struct fs_objects objeto) {// Retorna o tamanho total da tupla da tabela.
+int tamTupla(tp_table *esquema, fs_objects objeto) {// Retorna o tamanho total da tupla da tabela.
 
     int qtdCampos = objeto.qtdCampos, i, tamanhoGeral = 0;
 
@@ -765,12 +765,12 @@ void printTable(char *tbl){
 		printf(" %-18s | %-12s | %-10s\n", "Column", "Type", "Modifiers");
 		printf("--------------------+--------------+-----------\n");
 
-		struct fs_objects objeto1;
+		fs_objects objeto1;
 		tp_table *esquema1;
 
 		abreTabela(tbl, &objeto1, &esquema1);
 
-		tp_table *tab3 = (tp_table *)malloc(sizeof(struct tp_table));
+		tp_table *tab3 = (tp_table *)malloc(sizeof(tp_table));
 		tab3 = procuraAtributoFK(objeto1); //retorna tp_table
 		int l, ipk=0, ifk=0;
 

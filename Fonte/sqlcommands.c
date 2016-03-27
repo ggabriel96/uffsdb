@@ -557,10 +557,10 @@ void insert(rc_insert *s_insert) {
 			for (i = 0; i < objeto.qtdCampos; i++) {
 
                 // bug da inserção de string no tipo char
-				// if (s_insert -> type[i] == 'S' && tabela -> esquema[i].tipo == 'C') {
-				// 	s_insert -> values[i][1] = '\0';
-				// 	s_insert -> type[i] = 'C';
-				// }
+				if (s_insert -> type[i] == 'S' && tabela -> esquema[i].tipo == 'C' && s_insert -> values[i][1] == '\0') {
+					// s_insert -> values[i][1] = '\0';
+					s_insert -> type[i] = 'C';
+				}
 
                 // precisa disso? '0' não é considerado Double, caso tente inserir?
 				if (s_insert -> type[i] == 'I' && tabela -> esquema[i].tipo == 'D') {
