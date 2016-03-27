@@ -15,27 +15,25 @@
 #endif
 
 char connectDB(char *db_name) {
-    int i;
-	FILE *DB;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_DIR], valid, directory[LEN_DB_NAME * 2] = "data/";
+    int i = 0;
+	FILE *DB = NULL;
+	char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
 
     if ((DB = fopen("data/DB.dat", "rb")) == NULL) {
         return ERRO_ABRIR_ARQUIVO;
     }
 
-    for (i = 0; fgetc(DB) != EOF; i++) {
-        // o fgetc na condição do for anda um char no arquivo
-        // então tem que fazer ele voltar esse char, caso não seja EOF
-    	fseek(DB, -1, SEEK_CUR);
-    	fread(&valid, sizeof (char), 1, DB);
-        fread(vec_name[i], sizeof (char), LEN_DB_NAME, DB);
-        fread(vec_directory[i], sizeof (char), LEN_DB_DIR, DB);
-        // verifica se encontrou o banco
-        if (strcasecmp(vec_name[i], db_name) == 0 && valid) {
+    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+        fread(name, sizeof (char), LEN_DB_NAME, DB);
+        fread(dir, sizeof (char), LEN_DB_DIR, DB);
+        if (strcmp(name, db_name) == 0 && valid) {
             // atualiza o diretorio do banco que está conectado
-    		strcat(directory, vec_directory[i]);
-        	strcpylower(connected.db_directory, directory);
-        	fclose(DB);
+            fclose(DB);
+            strcpy(connected.db_directory, "data/");
+            strcat(connected.db_directory, dir);
+            // esse for dá segfault >_>
+            // for (i = 0; connected.db_directory[i] != '/'; i++);
+        	// strcat(connected.db_directory + i + 1, dir);
         	return SUCCESS;
         }
     }
