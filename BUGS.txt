@@ -95,3 +95,5 @@ uffsdb=#
     	name VARCHAR(10),
     	sex char
     );
+
++ Criar banco chamado uffsdb não retorna mensagem de "sucesso"

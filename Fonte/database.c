@@ -46,7 +46,7 @@ char connectDB(char *db_name) {
 void createDB(char *db_name) {
     int i;
 	FILE *DB;
-	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], create[LEN_DB_NAME + 6] = "mkdir data/", valid;
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], create[LEN_DB_NAME + 12] = "mkdir data/", valid;
 
     if ((DB = fopen("data/DB.dat", "a+b")) == NULL) {
         printf("ERROR: could not open data/DB.dat.\n");
@@ -92,7 +92,7 @@ void createDB(char *db_name) {
     // verifica se foi possivel criar o diretório
 	if (system(create) == -1) {
 		printf("ERROR: failed to create database %s.\n", SGBD -> db_name);
-		fclose(DB);
+		fclose(DB); free(SGBD); SGBD = NULL;
 		return;
 	}
 

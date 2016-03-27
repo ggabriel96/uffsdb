@@ -62,7 +62,7 @@ typedef struct rc_parser {
 typedef struct data_base {
 	char 		valid;
 	char 		db_name[LEN_DB_NAME];
-	char 		db_directory[LEN_DB_NAME];
+	char 		db_directory[LEN_DB_NAME + 1];
 }data_base;
 
 typedef struct db_connected {
