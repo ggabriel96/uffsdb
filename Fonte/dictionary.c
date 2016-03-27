@@ -29,19 +29,15 @@
    ---------------------------------------------------------------------------------------------*/
 
 int existeArquivo(const char* filename){
-
-    char directory[LEN_DB_NAME*2];
+    char directory[LEN_DB_NAME * 2];
     strcpy(directory, connected.db_directory);
     strcat(directory, filename);
     FILE* fptr = fopen(directory, "r");
 
-    if (fptr != NULL){
-        fclose(fptr);
+    if (fptr == NULL) return 0;
 
-        return 1;
-    }
-
-    return 0;
+    fclose(fptr);
+    return 1;
 }
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Verifica a existência do atributo antes de adicionar na tabela
@@ -52,9 +48,9 @@ int existeArquivo(const char* filename){
    ---------------------------------------------------------------------------------------------*/
 
 int existeAtributo(char *nomeTabela, column *c){
-    int erro, x, count;
-    struct fs_objects objeto;
-    memset(&objeto, 0, sizeof(struct fs_objects));
+    int x, count;
+    fs_objects objeto;
+    memset(&objeto, 0, sizeof(fs_objects));
     tp_table *tabela;
     tp_buffer *bufferpoll;
     column *aux = NULL;
@@ -63,15 +59,10 @@ int existeAtributo(char *nomeTabela, column *c){
     if(iniciaAtributos(&objeto, &tabela, &bufferpoll, nomeTabela) != SUCCESS)
         return ERRO_DE_PARAMETRO;
 
-    erro = SUCCESS;
-    for(x = 0; erro == SUCCESS; x++)
-        erro = colocaTuplaBuffer(bufferpoll, x, tabela, objeto);
-
+    for(x = 0; colocaTuplaBuffer(bufferpoll, x, tabela, objeto) == SUCCESS; x++);
+        
     pagina = getPage(bufferpoll, tabela, objeto, 0);
-
-    if(pagina == NULL){
-        pagina = getPage(bufferpoll, tabela, objeto, 1);
-    }
+    if(pagina == NULL) pagina = getPage(bufferpoll, tabela, objeto, 1);
 
     if(pagina != NULL){
         count = 0;

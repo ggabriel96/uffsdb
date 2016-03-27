@@ -59,6 +59,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     int qtdb = 0;
     FILE *DB = NULL;
     data_base *SGBD = NULL;
+    // 27 = |mkdir data/| (11) +  |> /dev/null 2>&1|(16)
     char mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
     if (dbname == NULL) { first = 1; dbname = DEFAULT_DB; }
 

@@ -1,12 +1,12 @@
 #include "macros.h"
 #define FTYPES 1 // flag para identificar se types.h já foi incluída
 
-struct fs_objects { // Estrutura usada para carregar fs_objects.dat
+typedef struct fs_objects { // Estrutura usada para carregar fs_objects.dat
     char nome[TAMANHO_NOME_TABELA];     //  Nome da tabela.
     int cod;                            // Código da tabela.
     char nArquivo[TAMANHO_NOME_ARQUIVO];// Nome do arquivo onde estão armazenados os dados da tabela.
     int qtdCampos;                      // Quantidade de campos da tabela.
-};
+}fs_objects;
 
 typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
     char nome[TAMANHO_NOME_CAMPO];  // Nome do Campo.                    40bytes
