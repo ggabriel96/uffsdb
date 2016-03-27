@@ -47,7 +47,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     char name[LEN_DB_NAME], valid, mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
     if (dbname == NULL) { first = 1; dbname = DEFAULT_DB; }
 
-    //Forço sempre a criação da pasta data
+    // Forço sempre a criação da pasta data
     system("mkdir data > /dev/null 2>&1");
 
     if ((DB = fopen("data/DB.dat", "a+b")) == NULL) {
@@ -55,41 +55,41 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
         return;
     }
 
-    //Verifica o tamanho do nome e trunca, quando necessário
+    // Verifica o tamanho do nome e trunca, quando necessário
     if (strlen(dbname) >= LEN_DB_NAME) {
     	printf("WARNING: database name is too long, it will be truncated to %d chars.\n", LEN_DB_NAME - 1);
     	dbname[LEN_DB_NAME - 1] = '\0';
     }
 
-    //Percorre a lista de bancos para ver se o banco que está sendo criado já não existe
+    // Percorre a lista de bancos para ver se o banco que está sendo criado já não existe
     for (qtdb = 0; fread(&valid, sizeof (char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
-        if(valid) qtdb++;
+        if (valid) qtdb++;
         if (strcasecmp(name, dbname) == 0 && valid) {
             if(!first) printf("ERROR: database already exists\n");
             fclose(DB); return;
         }
     }
 
-    //Se não existe o banco ainda, mas a quantidade de bancos for maior ou igual ao limite, o banco não é criado
-    //O first está ali para permitir a criação do banco padrão, mesmo ultrapassando o limite
+    // Se não existe o banco ainda, mas a quantidade de bancos for maior ou igual ao limite, o banco não é criado
+    // O first está ali para permitir a criação do banco padrão, mesmo ultrapassando o limite
     if (qtdb >= QTD_DB) {
         printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
         fclose(DB); return;
     }
 
     data_base *SGBD = (data_base *) malloc(sizeof (data_base));;
-    SGBD->valid = 1;
-    strcpy(SGBD->db_name, dbname);
-	strcpy(SGBD->db_directory, dbname);
-	strcat(SGBD->db_directory, "/");
-    strcat(mkdir, SGBD->db_name); strcat(mkdir,  "> /dev/null 2>&1");
+    SGBD -> valid = 1;
+    strcpy(SGBD -> db_name, dbname);
+	strcpy(SGBD -> db_directory, dbname);
+	strcat(SGBD -> db_directory, "/");
+    strcat(mkdir, SGBD -> db_name); strcat(mkdir, "> /dev/null 2>&1");
 
     //Cria a pasta do banco e só escreve o banco no arquivo se foi possível criar a pasta
-    if(system(mkdir) == -1) printf("ERROR: failed to create database %s.\n", SGBD->db_name);
-    else{
-        fwrite(SGBD, sizeof(data_base), 1, DB);
-        if(!first) printf("CREATE DATABASE\n");
+    if (system(mkdir) == -1) printf("ERROR: failed to create database %s.\n", SGBD -> db_name);
+    else {
+        fwrite(SGBD, sizeof (data_base), 1, DB);
+        if (!first) printf("CREATE DATABASE\n");
     }
     fclose(DB); free(SGBD); SGBD = NULL;
 }
