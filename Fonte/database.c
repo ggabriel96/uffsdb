@@ -43,13 +43,13 @@ char connectDB(char *db_name) {
     return DB_NOT_EXISTS;
 }
 
-void createDB(char *db_name) { //Se db_name é NULL, vai ser criado o banco padrão
+void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrão
     FILE *DB;
     int qtdb = 0;
-    char name[LEN_DB_NAME], valid, mkdir[LEN_DB_NAME + 12] = "mkdir data/", *tmp;
-    if(db_name == NULL) tmp = DEFAULT_DB;
-    else tmp = db_name;
+    char name[LEN_DB_NAME], valid, mkdir[LEN_DB_NAME + 27] = "mkdir data/", first = 0;
+    if(dbname == NULL) { first = 1; dbname = DEFAULT_DB;}
 
+    //Forço sempre a criação da pasta data
     system("mkdir data > /dev/null 2>&1");
 
     if ((DB = fopen("data/DB.dat", "a+b")) == NULL) {
@@ -57,19 +57,24 @@ void createDB(char *db_name) { //Se db_name é NULL, vai ser criado o banco padr
         return;
     }
 
-    if (db_name != NULL && strlen(db_name) >= LEN_DB_NAME) {
+    //Verifica o tamanho do nome e trunca, quando necessário
+    if (strlen(dbname) >= LEN_DB_NAME) {
     	printf("WARNING: database name is too long, it will be truncated to %d chars.\n", LEN_DB_NAME - 1);
-    	db_name[LEN_DB_NAME - 1] = '\0';
+    	dbname[LEN_DB_NAME - 1] = '\0';
     }
 
-    for(qtdb = 0; fread(&valid, sizeof(char), 1, DB) > 0; qtdb++, fseek(DB, LEN_DB_DIR, SEEK_CUR)){
+    //Percorre a lista de bancos para ver se o banco que está sendo criado já não existe
+    for(qtdb = 0; fread(&valid, sizeof(char), 1, DB) > 0; fseek(DB, LEN_DB_DIR, SEEK_CUR)){
         fread(name, sizeof (char), LEN_DB_NAME, DB);
-        if (strcasecmp(name, tmp) == 0 && valid) {
-            if(db_name != NULL) printf("ERROR: database already exists\n");
+        if(valid) qtdb++;
+        if (strcasecmp(name, dbname) == 0 && valid) {
+            if(!first) printf("ERROR: database already exists\n");
             fclose(DB); return;
         }
     }
 
+    //Se não existe o banco ainda, mas a quantidade de bancos for maior ou igual ao limite, o banco não é criado
+    //O first está ali para permitir a criação do banco padrão, mesmo ultrapassando o limite
     if (qtdb >= QTD_DB) {
         printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
         fclose(DB); return;
@@ -77,15 +82,16 @@ void createDB(char *db_name) { //Se db_name é NULL, vai ser criado o banco padr
 
     data_base *SGBD = (data_base *) malloc(sizeof (data_base));;
     SGBD->valid = 1;
-    strcpy(SGBD->db_name, db_name == NULL ? DEFAULT_DB : db_name);
-	strcpy(SGBD->db_directory, SGBD->db_name);
+    strcpy(SGBD->db_name, dbname);
+	strcpy(SGBD->db_directory, dbname);
 	strcat(SGBD->db_directory, "/");
     strcat(mkdir, SGBD->db_name); strcat(mkdir,  "> /dev/null 2>&1");
 
+    //Cria a pasta do banco e só escreve o banco no arquivo se foi possível criar a pasta
     if(system(mkdir) == -1) printf("ERROR: failed to create database %s.\n", SGBD->db_name);
     else{
-        if(db_name != NULL) printf("CREATE DATABASE\n");
         fwrite(SGBD, sizeof(data_base), 1, DB);
+        if(!first) printf("CREATE DATABASE\n");
     }
     fclose(DB); free(SGBD); SGBD = NULL;
 }

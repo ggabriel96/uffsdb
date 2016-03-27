@@ -17,7 +17,7 @@
     );
     insert into tbl values (4, 'Luiz', 'Masculino');
 
-+ Reclama ao criar um banco de nome com 19 caracteres, mas o nome não é truncado. Exemplo:
++ [DONE]Reclama ao criar um banco de nome com 19 caracteres, mas o nome não é truncado. Exemplo:
 
     create database a123456789b12345678;
     WARNING: database name is too long, it will be truncate
@@ -30,9 +30,9 @@
     uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
     [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
 
-+ Erro ao deletar um banco. Primeiro tento excluir o banco estando conectado a ele, depois conecto a outro e repito o comando. Da um erro no rm. Exemplo:
++ [DONE]Erro ao deletar um banco. Primeiro tento excluir o banco estando conectado a ele, depois conecto a outro e repito o comando. Da um erro no rm. Exemplo:
 
-    uffsdb=# \c a123456789b12345678
+    uffsdb=# \c a123456789b123456789
     You are now connected to database "a123456789b12345678" as user "uffsdb".
     a123456789b12345678=# drop database a123456789b12345678
     a123456789b12345678-# ;
@@ -44,7 +44,7 @@
     DROP DATABASE
     uffsdb=#
 
-+ Ao tentar recriar o banco...
++ [DONE]Ao tentar recriar o banco...
 
 uffsdb=# create database a123456789b12345678
 uffsdb-# ;
@@ -53,7 +53,7 @@ mkdir: é impossível criar o diretório “data/a123456789b12345678”: Arquivo
 CREATE DATABASE
 uffsdb=#
 
-+ *** stack smashing detected *** também com:
++ [DONE]*** stack smashing detected *** também com:
     create database a123456789b123456789;
 + *** stack smashing detected ***. Com o banco resetado, faça:
 
@@ -98,4 +98,5 @@ uffsdb=#
     	sex char
     );
 
-+ Criar banco chamado uffsdb não retorna mensagem de "sucesso"
++ [DONE] Criar banco chamado uffsdb não retorna mensagem de "sucesso"
++ Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
