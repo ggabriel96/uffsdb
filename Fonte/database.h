@@ -6,7 +6,7 @@ void createDB(char *);
 /* connectDB: Recebe o nome de um banco de dadados
  *            conecta-se com o banco, caso exista
  */
-char connectDB(char *);
+int connectDB(char *);
 
 /* dbInit: cria o banco de dados padrão
  *         com o nome "ibetres", caso não exista

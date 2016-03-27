@@ -14,30 +14,48 @@
   #include "misc.h"
 #endif
 
-char connectDB(char *db_name) {
-    int i = 0;
-	FILE *DB = NULL;
-	char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
-
-    if ((DB = fopen("data/DB.dat", "rb")) == NULL) {
-        return ERRO_ABRIR_ARQUIVO;
-    }
-
-    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+// Procura pelo banco de nome 'dbname' no arquivo 'DB'
+// e coloca no ponteiro 'dbdir' o diretório do banco, caso
+// o tenha encontrado. 'DB' deve ter passado previamente
+// por fopen e 'dbdir' deve ter sido previamente alocado
+// retorna:
+// -1, caso DB seja NULL
+// -2, caso dbname seja NULL
+// -3, caso dbdir seja NULL
+//  0, caso não tenha entrado o banco (e retorna à posição original do arquivo DB)
+//  1, caso tenha encontrado (mantendo a posição do arquivo após a busca)
+int seekdb(FILE *DB, char *dbname, char *dbdir) {
+    if (DB == NULL) return -1;
+    if (dbname == NULL) return -2;
+    if (dbdir == NULL) return -3;
+    long oldpos = ftell(DB);
+    char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
+    while (fread(&valid, sizeof (char), 1, DB) > 0) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         fread(dir, sizeof (char), LEN_DB_DIR, DB);
-        if (strcmp(name, db_name) == 0 && valid) {
-            // atualiza o diretorio do banco que está conectado
-            fclose(DB);
-            strcpy(connected.db_directory, "data/");
-            strcat(connected.db_directory, dir);
-            // esse for dá segfault >_>
-            // for (i = 0; connected.db_directory[i] != '/'; i++);
-        	// strcat(connected.db_directory + i + 1, dir);
-        	return SUCCESS;
+        if (!strcmp(dbname, name) && valid) {
+            strcpy(dbdir, dir);
+            return 1;
         }
     }
+    fseek(DB, oldpos, SEEK_SET);
+    return 0;
+}
+
+int connectDB(char *dbname) {
+    int status = 0;
+    char *dbdir = NULL;
+    FILE *DB = fopen("data/DB.dat", "rb");
+    if (DB == NULL) return ERRO_ABRIR_ARQUIVO;
+    dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR); dbdir[0] = '\0';
+    status = seekdb(DB, dbname, dbdir);
     fclose(DB);
+    if (status == 1) {
+        strcpy(connected.db_directory, "data/");
+        strcat(connected.db_directory, dbdir);
+        return SUCCESS;
+    }
+    if (status == -3) return MALLOC_FAILED;
     return DB_NOT_EXISTS;
 }
 
@@ -95,7 +113,6 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
 }
 
 void dropDatabase(char *db_name) {
-    int i = 0;
 	FILE *DB = NULL;
 	char name[LEN_DB_NAME], dir[LEN_DB_DIR], valid = 0;
 
@@ -109,7 +126,7 @@ void dropDatabase(char *db_name) {
         return;
     }
 
-    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+    while (fread(&valid, sizeof (char), 1, DB) > 0) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         fread(dir, sizeof (char), LEN_DB_DIR, DB);
 
@@ -144,7 +161,7 @@ void showDB() {
     printf("\n List of databases\n");
     for (i = 0; i < LEN_DB_NAME + 1; i++) printf("-");
     printf("\n");
-    for (i = 0; fread(&valid, sizeof (char), 1, DB) > 0; i++) {
+    while (fread(&valid, sizeof (char), 1, DB) > 0) {
         fread(name, sizeof (char), LEN_DB_NAME, DB);
         fseek(DB, LEN_DB_DIR, SEEK_CUR);
         if (valid) {
