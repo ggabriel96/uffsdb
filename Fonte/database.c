@@ -104,13 +104,11 @@ void createDB(char *db_name) {
 }
 
 void dropDatabase(char *db_name) {
+    int i;
 	FILE *DB;
-	int i;
-	char vec_name 				[QTD_DB][LEN_DB_NAME],
-		 vec_directory 			[QTD_DB][LEN_DB_NAME],
-		 valid;
+	char vec_name[QTD_DB][LEN_DB_NAME], vec_directory[QTD_DB][LEN_DB_NAME], valid;
 
-	if(strcmp(db_name, connected.db_name) == 0) {
+	if(!strcmp(db_name, connected.db_name)) {
 		printf("ERROR: You can not delete the database that you are connected.\n");
 		return;
 	}
@@ -120,35 +118,31 @@ void dropDatabase(char *db_name) {
 		return;
     }
 
-    for(i=0; fgetc (DB) != EOF; i++) {
+    for(i = 0; fgetc(DB) != EOF; i++) {
     	fseek(DB, -1, 1);
+    	fread(&valid, sizeof(char), 1, DB);
+        fread(vec_name[i], sizeof(char), LEN_DB_NAME, DB);
+        fread(vec_directory[i], sizeof(char), LEN_DB_NAME + 1, DB);
 
-    	fread(&valid			,sizeof(char), 			 1, DB);
-        fread(vec_name[i]  		,sizeof(char), LEN_DB_NAME, DB);
-        fread(vec_directory[i] 	,sizeof(char), LEN_DB_NAME, DB);
+        if(!objcmp(vec_name[i], db_name) && valid) {
+        	valid = 0;
+        	// fseek(DB, ((LEN_DB_NAME*2+1)*i), SEEK_SET); 	// posiciona o cabecote sobre o byte de validade -> FOrmula antiga
+        	fseek(DB, (LEN_DB_NAME * 2 + 2) * i, SEEK_SET); 	// posiciona o cabecote sobre o byte de validade
+        	fwrite(&valid, sizeof(char), 1, DB);			   // do banco e apaga ele
 
-        if(objcmp(vec_name[i], db_name) == 0) {
-        	if(valid) {
-	        	valid = 0;
-	        	fseek(DB, ((LEN_DB_NAME*2+1)*i), SEEK_SET); 	// posiciona o cabecote sobre o byte de validade
-	        	fwrite(&valid ,sizeof(char), 1, DB);			// do banco e apaga ele
+        	char directory[LEN_DB_NAME * 2] = "rm data/";
+        	strcat(directory, vec_directory[i]);
+        	strcat(directory, " -R");
 
-	        	char directory[LEN_DB_NAME*2] = "rm data/";
-	        	strcat(directory, vec_directory[i]);
-	        	strcat(directory, " -R\0");
+        	system(directory);
 
-	        	system(directory);
-
-	        	fclose(DB);
-	        	printf("DROP DATABASE\n");
-	        	return;
-	        }
+        	fclose(DB);
+        	printf("DROP DATABASE\n");
+        	return;
         }
     }
     fclose(DB);
-
     printf("ERROR: database does not exist\n");
-
 }
 
 void showDB() {
