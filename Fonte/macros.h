@@ -47,7 +47,7 @@
 #define LEN_DB_NAME 21
 #define LEN_DB_DIR LEN_DB_NAME + 1
 #define PAGES 1024              // Número de páginas.
-#define QTD_DB 2
+#define QTD_DB 100
 #define SIZE 512                // Tamanho da página.
 #define TAMANHO_NOME_CAMPO 40   // Tamanho do nome dos campos de uma tabela.
 #define TAMANHO_NOME_TABELA 20  // Tamanho do nome da tabela.

@@ -55,7 +55,7 @@ uffsdb=#
 
 + [DONE]*** stack smashing detected *** também com:
     create database a123456789b123456789;
-+ *** stack smashing detected ***. Com o banco resetado, faça:
++ [DONE]*** stack smashing detected ***. Com o banco resetado, faça:
 
     CREATE DATABASE a123456789b12345678;
     \c a123456789b12345678
@@ -101,7 +101,7 @@ uffsdb=#
 + [DONE] Criar banco chamado uffsdb não retorna mensagem de "sucesso"
 + Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
 
-+ Algum problema com os atributos de uma tabela:
++ [DONE]Algum problema com os atributos de uma tabela:
     ./uffsdb
     create database d;
     \c d
