@@ -117,3 +117,4 @@ Printou:
                        | null
                        | null
                        ...
++ Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
