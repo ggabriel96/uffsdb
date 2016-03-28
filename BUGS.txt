@@ -23,7 +23,8 @@
     WARNING: database name is too long, it will be truncate
     \c a123456789b12345678;
 
-+ Digita vários ; numa mesma linha e dê enter, é engraçado. E tem comportamento estranho com [] e outros simbolos que não são letras.
++ [DONE]Digita vários ; numa mesma linha e dê enter, é engraçado.
++ E tem comportamento estranho com [] e outros simbolos que não são letras.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#

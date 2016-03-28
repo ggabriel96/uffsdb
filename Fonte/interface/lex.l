@@ -42,7 +42,7 @@ help							return HELP;
 (?i:CLEAR)						return CLEAR;
 
 [,]								return *yytext;
-[;]								return *yytext;
+[;]+								return *yytext;
 [*]								return *yytext;
 [(]								return *yytext;
 [)]								return *yytext;

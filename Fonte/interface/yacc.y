@@ -42,7 +42,6 @@ int yywrap() {
     char *strval;
 }
 
-%%
 
 %token  INSERT      INTO        VALUES      SELECT      FROM
         CREATE      TABLE       INTEGER     VARCHAR     DOUBLE
@@ -50,6 +49,8 @@ int yywrap() {
         DROP        OBJECT      NUMBER      VALUE       QUIT
         LIST_TABLES LIST_TABLE  ALPHANUM    CONNECT     HELP
         LIST_DBASES CLEAR       CONTR;
+
+%%
 
 start: insert | select | create_table | create_database | drop_table | drop_database
      | table_attr | list_tables | connection | exit_program | semicolon {GLOBAL_PARSER.consoleFlag = 1; return 0;}
