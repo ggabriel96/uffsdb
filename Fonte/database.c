@@ -99,7 +99,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
             if (!first) printf("CREATE DATABASE\n");
         }
     }
-    else printf("ERROR: failed to create database \"%s\" (error code: %d).\n", dbname, qtdb);
+    else if(!first) printf("ERROR: failed to create database \"%s\" (error code: %d).\n", dbname, qtdb);
     fclose(DB);
     free(SGBD); SGBD = NULL;
 }
