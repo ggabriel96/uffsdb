@@ -42,7 +42,7 @@ help							return HELP;
 (?i:CLEAR)						return CLEAR;
 
 [,]								return *yytext;
-[;]+								return *yytext;
+[;]+							return *yytext;
 [*]								return *yytext;
 [(]								return *yytext;
 [)]								return *yytext;
@@ -80,4 +80,5 @@ help							return HELP;
 [\\][t]+[^ ^\n]*				{invalidCommand(yytext);};
 [\\][t]+[ ]*[\n]				{invalidCommand("\\t <enter>'. Expecting '\\t TABLENAME"); return 0;};
 [ \t]+							/* ignore whitespace */;
+.                               {invalidCommand(yytext); return 0;}
 %%

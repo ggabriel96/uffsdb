@@ -8,7 +8,7 @@
 
 + Falta de '\n' no select *?
 
-+  [DONE?] Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
++  [DONE] Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
 
     CREATE TABLE tbl(
 	   cod INTEGER PRIMARY KEY,
@@ -24,7 +24,7 @@
     \c a123456789b12345678;
 
 + [DONE]Digita vários ; numa mesma linha e dê enter, é engraçado.
-+ E tem comportamento estranho com [] e outros simbolos que não são letras.
++ [DONE]E tem comportamento estranho com [] e outros simbolos que não são letras.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
@@ -100,7 +100,7 @@ uffsdb=#
     );
 
 + [DONE] Criar banco chamado uffsdb não retorna mensagem de "sucesso"
-+ Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
++ [DONE]Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
 
 + [DONE]Algum problema com os atributos de uma tabela:
     ./uffsdb
