@@ -660,7 +660,7 @@ void imprime(char nomeTabela[]) {
             	double *n = (double *)&pagina[j].valorCampo[0];
     	        printf(" %-10f ", *n);
         	}
-            if(j>=1 && ((j+1)%objeto.qtdCampos)==0)
+            if(j>=0 && ((j+1)%objeto.qtdCampos) == 0)
             	printf("\n");
         	else
         		printf("|");

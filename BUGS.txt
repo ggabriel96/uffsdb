@@ -6,7 +6,7 @@
 
 + [DONE] Alinhamento das colunas errado no comando \l
 
-+ Falta de '\n' no select *?
++ [DONE?] Falta de '\n' no select *?
 
 +  [DONE] Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
 
@@ -153,3 +153,29 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     uffsdb=# insert into tbl values (1);
     ERROR: relation "tbl" was not found.
     ERROR: INSERT has more expressions than target columns.
+
++ Gera um erro por caracter:
+    uffsdb=# inser into b values (2, 2);
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
+    uffsdb=#
+    default @ parser.interface().while.else
+    ERROR: syntax error.
