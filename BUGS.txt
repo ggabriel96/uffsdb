@@ -1,6 +1,6 @@
 + Avisos de erros repetidos. Exemplo:
 
-    uffsdb=# create databasea baba;
+    uffsdb=# create databasea baba; //Agora além disso ta retornando uns erros estranhos
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
 
@@ -118,3 +118,38 @@ Printou:
                        | null
                        ...
 + Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
+
+
++ Nome de colunas da tabela possuem comportamento estranho:
+
+    uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    uffsdb=# \t tbl
+    	  Table "public.tbl"
+     Column             | Type         | Modifiers
+    --------------------+--------------+-----------
+      a123456789b123456789c123456789a123456789i | null
+
+O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
+
++ Continuação do erro de cima...
+
+    uffsdb=# drop table a123456789b123456789c123456789a123456789i;
+    Falha de segmentação (imagem do núcleo gravada)
+
++ Continuação do erro... (reexecuta o banco)
+
+    uffsdb=# \t tbl
+    	  Table "public.tbl"
+     Column             | Type         | Modifiers
+    --------------------+--------------+-----------
+      a123456789b123456789c123456789a123456789i | null
+
+    uffsdb=# insert into tbl values (1);
+    *** Error in `./uffsdb': free(): invalid size: 0x0000000000f842e0 ***
+    Abortado (imagem do núcleo gravada)
+
++ O ultimo erro não deveria ter aparecido, já que a tabela não existe
+    uffsdb=# drop table tbl;
+    uffsdb=# insert into tbl values (1);
+    ERROR: relation "tbl" was not found.
+    ERROR: INSERT has more expressions than target columns.
