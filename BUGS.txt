@@ -200,7 +200,8 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
       string1           |  varchar(1001) | null
       string2           |  varchar(3) | null
 
-+ O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro errado...
+//Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
++ [DONE] O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro errado...
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     CREATE TABLE
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );

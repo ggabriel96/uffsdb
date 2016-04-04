@@ -909,7 +909,7 @@ int verifyFieldName(char **fieldName, int N){
 
 //////
 void createTable(rc_insert *t) {
-	int size, i, error;
+	int size, i;
 
     //+ 4 por causa do .dat
     char tableName[TAMANHO_NOME_TABELA + 4], fkTable[TAMANHO_NOME_TABELA], fkColumn[TAMANHO_NOME_CAMPO];
@@ -941,20 +941,17 @@ void createTable(rc_insert *t) {
     		strcpy(fkColumn, "");
     	}
 
-        if((error = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn)) != SUCCESS){
-            printf("ERROR %d: table couldn't be created\n", error);
-            freeTable(tab); return;
-        }
+        //Se deu erro aqui, possivelmente é porque a tabela já existe, e é informado lá na finalizaTabela
+        if(adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn) != SUCCESS) break;
 
-        if((objcmp(fkTable, "") != 0) || (objcmp(fkColumn, "") != 0)){
-            if(verifyFK(fkTable, fkColumn) == 0){
-    			printf("ERROR: attribute FK cannot be referenced\n");
-                freeTable(tab);
-                return;
-    		}
+        //objcmp é a stcmp deles, basicamente transformam tudo para minusculo antes
+        if((objcmp(fkTable, "") != 0 || objcmp(fkColumn, "") != 0) && verifyFK(fkTable, fkColumn) == 0){
+			printf("ERROR: attribute FK cannot be referenced\n");
+            freeTable(tab);
+            return;
         }
     }
 
-    printf("%s\n",(finalizaTabela(tab) == SUCCESS)? "CREATE TABLE" : "ERROR: table already exist\n");
+    printf("%s\n",(finalizaTabela(tab) == SUCCESS)? "CREATE TABLE" : "ERROR: table already exist");
     if (tab != NULL) freeTable(tab);
 }
