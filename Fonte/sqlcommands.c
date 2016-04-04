@@ -780,17 +780,17 @@ int procuraSchemaArquivo(struct fs_objects objeto){
 int excluirTabela(char *nomeTabela) {
     struct fs_objects objeto, objeto1;
     tp_table *esquema, *esquema1;
-    int x,erro, i, j, k, l, qtTable;
-    char str[20];
+    int x, erro, i, j, k, l, qtTable;
+    char str[TAMANHO_NOME_TABELA + 4]; //.dat
     char dat[5] = ".dat";
-    memset(str, '\0', 20);
+    memset(str, '\0', TAMANHO_NOME_TABELA + 4);
 
     if (!verificaNomeTabela(nomeTabela)) {
         printf("ERROR: table \"%s\" does not exist.\n", nomeTabela);
         return ERRO_NOME_TABELA;
     }
 
-    strcpylower(str, nomeTabela);
+    strncpy(str, nomeTabela, TAMANHO_NOME_TABELA - 1);
     strcat(str, dat);              //Concatena e junta o nome com .dat
 
     abreTabela(nomeTabela, &objeto, &esquema);
@@ -799,7 +799,7 @@ int excluirTabela(char *nomeTabela) {
     char **tupla = (char **)malloc(sizeof(char **)*qtTable);
     memset(tupla, 0, qtTable);
 
-    for (i=0; i < qtTable; i++) {
+    for (i = 0; i < qtTable; i++) {
         tupla[i] = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
         memset(tupla[i], '\0', TAMANHO_NOME_TABELA);
     }

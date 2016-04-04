@@ -131,7 +131,7 @@ Printou:
 
 O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
 
-+ [??] Erro na exclusão
++ [DONE] Erro na exclusão
     //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna oO
 
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
@@ -199,3 +199,9 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     --------------------+--------------+-----------
       string1           |  varchar(1001) | null
       string2           |  varchar(3) | null
+
++ O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro errado...
+    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    CREATE TABLE
+    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    ERROR 74: table couldn't be created
