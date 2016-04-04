@@ -71,6 +71,7 @@ int verificaNomeTabela(char *);
 */
 table *iniciaTabela(char *);
 /*
+    Não faz sentido retornar algo, já que retorna o proprio parametro
     Esta função encadeia a lista de campos na estrutura de uma tabela que vai ser criada.
     Retorna:
         -> a estrutura com a coluna inserida na lista.
@@ -79,6 +80,7 @@ table *iniciaTabela(char *);
     tipoCampo - Tipo do campo que irá ser inserido na lista de campos.
     tamanhoCampo - Tamanho do campo que irá ser inserido na lista de campos.
 */
+// table *adicionaCampo(table *,char *, char , int , int , char *, char *);
 table *adicionaCampo(table *,char *, char , int , int , char *, char *);
 /*
     Esta função finaliza a tabela preveamente estrutura pelas funcoes iniciaTabela() e adicionaCampo().

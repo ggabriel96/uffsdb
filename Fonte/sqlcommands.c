@@ -890,12 +890,14 @@ int excluirTabela(char *nomeTabela) {
     return SUCCESS;
 }
 
-/////
+//N = numero de colunas da tabela
+//**fieldName = Vetor dos nomes das colunas da tabela
+//Verifica se as colunas da tabela não tem nome repetido
 int verifyFieldName(char **fieldName, int N){
     int i, j;
-    if(N<=1) return 1;
-    for(i=0; i < N; i++){
-        for(j=i+1; j < N; j++){
+    if(N <= 1) return 1; //Meeeu deus, notem como essa poda realmente faz alguma diferença
+    for(i = 0; i < N; i++){
+        for(j = i + 1; j < N; j++){
             if(objcmp(fieldName[i], fieldName[j]) == 0){
                 printf("ERROR: column \"%s\" specified more than once\n", fieldName[i]);
                 return 0;
@@ -907,53 +909,49 @@ int verifyFieldName(char **fieldName, int N){
 
 //////
 void createTable(rc_insert *t) {
-	int size;
-    strcpylower(t->objName, t->objName);        //muda pra minúsculo
-    char *tableName = (char*) malloc (sizeof(char)*TAMANHO_NOME_TABELA),
-        fkTable[TAMANHO_NOME_TABELA], fkColumn[TAMANHO_NOME_CAMPO];
+	int size, i;
+    // strcpylower(t->objName, t->objName);        //muda pra minúsculo ~Boatos que não precisa mais
 
-    strncpylower(tableName, t->objName, TAMANHO_NOME_TABELA);
+    //+ 4 por causa do .dat
+    char tableName[TAMANHO_NOME_TABELA + 4], fkTable[TAMANHO_NOME_TABELA], fkColumn[TAMANHO_NOME_CAMPO];
 
+    // strncpylower(tableName, t->objName, TAMANHO_NOME_TABELA);
+    strncpy(tableName, t->objName, TAMANHO_NOME_TABELA); //Faz o truncamento
     strcat(tableName, ".dat\0");                  //tableName.dat
 
-    if(existeArquivo(tableName)){
-        printf("ERROR: table already exist\n");
-        free(tableName);
-        return;
-    }
+    if(existeArquivo(tableName)){ printf("ERROR: table already exist\n"); return; }
 
     table *tab = NULL;
     tab = iniciaTabela(t->objName);    //cria a tabela
 
-    if(0 == verifyFieldName(t->columnName, t->N)){
-        free(tableName);
-        freeTable(tab);
-        return;
-    }
-    int i;
-    for(i=0; i < t->N; i++){
-    	if (t->type[i] == 'S')
-    		size = atoi(t->values[i]);
-    	else if (t->type[i] == 'I')
-    		size = sizeof(int);
-    	else if (t->type[i] == 'D')
-    		size = sizeof(double);
-        else if (t->type[i] == 'C')
-    		size = sizeof(char);
+    if(!verifyFieldName(t->columnName, t->N)){ /* free(tableName); */ freeTable(tab); return; }
 
+    for(i = 0; i < t->N; i++){
+    	if (t->type[i] == 'S') //String
+    		size = atoi(t->values[i]); //t->values contem tamanho das strings na criação, atoi converte esse tamanho(string) para int
+    	else if (t->type[i] == 'I') //Inteiro
+    		size = sizeof(int);
+    	else if (t->type[i] == 'D') //Double
+    		size = sizeof(double);
+        else if (t->type[i] == 'C') //Char
+    		size = sizeof(char);
+        //???
     	if (t->attribute[i] == FK) {
-    		strncpylower(fkTable, t->fkTable[i], TAMANHO_NOME_TABELA);
-    		strncpylower(fkColumn,t->fkColumn[i], TAMANHO_NOME_CAMPO);
+    		// strncpylower(fkTable, t->fkTable[i], TAMANHO_NOME_TABELA);
+    		// strncpylower(fkColumn,t->fkColumn[i], TAMANHO_NOME_CAMPO);
+    		strncpy(fkTable, t->fkTable[i], TAMANHO_NOME_TABELA);
+    		strncpy(fkColumn,t->fkColumn[i], TAMANHO_NOME_CAMPO);
     	} else {
     		strcpy(fkTable, "");
     		strcpy(fkColumn, "");
     	}
 
+        //Essa função passa como parametro o tab, mas tab recebe o retorno(?)
         tab = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn);
         if((objcmp(fkTable, "") != 0) || (objcmp(fkColumn, "") != 0)){
             if(verifyFK(fkTable, fkColumn) == 0){
     			printf("ERROR: attribute FK cannot be referenced\n");
-                free(tableName);
+                // free(tableName);
                 freeTable(tab);
                 return;
     		}
@@ -961,7 +959,7 @@ void createTable(rc_insert *t) {
     }
 
     printf("%s\n",(finalizaTabela(tab) == SUCCESS)? "CREATE TABLE" : "ERROR: table already exist\n");
-    free(tableName);
+    // free(tableName);
     if (tab != NULL) freeTable(tab);
 }
 ///////

@@ -1,6 +1,6 @@
 + Avisos de erros repetidos. Exemplo:
 
-    uffsdb=# create databasea baba; //Agora além disso ta retornando uns erros estranhos
+    uffsdb=# create databasea baba; 
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
 
