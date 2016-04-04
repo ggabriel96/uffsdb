@@ -6,7 +6,7 @@
 
 + [DONE] Alinhamento das colunas errado no comando \l
 
-+ [DONE?] Falta de '\n' no select *?
++ [DONE] Falta de '\n' no select *?
 
 +  [DONE] Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
 
@@ -24,7 +24,7 @@
     \c a123456789b12345678;
 
 + [DONE]Digita vários ; numa mesma linha e dê enter, é engraçado.
-+ [DONE]E tem comportamento estranho com [] e outros simbolos que não são letras.
++ [WIP]E tem comportamento estranho com [] e outros simbolos que não são letras.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
@@ -205,3 +205,5 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     CREATE TABLE
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     ERROR 74: table couldn't be created
+
++ Digitar varias aspas simples buga o banco (??)

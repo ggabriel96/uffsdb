@@ -45,6 +45,8 @@ void connect(char *nome) {
 }
 
 void invalidCommand(char *command) {
+    int size = strlen(command);
+    if(command[size - 1] == '\n') command[size - 1] =  '\0';
     printf("ERROR: Invalid command '%s'. Type \"help\" for help.\n", command);
 }
 

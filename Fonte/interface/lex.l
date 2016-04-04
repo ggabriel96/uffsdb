@@ -80,5 +80,5 @@ help							return HELP;
 [\\][t]+[^ ^\n]*				{invalidCommand(yytext);};
 [\\][t]+[ ]*[\n]				{invalidCommand("\\t <enter>'. Expecting '\\t TABLENAME"); return 0;};
 [ \t]+							/* ignore whitespace */;
-.                               {invalidCommand(yytext); return 0;}
+(\[*\]*)+\n                       {invalidCommand(yytext); return 0;}
 %%

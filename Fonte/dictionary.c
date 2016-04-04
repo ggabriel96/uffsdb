@@ -89,35 +89,25 @@ int existeAtributo(char *nomeTabela, column *c){
 }
 //////
 int verificaNomeTabela(char *nomeTabela) {
-
     FILE *dicionario;
-    char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
+    char tupla[TAMANHO_NOME_TABELA], directory[LEN_DB_NAME * 2];
 
-    char directory[LEN_DB_NAME * 2];
     strcpy(directory, connected.db_directory);
     strcat(directory, "fs_object.dat");
 
+    if((dicionario = fopen(directory,"a+b")) == NULL) return ERRO_ABRIR_ARQUIVO;
 
-    if((dicionario = fopen(directory,"a+b")) == NULL){
-        free(tupla);
-        return ERRO_ABRIR_ARQUIVO;
-    }
-    // printf("<<%s\n", nomeTabela);
-    // fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario); //Lê somente o nome da tabela
-    while (fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario)){
-        // printf(">>%s\n", tupla);
-        if(strcmp(tupla, nomeTabela) == 0){ // Verifica se o nome dado pelo usuario existe no dicionario de dados.
-            free(tupla);
+    //Percorro o arquivo lendo os nomes das tabelas existentes
+    while (fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario) > 0){
+        if(!strcmp(tupla, nomeTabela)){ // Verifica se o nome dado pelo usuario existe no dicionario de dados.
             fclose(dicionario);
             return 1;
         }
-
-        fseek(dicionario, 28, 1);
+        //Ignoro os outros campos do fs_objects
+        fseek(dicionario, sizeof(int) * 2 + sizeof(char) * TAMANHO_NOME_ARQUIVO, SEEK_CUR);
     }
 
     fclose(dicionario);
-    free(tupla);
-
     return 0;
 }
 ////

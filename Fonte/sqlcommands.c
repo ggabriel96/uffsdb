@@ -895,7 +895,7 @@ int excluirTabela(char *nomeTabela) {
 //Verifica se as colunas da tabela não tem nome repetido
 int verifyFieldName(char **fieldName, int N){
     int i, j;
-    // if(N <= 1) return 1; //Meeeu deus, notem como essa poda realmente faz alguma diferença
+    if(N <= 1) return 1; //Meeeu deus, notem como essa poda realmente faz alguma diferença
     for(i = 0; i < N; i++){
         for(j = i + 1; j < N; j++){
             if(objcmp(fieldName[i], fieldName[j]) == 0){
