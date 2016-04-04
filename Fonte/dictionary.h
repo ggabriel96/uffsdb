@@ -71,17 +71,18 @@ int verificaNomeTabela(char *);
 */
 table *iniciaTabela(char *);
 /*
-    Não faz sentido retornar algo, já que retorna o proprio parametro
     Esta função encadeia a lista de campos na estrutura de uma tabela que vai ser criada.
     Retorna:
-        -> a estrutura com a coluna inserida na lista.
+        SUCSSES(0), se não ocorreu erro
+        MALLOC_FAILED(73), não conseguiu alocar memória
+        ERRO_ESTRUTURA_TABELA_NULA(74), se a tabela passada for nula
     *t - Estrutura da tabela à ser criada.
     *nomeCampo - Nome do campo que irá ser inserido na lista de campos.
     tipoCampo - Tipo do campo que irá ser inserido na lista de campos.
     tamanhoCampo - Tamanho do campo que irá ser inserido na lista de campos.
 */
-// table *adicionaCampo(table *,char *, char , int , int , char *, char *);
-table *adicionaCampo(table *,char *, char , int , int , char *, char *);
+
+int adicionaCampo(table *,char *, char , int , int , char *, char *);
 /*
     Esta função finaliza a tabela preveamente estrutura pelas funcoes iniciaTabela() e adicionaCampo().
     Escreve nos arquivos fs_object.dat e fs_schema.dat, a estrutura passada.

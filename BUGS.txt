@@ -1,6 +1,6 @@
 + Avisos de erros repetidos. Exemplo:
 
-    uffsdb=# create databasea baba; 
+    uffsdb=# create databasea baba;
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
 
@@ -120,7 +120,7 @@ Printou:
 + Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
 
 
-+ Nome de colunas da tabela possuem comportamento estranho:
++ [DONE]Nome de colunas da tabela possuem comportamento estranho:
 
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     uffsdb=# \t tbl
@@ -131,12 +131,22 @@ Printou:
 
 O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
 
-+ Continuação do erro de cima...
++ [??] Erro na exclusão
+    //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna oO
 
+    uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    CREATE TABLE
     uffsdb=# drop table a123456789b123456789c123456789a123456789i;
+    ERROR: table "a123456789b123456789c123456789a123456789i" does not exist.
+    uffsdb=# drop table a123456789b123456789c123456789a123456789i;
+    ERROR: table "a123456789b123456789c123456789a123456789i" does not exist.
+    uffsdb=# drop table a123456789b123456789c123456789a123456789i;
+    ERROR: table "a123456789b123456789c123456789a123456789i" does not exist.
+    uffsdb=# drop table tbl;
     Falha de segmentação (imagem do núcleo gravada)
+//Quando faz o drop table tbl de primeira, sem esses "drop table a123456789b123456789c123456789a123456789i;" funciona normalmente
 
-+ Continuação do erro... (reexecuta o banco)
++ [DONE] Continuação do erro... (reexecuta o banco)
 
     uffsdb=# \t tbl
     	  Table "public.tbl"
@@ -179,3 +189,13 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     uffsdb=#
     default @ parser.interface().while.else
     ERROR: syntax error.
+
++ \t não alinha de forma correta varchar
+    uffsdb=# create table animal (string1 varchar(1001), string2 varchar(3) );
+    CREATE TABLE
+    uffsdb=# \t animal
+    	  Table "public.animal"
+     Column             | Type         | Modifiers
+    --------------------+--------------+-----------
+      string1           |  varchar(1001) | null
+      string2           |  varchar(3) | null

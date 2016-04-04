@@ -895,7 +895,7 @@ int excluirTabela(char *nomeTabela) {
 //Verifica se as colunas da tabela não tem nome repetido
 int verifyFieldName(char **fieldName, int N){
     int i, j;
-    if(N <= 1) return 1; //Meeeu deus, notem como essa poda realmente faz alguma diferença
+    // if(N <= 1) return 1; //Meeeu deus, notem como essa poda realmente faz alguma diferença
     for(i = 0; i < N; i++){
         for(j = i + 1; j < N; j++){
             if(objcmp(fieldName[i], fieldName[j]) == 0){
@@ -909,22 +909,19 @@ int verifyFieldName(char **fieldName, int N){
 
 //////
 void createTable(rc_insert *t) {
-	int size, i;
-    // strcpylower(t->objName, t->objName);        //muda pra minúsculo ~Boatos que não precisa mais
+	int size, i, error;
 
     //+ 4 por causa do .dat
     char tableName[TAMANHO_NOME_TABELA + 4], fkTable[TAMANHO_NOME_TABELA], fkColumn[TAMANHO_NOME_CAMPO];
 
-    // strncpylower(tableName, t->objName, TAMANHO_NOME_TABELA);
-    strncpy(tableName, t->objName, TAMANHO_NOME_TABELA); //Faz o truncamento
+    strncpy(tableName, t->objName, TAMANHO_NOME_TABELA); //Faz o truncamento do nome da tabela
     strcat(tableName, ".dat\0");                  //tableName.dat
 
     if(existeArquivo(tableName)){ printf("ERROR: table already exist\n"); return; }
-
     table *tab = NULL;
     tab = iniciaTabela(t->objName);    //cria a tabela
 
-    if(!verifyFieldName(t->columnName, t->N)){ /* free(tableName); */ freeTable(tab); return; }
+    if(!verifyFieldName(t->columnName, t->N)){ freeTable(tab); return; }
 
     for(i = 0; i < t->N; i++){
     	if (t->type[i] == 'S') //String
@@ -937,21 +934,21 @@ void createTable(rc_insert *t) {
     		size = sizeof(char);
         //???
     	if (t->attribute[i] == FK) {
-    		// strncpylower(fkTable, t->fkTable[i], TAMANHO_NOME_TABELA);
-    		// strncpylower(fkColumn,t->fkColumn[i], TAMANHO_NOME_CAMPO);
     		strncpy(fkTable, t->fkTable[i], TAMANHO_NOME_TABELA);
-    		strncpy(fkColumn,t->fkColumn[i], TAMANHO_NOME_CAMPO);
+    		strncpy(fkColumn, t->fkColumn[i], TAMANHO_NOME_CAMPO);
     	} else {
     		strcpy(fkTable, "");
     		strcpy(fkColumn, "");
     	}
 
-        //Essa função passa como parametro o tab, mas tab recebe o retorno(?)
-        tab = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn);
+        if((error = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn)) != SUCCESS){
+            printf("ERROR %d: table couldn't be created\n", error);
+            freeTable(tab); return;
+        }
+
         if((objcmp(fkTable, "") != 0) || (objcmp(fkColumn, "") != 0)){
             if(verifyFK(fkTable, fkColumn) == 0){
     			printf("ERROR: attribute FK cannot be referenced\n");
-                // free(tableName);
                 freeTable(tab);
                 return;
     		}
@@ -959,7 +956,5 @@ void createTable(rc_insert *t) {
     }
 
     printf("%s\n",(finalizaTabela(tab) == SUCCESS)? "CREATE TABLE" : "ERROR: table already exist\n");
-    // free(tableName);
     if (tab != NULL) freeTable(tab);
 }
-///////
