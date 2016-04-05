@@ -257,7 +257,6 @@ int interface() {
                         dropDatabase(GLOBAL_DATA.objName);
                         break;
                     default:
-                        printf("\ndefault @ parser.interface().while.if\n");
                         break;
                 }
             }
@@ -277,7 +276,6 @@ int interface() {
                     }
                     break;
                 default:
-                    printf("\ndefault @ parser.interface().while.else\n");
                     break;
             }
 

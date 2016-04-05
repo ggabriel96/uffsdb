@@ -667,7 +667,7 @@ void imprime(char nomeTabela[]) {
     	}
     	x-=bufferpoll[p++].nrec;
     }
-    printf("\n(%d %s)\n\n",ntuples,(1>=ntuples)?"row": "rows");
+    printf("\n(%d %s)\n\n", ntuples, ntuples == 1 ? "row" : "rows");
 
     free(bufferpoll);
     free(esquema);
