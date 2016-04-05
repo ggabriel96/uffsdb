@@ -534,16 +534,15 @@ int adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, in
 
 ///
 int finalizaTabela(table *t){
-    if(t == NULL)
-        return ERRO_DE_PARAMETRO;
+    if(t == NULL) return ERRO_DE_PARAMETRO;
 
-    FILE *esquema, *dicionario;
     tp_table *aux;
+    FILE *esquema, *dicionario, *arquivo;
     int codTbl = quantidadeTabelas() + 1, qtdCampos = 0; // Conta a quantidade de tabelas já no dicionario e soma 1 no codigo dessa nova tabela.
     char nomeArquivo[TAMANHO_NOME_ARQUIVO];
     memset(nomeArquivo, 0, TAMANHO_NOME_ARQUIVO);
 
-    char directory[LEN_DB_NAME*2];
+    char directory[LEN_DB_NAME * 2];
     strcpy(directory, connected.db_directory);
     strcat(directory, "fs_schema.dat");
 
@@ -580,6 +579,11 @@ int finalizaTabela(table *t){
     fwrite(&nomeArquivo,sizeof(nomeArquivo),1,dicionario);
     fwrite(&qtdCampos,sizeof(qtdCampos),1,dicionario);
 
+    //Cria arquivo da tabela
+    strcpy(directory, connected.db_directory);
+    strcat(directory, nomeArquivo);
+    if((arquivo = fopen(directory, "a")) == NULL) return ERRO_ABRIR_ARQUIVO;
+    fclose(arquivo);
     fclose(dicionario);
     return SUCCESS;
 }

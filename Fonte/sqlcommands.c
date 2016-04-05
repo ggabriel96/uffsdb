@@ -909,7 +909,7 @@ int verifyFieldName(char **fieldName, int N){
 
 //////
 void createTable(rc_insert *t) {
-	int size, i;
+	int size, i, error;
 
     //+ 4 por causa do .dat
     char tableName[TAMANHO_NOME_TABELA + 4], fkTable[TAMANHO_NOME_TABELA], fkColumn[TAMANHO_NOME_CAMPO];
@@ -941,8 +941,10 @@ void createTable(rc_insert *t) {
     		strcpy(fkColumn, "");
     	}
 
-        //Se deu erro aqui, possivelmente é porque a tabela já existe, e é informado lá na finalizaTabela
-        if(adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn) != SUCCESS) break;
+        if((error = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn) != SUCCESS)){
+            printf("ERROR: %s\n", error == MALLOC_FAILED ? "malloc failed" : "could not initialize the table");
+            return; //Por favor, mudem o printf. Não sei escrever!
+        }
 
         //objcmp é a stcmp deles, basicamente transformam tudo para minusculo antes
         if((objcmp(fkTable, "") != 0 || objcmp(fkColumn, "") != 0) && verifyFK(fkTable, fkColumn) == 0){
@@ -952,6 +954,6 @@ void createTable(rc_insert *t) {
         }
     }
 
-    printf("%s\n",(finalizaTabela(tab) == SUCCESS)? "CREATE TABLE" : "ERROR: table already exist");
+    printf("%s\n",(finalizaTabela(tab) == SUCCESS) ? "CREATE TABLE" : "ERROR: could not create data file"); //Por favor, mudem o printf. Não sei escrever!
     if (tab != NULL) freeTable(tab);
 }
