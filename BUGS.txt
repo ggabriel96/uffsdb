@@ -1,4 +1,25 @@
-+ Avisos de erros repetidos. Exemplo:
+REPOSITÓRIO: https://github.com/ggabriel96/uffsdb
+
+MEMBROS DA EQUIPE: Acácia dos Campos da Terra, Gabriel Batista Galli, Harold Christian Becker, João Pedro Winckler Bernardi e Vladimir Belinski.
+
+RELAÇÃO DE ERROS:
+
+-----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
+
+#1) 
+
+#2) 
+
+---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
+** "No READ.md deve ter a relação dos bugs não concertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
+
+#1) 
+
+#2) 
+
+----------------------------------------			-------------------------------------				------------------------------------------		---------
+
++  Avisos de erros repetidos. Exemplo:
 
     uffsdb=# create databasea baba;
     ERROR: syntax error.
