@@ -6,13 +6,14 @@ RELAÇÃO DE ERROS:
 
 -----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
 
-#1)Ao ser alterado o nome do banco de ibetres para uffsdb o alinhamento das colunas era perdido. Assim, foi arrumado o alinhamento das colunas no comando \l.
+#1)Ao ser alterado o nome do banco de ibetres para uffsdb o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o alinhamento
+das colunas no comando \l.
 
-#2)Quando uma tabela possuia somente um atributo, ao ser realizado um selec * os dados não apareciam organizados em coluna, mas sim de forma linear, ou seja,
-errônea.
+#2)Quando uma tabela possuia somente um atributo, ao ser realizado um selec * os dados não apareciam organizados de maneira colunar, mas sim de forma linear. Foi
+ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
 
-#3)Mesmo o atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro. O trecho abaixo, por exemplo, não
-gerava erro:
+#3)Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo,
+não gerava erro ou warning:
 
     CREATE TABLE tbl(
 	   cod INTEGER PRIMARY KEY,
@@ -27,12 +28,13 @@ gerava erro:
     WARNING: database name is too long, it will be truncate
     \c a123456789b12345678;
 
-Além disso, o truncamento não funcionava direito. Logo, foi arrumado.
+Além disso, o truncamento não funcionava direito em casos diversos. Logo, foi arrumado o truncamento.
 
 #5)Ao digitar vários ; numa mesma linha e pressionar 'Enter' uffsdb=# era printado inúmeras vezes.
 
-#6)Ao deletar um banco, se primeiramente tento excluir o banco estando conectado a ele e depois me conecto a outro banco e reexecuto o comando de exclusão é
-apresentado um erro. Por exemplo:
+#6)Ao deletar um banco, se primeiramente tentava excluir o banco estando conectado a ele e depois me conectava a outro banco e reexecutava o comando de exclusão
+era apresentado que não havia sido possível remover o arquivo do banco a ser deletado "Arquivo ou diretório não encontrado", mas o banco era mesmo assim excluído.
+Por exemplo:
 
     uffsdb=# \c a123456789b123456789
     You are now connected to database "a123456789b12345678" as user "uffsdb".
@@ -47,7 +49,7 @@ apresentado um erro. Por exemplo:
     uffsdb=#
 
 #7)Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o
-diretório:
+diretório, pois o arquivo já existia:
 
 	uffsdb=# create database a123456789b12345678
 	uffsdb-# ;
@@ -101,9 +103,10 @@ diretório:
     	sex char
     );
 	
-#10)Criar um banco chamado uffsdb não retornava a mensagem de sucesso na criação.
+#10)Ao criar um banco chamado uffsdb não era retornada a mensagem de sucesso que deve aparecer quando ocorre a criação de um novo banco: CREATE DATABASE.
 
-#11)Caso houvesse excluído o banco padrão e criado bancos o suficiente para ocupar o limite máximo, na próxima vez que executasse o banco dava erro.
+#11)Caso fosse excluído o banco padrão e criados bancos o suficiente para ocupar o limite máximo definido, na próxima vez que o banco era executado um erro era
+gerado.
 
 #12)Havia um problema com os atributos de uma tabela, pois os DEFINEs não eram usados corretamente. Ao ser executado	./uffsdb
 																														create database d;
@@ -121,7 +124,9 @@ Era printado:
                        | null
                        ...
 					   
-#13) Nome de colunas da tabela possuíam comportamento estranho. Nomes longos truncavam pegando a primeira letra do tipo:
+A utilização dos DEFINEs foi ajustada.
+
+#13) Nomes longos para tabelas truncavam pegando a primeira letra do tipo. Além disso, as colunas ficavam desformatadas. Por exemplo:
 
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     uffsdb=# \t tbl
@@ -132,7 +137,8 @@ Era printado:
 
 No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char, aparece um c;
 
-#14) Ao tentar excluir o nome de uma coluna com o comando drop table e depois tentar excluir a tabela com o mesmo comando dava falha de segmentação:
+#14) Ao tentar excluir o nome de uma coluna com o comando drop table era apresentado um erro, como esperado. Contudo se depois fosse tentado excluir a tabela com
+o mesmo comando ocorria uma falha de segmentação:
 
     //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna
 
@@ -159,7 +165,8 @@ No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char
     *** Error in `./uffsdb': free(): invalid size: 0x0000000000f842e0 ***
     Abortado (imagem do núcleo gravada)
 
-#16) O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro indevido:
+#16) O arquivo da tabela só era criado depois que se adicionava alguma tupla, então se fosse tentado criar duas tabelas vazias com o mesmo nome era retornado
+o erro indevido, pois deveria ser apresentado que a tabela já existe, não simplesmente que ela não pode ser criada:
 
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     CREATE TABLE
@@ -171,9 +178,7 @@ No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char
 
 #1) 
 
-#2) 
-
-----------------------------------------			-------------------------------------				------------------------------------------		---------
+ERROS DA PARTE DE ACÁCIA (deixar no BUGS.txt e colar os não consertados no READ.md também):
 
 +  Avisos de erros repetidos. Exemplo:
 
