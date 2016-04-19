@@ -6,30 +6,13 @@ RELAÇÃO DE ERROS:
 
 -----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
 
-#1) 
+#1)Ao ser alterado o nome do banco de ibetres para uffsdb o alinhamento das colunas era perdido. Assim, foi arrumado o alinhamento das colunas no comando \l.
 
-#2) 
+#2)Quando uma tabela possuia somente um atributo, ao ser realizado um selec * os dados não apareciam organizados em coluna, mas sim de forma linear, ou seja,
+errônea.
 
----------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
-** "No READ.md deve ter a relação dos bugs não concertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
-
-#1) 
-
-#2) 
-
-----------------------------------------			-------------------------------------				------------------------------------------		---------
-
-+  Avisos de erros repetidos. Exemplo:
-
-    uffsdb=# create databasea baba;
-    ERROR: syntax error.
-    uffsdb=# ERROR: syntax error.
-
-+ [DONE] Alinhamento das colunas errado no comando \l
-
-+ [DONE] Falta de '\n' no select *?
-
-+  [DONE] Mesmo o atributo sendo char, é possível enviar uma string na hora de inserir o elemento. Exemplo:
+#3)Mesmo o atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro. O trecho abaixo, por exemplo, não
+gerava erro:
 
     CREATE TABLE tbl(
 	   cod INTEGER PRIMARY KEY,
@@ -37,22 +20,19 @@ RELAÇÃO DE ERROS:
 	   sex char
     );
     insert into tbl values (4, 'Luiz', 'Masculino');
-
-+ [DONE]Reclama ao criar um banco de nome com 19 caracteres, mas o nome não é truncado. Exemplo:
-
-    create database a123456789b12345678;
+	
+#4)Ao ser criado um banco de nome com 19 caracteres era apresentado um warning informando que o nome iria ser truncado, mas não o era:
+	
+	create database a123456789b12345678;
     WARNING: database name is too long, it will be truncate
     \c a123456789b12345678;
 
-+ [DONE]Digita vários ; numa mesma linha e dê enter, é engraçado.
-+ [WIP]E tem comportamento estranho com [] e outros simbolos que não são letras.
+Além disso, o truncamento não funcionava direito. Logo, foi arrumado.
 
-    uffsdb=# ;;;;;;;
-    uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
-    uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
-    [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
+#5)Ao digitar vários ; numa mesma linha e pressionar 'Enter' uffsdb=# era printado inúmeras vezes.
 
-+ [DONE]Erro ao deletar um banco. Primeiro tento excluir o banco estando conectado a ele, depois conecto a outro e repito o comando. Da um erro no rm. Exemplo:
+#6)Ao deletar um banco, se primeiramente tento excluir o banco estando conectado a ele e depois me conecto a outro banco e reexecuto o comando de exclusão é
+apresentado um erro. Por exemplo:
 
     uffsdb=# \c a123456789b123456789
     You are now connected to database "a123456789b12345678" as user "uffsdb".
@@ -66,20 +46,21 @@ RELAÇÃO DE ERROS:
     DROP DATABASE
     uffsdb=#
 
-+ [DONE]Ao tentar recriar o banco...
+#7)Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o
+diretório:
 
-uffsdb=# create database a123456789b12345678
-uffsdb-# ;
-WARNING: database name is too long, it will be truncated
-mkdir: é impossível criar o diretório “data/a123456789b12345678”: Arquivo existe
-CREATE DATABASE
-uffsdb=#
+	uffsdb=# create database a123456789b12345678
+	uffsdb-# ;
+	WARNING: database name is too long, it will be truncated
+	mkdir: é impossível criar o diretório “data/a123456789b12345678”: Arquivo existe
+	CREATE DATABASE
+	uffsdb=#
 
-+ [DONE]*** stack smashing detected *** também com:
-    create database a123456789b123456789;
-+ [DONE]*** stack smashing detected ***. Com o banco resetado, faça:
+#8)Ocorria *** stack smashing detected *** ao realizar: create database a123456789b123456789;
 
-    CREATE DATABASE a123456789b12345678;
+#9)Ocorria *** stack smashing detected *** após resetar o banco e executar:
+
+	CREATE DATABASE a123456789b12345678;
     \c a123456789b12345678
     CREATE TABLE tbl(
      	cod INTEGER PRIMARY KEY,
@@ -119,17 +100,18 @@ uffsdb=#
     	name VARCHAR(10),
     	sex char
     );
+	
+#10)Criar um banco chamado uffsdb não retornava a mensagem de sucesso na criação.
 
-+ [DONE] Criar banco chamado uffsdb não retorna mensagem de "sucesso"
-+ [DONE]Caso houvesse excluido o banco padrão e criado bancos o suficiente para ocupar o limite maximo, na proxima vez que executasse o banco da erro
+#11)Caso houvesse excluído o banco padrão e criado bancos o suficiente para ocupar o limite máximo, na próxima vez que executasse o banco dava erro.
 
-+ [DONE]Algum problema com os atributos de uma tabela:
-    ./uffsdb
-    create database d;
-    \c d
-    create table t (c char);
-    \t t
-Printou:
+#12)Havia um problema com os atributos de uma tabela, pois os DEFINEs não eram usados corretamente. Ao ser executado	./uffsdb
+																														create database d;
+																														\c d
+																														create table t (c char);
+																														\t t
+Era printado:
+
     Table "public.t"
     Column             | Type         | Modifiers
    --------------------+--------------+-----------
@@ -138,10 +120,8 @@ Printou:
                        | null
                        | null
                        ...
-+ Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
-
-
-+ [DONE]Nome de colunas da tabela possuem comportamento estranho:
+					   
+#13) Nome de colunas da tabela possuíam comportamento estranho. Nomes longos truncavam pegando a primeira letra do tipo:
 
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     uffsdb=# \t tbl
@@ -150,10 +130,11 @@ Printou:
     --------------------+--------------+-----------
       a123456789b123456789c123456789a123456789i | null
 
-O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
+No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char, aparece um c;
 
-+ [DONE] Erro na exclusão
-    //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna oO
+#14) Ao tentar excluir o nome de uma coluna com o comando drop table e depois tentar excluir a tabela com o mesmo comando dava falha de segmentação:
+
+    //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna
 
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     CREATE TABLE
@@ -165,9 +146,8 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     ERROR: table "a123456789b123456789c123456789a123456789i" does not exist.
     uffsdb=# drop table tbl;
     Falha de segmentação (imagem do núcleo gravada)
-//Quando faz o drop table tbl de primeira, sem esses "drop table a123456789b123456789c123456789a123456789i;" funciona normalmente
-
-+ [DONE] Continuação do erro... (reexecuta o banco)
+	
+#15) Ao reexecutar o banco (tendo sido executados os comandos do problema 14) ocorria o seguinte erro:
 
     uffsdb=# \t tbl
     	  Table "public.tbl"
@@ -178,6 +158,37 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
     uffsdb=# insert into tbl values (1);
     *** Error in `./uffsdb': free(): invalid size: 0x0000000000f842e0 ***
     Abortado (imagem do núcleo gravada)
+
+#16) O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro indevido:
+
+    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    CREATE TABLE
+    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
+    ERROR 74: table couldn't be created
+	
+---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
+** "No READ.md deve ter a relação dos bugs não concertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
+
+#1) 
+
+#2) 
+
+----------------------------------------			-------------------------------------				------------------------------------------		---------
+
++  Avisos de erros repetidos. Exemplo:
+
+    uffsdb=# create databasea baba;
+    ERROR: syntax error.
+    uffsdb=# ERROR: syntax error.
+    
++ [WIP]tem comportamento estranho com [] e outros simbolos que não são letras.
+
+    uffsdb=# ;;;;;;;
+    uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
+    uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+    [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
+
++ Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
 
 + O ultimo erro não deveria ter aparecido, já que a tabela não existe
     uffsdb=# drop table tbl;
@@ -222,10 +233,5 @@ O i do nome vem de integer, se criar a mesma tabela com um char, aparece um c
       string2           |  varchar(3) | null
 
 //Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
-+ [DONE] O arquivo da tabela só é criado depois que se adiciona alguma tupla, então se foi criado uma tabela com mesmo nome, retorna o erro errado...
-    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
-    CREATE TABLE
-    uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
-    ERROR 74: table couldn't be created
 
 + Digitar varias aspas simples buga o banco (??)
