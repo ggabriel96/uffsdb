@@ -1,19 +1,19 @@
 REPOSITÓRIO: https://github.com/ggabriel96/uffsdb
 
-MEMBROS DA EQUIPE: Acácia dos Campos da Terra, Gabriel Batista Galli, Harold Christian Becker, João Pedro Winckler Bernardi e Vladimir Belinski.
+MEMBROS DA EQUIPE: Acácia dos Campos da Terra, Gabriel Batista Galli, Harold Christien Becker, João Pedro Winckler Bernardi e Vladimir Belinski.
 
 RELAÇÃO DE ERROS:
 
 -----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
 
-#1)Ao ser alterado o nome do banco de ibetres para uffsdb o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o alinhamento
+#1) Ao ser alterado o nome do banco de 'ibetres' para 'uffsdb' o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o alinhamento
 das colunas no comando \l.
 
-#2)Quando uma tabela possuia somente um atributo, ao ser realizado um selec * os dados não apareciam organizados de maneira colunar, mas sim de forma linear. Foi
+#2) Quando uma tabela possuia somente um atributo, ao ser realizado um select * os dados não apareciam organizados de maneira colunar, mas sim de forma linear. Foi
 ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
 
-#3)Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo,
-não gerava erro ou warning:
+#3) Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo,
+não gerava erro ou warning (e a string inserida era truncada para um char!):
 
     CREATE TABLE tbl(
 	   cod INTEGER PRIMARY KEY,
@@ -22,7 +22,7 @@ não gerava erro ou warning:
     );
     insert into tbl values (4, 'Luiz', 'Masculino');
 	
-#4)Ao ser criado um banco de nome com 19 caracteres era apresentado um warning informando que o nome iria ser truncado, mas não o era:
+#4) Ao ser criado um banco de nome com 19 caracteres era apresentado um warning informando que o nome iria ser truncado, mas não o era:
 	
 	create database a123456789b12345678;
     WARNING: database name is too long, it will be truncate
@@ -30,10 +30,9 @@ não gerava erro ou warning:
 
 Além disso, o truncamento não funcionava direito em casos diversos. Logo, foi arrumado o truncamento.
 
-#5)Ao digitar vários ; numa mesma linha e pressionar 'Enter' uffsdb=# era printado inúmeras vezes.
+#5) Ao digitar vários ';' numa mesma linha e pressionar Enter, 'uffsdb=#' era printado tantas vezes quanto o número de ';' digitados..
 
-#6)Ao deletar um banco, se primeiramente tentava excluir o banco estando conectado a ele e depois me conectava a outro banco e reexecutava o comando de exclusão
-era apresentado que não havia sido possível remover o arquivo do banco a ser deletado "Arquivo ou diretório não encontrado", mas o banco era mesmo assim excluído.
+#6) Ao tentar excluir um banco no qual se está atualmente conectado, depois se conectar a outro banco e reexecutar o comando de exclusão, era apresentado que não havia sido possível remover o arquivo do banco a ser deletado ("Arquivo ou diretório não encontrado"), mas o banco era mesmo assim excluído.
 Por exemplo:
 
     uffsdb=# \c a123456789b123456789
