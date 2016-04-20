@@ -1,6 +1,6 @@
 REPOSITÓRIO: https://github.com/ggabriel96/uffsdb
 
-MEMBROS DA EQUIPE: Acácia dos Campos da Terra, Gabriel Batista Galli, Harold Christien Becker, João Pedro Winckler Bernardi e Vladimir Belinski.
+MEMBROS DA EQUIPE: Acácia dos Campos da Terra, Gabriel Batista Galli, Harold Cristien Santos Becker, João Pedro Winckler Bernardi e Vladimir Belinski.
 
 RELAÇÃO DE ERROS:
 
@@ -175,32 +175,30 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
 ---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
 ** "No READ.md deve ter a relação dos bugs não concertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
 
-#1) 
-
-ERROS DA PARTE DE ACÁCIA (deixar no BUGS.txt e colar os não consertados no READ.md também):
-
-+  Avisos de erros repetidos. Exemplo:
+#1) São exibidas mensagens de erros repetidas, em duas linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
 
     uffsdb=# create databasea baba;
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
     
-+ [WIP]tem comportamento estranho com [] e outros simbolos que não são letras.
+#2) Não reconhece símbolos que não as letras, como por exemplo  '[' e ']' e printa algumas coisas sem sentido.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
     uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
     [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
 
-+ Makefile não funciona direito. Tive que dar make manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc
+#3) Makefile não funciona como devia. É necessário fazê-lo manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc.
 
-+ O ultimo erro não deveria ter aparecido, já que a tabela não existe
+#4) Erros que não existem são mostrados, como por exemplo ao inserir tuplas em uma tabela que não existe mais: não é necessário dizer que a linha do insert está errada, basta dizer que a tabela não existe.
+
     uffsdb=# drop table tbl;
     uffsdb=# insert into tbl values (1);
     ERROR: relation "tbl" was not found.
     ERROR: INSERT has more expressions than target columns.
 
-+ Gera um erro por caracter:
+#5) Gera um erro por caracter quando se digita algo errado e continua repetindo o erro caracter por caracter.
+
     uffsdb=# inser into b values (2, 2);
     default @ parser.interface().while.else
     ERROR: syntax error.
@@ -226,7 +224,8 @@ ERROS DA PARTE DE ACÁCIA (deixar no BUGS.txt e colar os não consertados no REA
     default @ parser.interface().while.else
     ERROR: syntax error.
 
-+ \t não alinha de forma correta varchar
+#6) Quando cria uma tabela com um campo do tipo varchar maior ou igual a 1000, a tabulação não funciona direito, empurrando os demais campos para a direita. Como no exemplo:
+
     uffsdb=# create table animal (string1 varchar(1001), string2 varchar(3) );
     CREATE TABLE
     uffsdb=# \t animal
@@ -238,4 +237,9 @@ ERROS DA PARTE DE ACÁCIA (deixar no BUGS.txt e colar os não consertados no REA
 
 //Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
 
-+ Digitar varias aspas simples buga o banco (??)
+#7) Digitar várias aspas simples 
+
+
+
+
+
