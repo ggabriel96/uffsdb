@@ -174,22 +174,21 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     ERROR 74: table couldn't be created
 	
 ---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
-** "No READ.md deve ter a relação dos bugs não consertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
 
-#1) São exibidas mensagens de erros repetidas, em duas linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
+#1) São exibidas mensagens de erros repetidas, em várias linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
 
     uffsdb=# create databasea baba;
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
     
-#2) Não reconhece símbolos que não as letras, como por exemplo  '[' e ']' e printa algumas coisas sem sentido.
+#2) Não reconhece símbolos digitados que não as letras ou sentenças sql, como por exemplo  '[' e ']' e printa algumas coisas que não fazem muito sentido quando isso acontece.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
     uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
     [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
 
-#3) Makefile não funciona como devia. É necessário fazê-lo manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc.
+#3) O makefile não funciona como deveria. É necessário fazê-lo manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc.
 
 #4) Erros que não existem são mostrados, como por exemplo ao inserir tuplas em uma tabela que não existe mais: não é necessário dizer que a linha do insert está errada, basta dizer que a tabela não existe.
 
@@ -198,7 +197,7 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     ERROR: relation "tbl" was not found.
     ERROR: INSERT has more expressions than target columns.
 
-#5) Gera um erro por caracter quando se digita algo errado e continua repetindo o erro caracter por caracter.
+#5) Repete a mensagem de erro várias vezes, assim como o problema #1, porém com um pedaço de código no meio sendo repetido junto.
 
     uffsdb=# inser into b values (2, 2);
     default @ parser.interface().while.else
@@ -225,7 +224,7 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     default @ parser.interface().while.else
     ERROR: syntax error.
 
-#6) Quando cria uma tabela com um campo do tipo varchar maior ou igual a 1000, a tabulação não funciona direito, empurrando os demais campos para a direita. Como no exemplo:
+#6) Ao ser criada uma tabela com um campo do tipo varchar maior ou igual a 1000, a tabulação não funciona direito, empurrando os demais campos para a direita. Como no exemplo:
 
     uffsdb=# create table animal (string1 varchar(1001), string2 varchar(3) );
     CREATE TABLE
@@ -238,7 +237,7 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
 
 //Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
 
-#7) Digitar várias aspas simples 
+#7) Ao se digitar várias aspas simples faz com que o banco pare de funcionar corretamente, algumas vezes esperando que você digite um número par de aspas simples, as vezes não fazendo mais nada que é requisitado.
 
 
 
