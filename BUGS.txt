@@ -172,6 +172,8 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     CREATE TABLE
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     ERROR 74: table couldn't be created
+
+#17) Executar 'make' na pasta 'Fonte' não compila o lex e yacc se os respectivos arquivos foram alterados. Era necessário executar 'make' na pasta 'Fonte/interface'. Esse problema foi corrigido.
 	
 ---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
 
@@ -181,50 +183,21 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     ERROR: syntax error.
     uffsdb=# ERROR: syntax error.
     
-#2) Não reconhece símbolos digitados que não as letras ou sentenças sql, como por exemplo  '[' e ']' e printa algumas coisas que não fazem muito sentido quando isso acontece.
+#2) Não reconhece símbolos digitados que não as letras ou sentenças sql, como por exemplo  '[' e ']' e printa algumas coisas que não deveria quando isso acontece.
 
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
     uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
     [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
 
-#3) O makefile não funciona como deveria. É necessário fazê-lo manualmente na pasta interface e depois na fonte para ver as alterações feitas no lex/yacc.
-
-#4) Erros que não existem são mostrados, como por exemplo ao inserir tuplas em uma tabela que não existe mais: não é necessário dizer que a linha do insert está errada, basta dizer que a tabela não existe.
+#3) Erros que não existem são mostrados, como por exemplo ao inserir tuplas em uma tabela que não existe mais: não é necessário dizer que a linha do insert está errada, basta dizer que a tabela não existe.
 
     uffsdb=# drop table tbl;
     uffsdb=# insert into tbl values (1);
     ERROR: relation "tbl" was not found.
     ERROR: INSERT has more expressions than target columns.
 
-#5) Repete a mensagem de erro várias vezes, assim como o problema #1, porém com um pedaço de código no meio sendo repetido junto.
-
-    uffsdb=# inser into b values (2, 2);
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-    uffsdb=#
-    default @ parser.interface().while.else
-    ERROR: syntax error.
-
-#6) Ao ser criada uma tabela com um campo do tipo varchar maior ou igual a 1000, a tabulação não funciona direito, empurrando os demais campos para a direita. Como no exemplo:
+#4) Ao ser criada uma tabela com um campo do tipo varchar maior ou igual a 1000, a tabulação não funciona direito, empurrando os demais campos para a direita. Como no exemplo:
 
     uffsdb=# create table animal (string1 varchar(1001), string2 varchar(3) );
     CREATE TABLE
@@ -233,13 +206,16 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
      Column             | Type         | Modifiers
     --------------------+--------------+-----------
       string1           |  varchar(1001) | null
-      string2           |  varchar(3) | null
+      string2           |  varchar(3) | null 
 
 //Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
 
-#7) Ao se digitar várias aspas simples faz com que o banco pare de funcionar corretamente, algumas vezes esperando que você digite um número par de aspas simples, as vezes não fazendo mais nada que é requisitado.
+#5) Ao se digitar várias aspas simples faz com que o banco pare de funcionar corretamente, algumas vezes esperando que você digite um número par de aspas simples, as vezes não fazendo mais nada que é requisitado.
+	
+---------------------------------------------------------[MELHORIAS]---------------------------------------------------------------------------
+Sugestões de possíveis melhorias para o funcionamento do SGBD.
 
-
+#1) Configurar makefile para sempre tentar compilar lex e yacc ao executar make na pasta 'Fonte'. Quando não há alterações nos arquivos, nada é feito pelo make.
 
 
 
