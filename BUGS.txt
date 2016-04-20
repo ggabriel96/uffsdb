@@ -47,7 +47,7 @@ Por exemplo:
     DROP DATABASE
     uffsdb=#
 
-#7)Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o
+#7) Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o
 diretório, pois o arquivo já existia:
 
 	uffsdb=# create database a123456789b12345678
@@ -57,11 +57,11 @@ diretório, pois o arquivo já existia:
 	CREATE DATABASE
 	uffsdb=#
 
-#8)Ocorria *** stack smashing detected *** ao realizar: create database a123456789b123456789;
+#8) Ocorria stack smashing ao executar 'create database a123456789b123456789';
 
-#9)Ocorria *** stack smashing detected *** após resetar o banco e executar:
+#9) Ocorria stack smashing após resetar o banco e executar:
 
-	CREATE DATABASE a123456789b12345678;
+    CREATE DATABASE a123456789b12345678;
     \c a123456789b12345678
     CREATE TABLE tbl(
      	cod INTEGER PRIMARY KEY,
@@ -102,16 +102,18 @@ diretório, pois o arquivo já existia:
     	sex char
     );
 	
-#10)Ao criar um banco chamado uffsdb não era retornada a mensagem de sucesso que deve aparecer quando ocorre a criação de um novo banco: CREATE DATABASE.
+#10) Ao criar um banco chamado uffsdb, não era retornada a mensagem de sucesso que deve aparecer quando ocorre a criação de um novo banco: CREATE DATABASE.
 
-#11)Caso fosse excluído o banco padrão e criados bancos o suficiente para ocupar o limite máximo definido, na próxima vez que o banco era executado um erro era
+#11) Caso fosse excluído o banco padrão e criados bancos o suficiente para ocupar o limite máximo definido, na próxima vez que o banco era executado um erro era
 gerado.
 
-#12)Havia um problema com os atributos de uma tabela, pois os DEFINEs não eram usados corretamente. Ao ser executado	./uffsdb
-																														create database d;
-																														\c d
-																														create table t (c char);
-																														\t t
+#12) Havia um problema com os atributos de uma tabela, pois os DEFINEs não eram usados corretamente. Ao ser executado:
+
+     create database d;
+     \c d
+     create table t (c char);
+     \t t
+
 Era printado:
 
     Table "public.t"
@@ -136,11 +138,10 @@ A utilização dos DEFINEs foi ajustada.
 
 No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char, aparece um c;
 
-#14) Ao tentar excluir o nome de uma coluna com o comando drop table era apresentado um erro, como esperado. Contudo se depois fosse tentado excluir a tabela com
+#14) Ao tentar excluir o nome de uma coluna com o comando drop table era apresentado um erro, como esperado. Contudo, se depois fosse tentado excluir a tabela com
 o mesmo comando ocorria uma falha de segmentação:
 
-    //Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna
-
+    // Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     CREATE TABLE
     uffsdb=# drop table a123456789b123456789c123456789a123456789i;
@@ -173,7 +174,7 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
     ERROR 74: table couldn't be created
 	
 ---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
-** "No READ.md deve ter a relação dos bugs não concertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
+** "No READ.md deve ter a relação dos bugs não consertados: uma descrição rápida, como acontece, funções envolvidas, entre outros."
 
 #1) São exibidas mensagens de erros repetidas, em duas linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
 
