@@ -212,10 +212,3 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
 
 #5) Ao se digitar várias aspas simples faz com que o banco pare de funcionar corretamente, algumas vezes esperando que você digite um número par de aspas simples, as vezes não fazendo mais nada que é requisitado.
 	
----------------------------------------------------------[MELHORIAS]---------------------------------------------------------------------------
-Sugestões de possíveis melhorias para o funcionamento do SGBD.
-
-#1) Configurar makefile para sempre tentar compilar lex e yacc ao executar make na pasta 'Fonte'. Quando não há alterações nos arquivos, nada é feito pelo make.
-
-
-
