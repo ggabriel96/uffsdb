@@ -19,18 +19,14 @@ You can edit the following files: `parser.h`, `parser.c`, `lex.l`, and `yacc.y`.
 --------------------------------------------------[ERROS IDENTIFICADOS E NÃO CONSERTADOS]-------------------------------------------------------------
 
 #1) São exibidas mensagens de erros repetidas, em várias linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
-
     uffsdb=# create databasea baba;
     ERROR: syntax error.
-    uffsdb=# ERROR: syntax error.
-    
+    uffsdb=# ERROR: syntax error. 
 #2) Não reconhece símbolos digitados que não as letras ou sentenças sql, como por exemplo  '[' e ']' e printa algumas coisas que não deveria quando isso acontece.
-
     uffsdb=# ;;;;;;;
     uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=# uffsdb=#
     uffsdb=# [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
     [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[uffsdb=#
-
 #3) Erros que não existem são mostrados, como por exemplo ao inserir tuplas em uma tabela que não existe mais: não é necessário dizer que a linha do insert está errada, basta dizer que a tabela não existe.
 
     uffsdb=# drop table tbl;
