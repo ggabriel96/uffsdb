@@ -280,7 +280,7 @@ int searchObjectFile(char *nomeTabela){
 
     while(cont < quantityTable()){
         fread(table, sizeof(char), tamanhoTotal, dicionario);
-        teste = TrocaArquivosObj(nomeTabela, table);
+        teste = exchangeFileObject(nomeTabela, table);
 
         if(teste == 0){                                         //NÃO É IGUAL
             fseek(fp, 0, SEEK_END);

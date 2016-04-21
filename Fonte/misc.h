@@ -4,7 +4,7 @@
   #include "types.h"
 #endif
 
-int cabecalho(tp_table *, int );
+int header(tp_table *, int );
 int drawline(tp_buffer *, tp_table *, struct fs_objects, int , int);
 void help();
 void contr();
@@ -16,7 +16,7 @@ void strncpylower(char *, char *, int);
     Parametros: Nome da tabela, char linha.
     Retorno:    INT(1 - Está contido, 0 - Não está)
    ---------------------------------------------------------------------------------------------*/
-int TrocaArquivosObj(char *nomeTabela, char *linha);
+int exchangeFileObject(char *nomeTabela, char *linha);
 ///
 int pot10(int );
 
@@ -24,9 +24,9 @@ int strtam(char []);
 
 int convertI(char []);
 
-double get_decimal(char []);
+double getDecimal(char []);
 
-double get_inteiro(char []);
+double getInteger(char []);
 
 double convertD(char c[]);
 

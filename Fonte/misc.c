@@ -19,11 +19,11 @@
   #include "dictionary.h"
 #endif
 
-int cabecalho(tp_table *s, int num_reg) {
+int header(tp_table *s, int num_reg) {
     int count, aux;
     aux = 0;
     for(count = 0; count < num_reg; count++) {
-        cria_campo(s[count].tam, 1, s[count].nome, 0); // O segundo parâmetro significa se = 1 Cabecalho se = 0 é valor daquele campo
+        cria_campo(s[count].tam, 1, s[count].nome, 0); // O segundo parâmetro significa se = 1 header se = 0 é valor daquele campo
         aux += s[count].tam;
     }
     printf("\n");
@@ -176,7 +176,7 @@ void strcpylower(char *dest, char *src) {
     Retorno:    INT(1 - Está contido, 0 - Não está)
    ---------------------------------------------------------------------------------------------*/
 
-int TrocaArquivosObj(char *nomeTabela, char *linha){
+int exchangeFileObject(char *nomeTabela, char *linha){
     int x = 0;
     char *tabela = (char *)malloc(sizeof(char) * TABLE_NAME_SIZE);
 
@@ -211,17 +211,18 @@ int convertI(char u[]) {
     return (u[0]-48)*pot10(strtam(u)-1) + convertI(u+1);
 }
 
-double get_decimal(char u[]) {
+double getDecimal(char u[]) {
     double decimal=0;
     int i,tamanho = strtam(u);
     for(i=0;i<tamanho && u[i]!='.';i++); // posiciona o indice i encima do ponto
     if (u[i] != '.') return 0;
     decimal=convertI(u+i+1);///(pot10(tamanho-i-1));
     decimal=(double)convertI(u+i+1)/(double)(pot10(tamanho-i-1));
+    
     return decimal;
 }
 
-double get_inteiro(char v[]) {
+double getInteger(char v[]) {
     double inteiro=0;
     int i,tamanho = strtam(v);
     char u[10];
@@ -233,7 +234,7 @@ double get_inteiro(char v[]) {
 }
 
 double convertD(char u[]) {
-    return get_inteiro(u)+get_decimal(u);
+    return getInteger(u)+getDecimal(u);
     //Soma inteiro com decimal.ss
 }
 ///

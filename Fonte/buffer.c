@@ -45,7 +45,7 @@ int printbufferpoll(tp_buffer *buffpoll, tp_table *s,struct fs_objects objeto, i
 
     i = aux = 0;
 
-    aux = cabecalho(s, num_reg);
+    aux = header(s, num_reg);
 
 
     while(i < buffpoll[num_page].nrec){ // Enquanto i < numero de registros * tamanho de uma instancia da tabela
