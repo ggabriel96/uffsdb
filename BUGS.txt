@@ -208,7 +208,5 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
       string1           |  varchar(1001) | null
       string2           |  varchar(3) | null 
 
-//Esse erro abaixo nem existia antes, surgiu quando mexi na função de criar tabela
-
 #5) Ao se digitar várias aspas simples faz com que o banco pare de funcionar corretamente, algumas vezes esperando que você digite um número par de aspas simples, as vezes não fazendo mais nada que é requisitado.
 	
