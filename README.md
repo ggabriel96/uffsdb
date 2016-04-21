@@ -16,7 +16,7 @@ In the `interface` folder, type `make` to compile both.
 You can edit the following files: `parser.h`, `parser.c`, `lex.l`, and `yacc.y`.
 
 	
---------------------------------------------------[ERROS IDENTIFICADOS E NÃO CONSERTADOS]-------------------------------------------------------------
+# ERROS IDENTIFICADOS E NÃO CONSERTADOS
 
 1) São exibidas mensagens de erros repetidas, em várias linhas. Acontece ao digitar uma sintaxe errada. Como por exemplo:
 
