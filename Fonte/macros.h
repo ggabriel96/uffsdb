@@ -3,33 +3,33 @@
 // ERRORS
 #define DB_EXISTS 1
 #define DB_NOT_EXISTS 24
-#define ERRO_ABRIR_ARQUIVO -6
-#define ERRO_ABRIR_DICIONARIO -11
-#define ERRO_ABRIR_ESQUEMA NULL
-#define ERRO_BUFFER_CHEIO -10
-#define ERRO_CHAVE_ESTRANGEIRA -15
-#define ERRO_CHAVE_PRIMARIA -14
-#define ERRO_CRIACAO_TABELA -16
-#define ERRO_DE_ALOCACAO NULL
-#define ERRO_DE_LEITURA NULL
-#define ERRO_DE_PARAMETRO -5
-#define ERRO_ESTRUTURA_TABELA_NULA 74
-#define ERRO_IMPRESSAO -8
-#define ERRO_INSERIR_VALOR NULL
-#define ERRO_LEITURA_DADOS -9
-#define ERRO_NO_TAMANHO_STRING -2
-#define ERRO_NO_TIPO_CHAR -12
-#define ERRO_NO_TIPO_DOUBLE -13
-#define ERRO_NO_TIPO_INTEIRO -1
-#define	ERRO_NOME_CAMPO -3
-#define ERRO_NOME_TABELA -4
-#define ERRO_NOME_TABELA_INVALIDO NULL
-#define ERRO_PAGINA_INVALIDA NULL
-#define ERRO_PARAMETRO NULL
-#define ERRO_REMOVER_ARQUIVO -17
-#define ERRO_REMOVER_ARQUIVO_OBJECT -18
-#define ERRO_REMOVER_ARQUIVO_SCHEMA -19
-#define ERRO_VAZIO -7
+#define ERROR_OPEN_FILE -6
+// #define ERROR_OPEN_DICTIONARY -11   //---Não usado
+#define ERROR_OPEN_SCHEMA NULL
+#define BUFFER_ALREADY_FULL -10
+#define ERROR_FOREIGN_KEY -15
+#define ERROR_PRIMARY_KEY -14
+// #define ERROR_CREATE_TABLE -16  //---Não usado
+#define ALLOCATION_ERROR NULL
+#define READING_ERROR NULL
+#define PARAMETER_ERROR_1 -5
+#define ERROR_STRUCTURE_TABLE_NULL 74
+#define PRINT_ERROR -8
+#define INSERT_ERROR NULL
+#define READING_DATA_ERROR -9
+#define STRING_LENGTH_ERROR -2
+#define ERROR_EXPECTED_CHAR -12
+#define ERROR_EXPECTED_DOUBLE -13
+#define ERROR_EXPECTED_INTEGER -1
+#define	FIELD_NAME_ERROR -3
+#define TABLE_NAME_ERROR -4
+#define INVALID_TABLE_NAME NULL
+#define INVALID_PAGE NULL
+#define PARAMETER_ERROR_2 NULL
+// #define DELETE_FILE_ERROR -17   //---Não usado
+#define DELETE_OBJECT_FILE_ERROR -18
+#define DELETE_SCHEMA_FILE_ERROR -19
+// #define EMPTY_ERROR -7   //---Não usado
 #define MALLOC_FAILED 73
 #define SUCCESS 0
 
@@ -46,9 +46,9 @@
 #define DEFAULT_DB "uffsdb"
 #define LEN_DB_NAME 21
 #define LEN_DB_DIR LEN_DB_NAME + 1
-#define PAGES 1024              // Número de páginas.
-#define QTD_DB 100
-#define SIZE 512                // Tamanho da página.
-#define TAMANHO_NOME_CAMPO 40   // Tamanho do nome dos campos de uma tabela.
-#define TAMANHO_NOME_TABELA 20  // Tamanho do nome da tabela.
-#define TAMANHO_NOME_ARQUIVO 20 // Tamanho do nome do arquivo.
+#define PAGES 1024          // Número de páginas.
+#define DATABASE_AMOUNT_LIMIT 100
+#define SIZE 512            // Tamanho da página.
+#define FIELD_NAME_SIZE 40  // Tamanho do nome dos campos de uma tabela.
+#define TABLE_NAME_SIZE 20  // Tamanho do nome da tabela.
+#define FILE_NAME_SIZE 20   // Tamanho do nome do arquivo.

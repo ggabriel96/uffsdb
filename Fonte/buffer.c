@@ -23,7 +23,7 @@ tp_buffer * initbuffer(){
     tp_buffer *temp = bp;
 
     if(bp == NULL)
-        return ERRO_DE_ALOCACAO;
+        return ALLOCATION_ERROR;
     for (i = 0;i < PAGES; i++){
         temp->db=0;
         temp->pc=0;
@@ -35,18 +35,18 @@ tp_buffer * initbuffer(){
 }
 //// imprime os dados no buffer (deprecated?)
 int printbufferpoll(tp_buffer *buffpoll, tp_table *s,struct fs_objects objeto, int num_page){
-    
+
     int aux, i, num_reg = objeto.qtdCampos;
-    
-    
+
+
     if(buffpoll[num_page].nrec == 0){
-        return ERRO_IMPRESSAO;  
+        return PRINT_ERROR;
     }
-    
+
     i = aux = 0;
-    
+
     aux = cabecalho(s, num_reg);
-    
+
 
     while(i < buffpoll[num_page].nrec){ // Enquanto i < numero de registros * tamanho de uma instancia da tabela
         drawline(buffpoll, s, objeto, i, num_page);
@@ -59,15 +59,15 @@ int printbufferpoll(tp_buffer *buffpoll, tp_table *s,struct fs_objects objeto, i
 column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page){
 
     if(page >= PAGES)
-        return ERRO_PAGINA_INVALIDA;
+        return INVALID_PAGE;
 
     if(buffer[page].nrec == 0) //Essa página não possui registros
-        return ERRO_PARAMETRO;
+        return PARAMETER_ERROR_2;
 
     column *colunas = (column *)malloc(sizeof(column)*objeto.qtdCampos*(buffer[page].nrec)); //Aloca a quantidade de campos necessária
 
     if(!colunas)
-        return ERRO_DE_ALOCACAO;
+        return ALLOCATION_ERROR;
 
     memset(colunas, 0, sizeof(column)*objeto.qtdCampos*(buffer[page].nrec));
 
@@ -105,10 +105,10 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
     column *colunas = (column *)malloc(sizeof(column)*objeto.qtdCampos);
 
     if(colunas == NULL)
-        return ERRO_DE_ALOCACAO;
+        return ALLOCATION_ERROR;
 
     if(buffer[page].nrec == 0) //Essa página não possui registros
-        return ERRO_PARAMETRO;
+        return PARAMETER_ERROR_2;
 
     int i, tamTpl = tamTupla(campos, objeto), j=0, t=0;
     i = tamTpl*nTupla; //Calcula onde começa o registro
@@ -156,7 +156,7 @@ char *getTupla(tp_table *campos,struct fs_objects objeto, int from){ //Pega uma 
 
     if (dados == NULL) {
         free(linha);
-        return ERRO_DE_LEITURA;
+        return READING_ERROR;
     }
 
     fseek(dados, from, 1);
@@ -166,7 +166,7 @@ char *getTupla(tp_table *campos,struct fs_objects objeto, int from){ //Pega uma 
     } else {       //Caso em que o from possui uma valor inválido para o arquivo de dados
         fclose(dados);
         free(linha);
-        return ERRO_DE_LEITURA;
+        return READING_ERROR;
     }
 
     fclose(dados);
@@ -184,9 +184,9 @@ int colocaTuplaBuffer(tp_buffer *buffer, int from, tp_table *campos, struct fs_o
 
     char *tupla = getTupla(campos,objeto,from);
 
-    if(tupla == ERRO_DE_LEITURA) {
+    if(tupla == READING_ERROR) {
         free(tupla);
-        return ERRO_LEITURA_DADOS;
+        return READING_DATA_ERROR;
     }
 
     int i=0, found=0;
@@ -204,7 +204,7 @@ int colocaTuplaBuffer(tp_buffer *buffer, int from, tp_table *campos, struct fs_o
 
     if (!found) {
         free(tupla);
-        return ERRO_BUFFER_CHEIO;
+        return BUFFER_ALREADY_FULL;
     }
 
 

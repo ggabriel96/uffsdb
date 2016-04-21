@@ -19,12 +19,12 @@ int typesCompatible(char , char);
     Esta função finaliza a inserção de valores em uma tabela. Assume que o usuário entrou com todos
     os campos de uma tupla completa.
     Retorna:
-        -> ERRO_ABRIR_ARQUIVO, quando ocorreu um erro ao abrir o arquivo fs_object.dat ou fs_schema.dat;
-        -> ERRO_NO_TAMANHO_STRING, quando ocorreu um erro no tamanho da string inserida;
-        -> ERRO_NOME_CAMPO, quando o nome do campo passado na estrutura;
-        -> ERRO_NO_TIPO_INTEIRO, quando o valor passado não é um inteiro;
-        -> ERRO_NO_TIPO_DOUBLE, quando o valor passado não é um double;
-        -> ERRO_NO_TIPO_CHAR, quando o valor passado é maior que 1byte;
+        -> ERROR_OPEN_FILE, quando ocorreu um erro ao abrir o arquivo fs_object.dat ou fs_schema.dat;
+        -> STRING_LENGTH_ERROR, quando ocorreu um erro no tamanho da string inserida;
+        -> FIELD_NAME_ERROR, quando o nome do campo passado na estrutura;
+        -> ERROR_EXPECTED_INTEGER, quando o valor passado não é um inteiro;
+        -> ERROR_EXPECTED_DOUBLE, quando o valor passado não é um double;
+        -> ERROR_EXPECTED_CHAR, quando o valor passado é maior que 1byte;
         -> SUCCESS, quando a função teve sucesso em sua operação de inserção na tabela.
     *nome - Nome da tabela que vai ser inserido os valores da estrutura *c.
     *c - Estrutura com o valores que vão ser inseridos na tabela *nome.
@@ -41,9 +41,9 @@ void imprime(char [] );
     Parametros: Nome da tabela (char).
     Retorno:    INT
                 SUCCESS,
-                ERRO_REMOVER_ARQUIVO_OBJECT,
-                ERRO_REMOVER_ARQUIVO_SCHEMA,
-                ERRO_LEITURA_DADOS.
+                DELETE_OBJECT_FILE_ERROR,
+                DELETE_SCHEMA_FILE_ERROR,
+                READING_DATA_ERROR.
    ---------------------------------------------------------------------------------------------*/
 int excluirTabela(char *);
 /* ----------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ int excluirTabela(char *);
     Parametros: Objeto que será removido do schema.
     Retorno:    INT
                 SUCCESS,
-                ERRO_REMOVER_ARQUIVO_SCHEMA
+                DELETE_SCHEMA_FILE_ERROR
    ---------------------------------------------------------------------------------------------*/
 int procuraSchemaArquivo(struct fs_objects);
 /* ----------------------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ int procuraSchemaArquivo(struct fs_objects);
     Parametros: Nome da Tabela, Coluna C, Nome do Campo, Valor do Campo, Tabela Apontada e Atributo Apontado.
     Retorno:    INT
                 SUCCESS,
-                ERRO_DE_PARAMETRO,
-                ERRO_CHAVE_ESTRANGEIRA
+                PARAMETER_ERROR_1,
+                ERROR_FOREIGN_KEY
    ---------------------------------------------------------------------------------------------*/
 int verificaChaveFK(char *, column *, char *, char *, char *, char *);
 
@@ -69,8 +69,8 @@ int verificaChaveFK(char *, column *, char *, char *, char *, char *);
     Parametros: Nome da Tabela, Coluna C, Nome do Campo, Valor do Campo
     Retorno:    INT
                 SUCCESS,
-                ERRO_DE_PARAMETRO,
-                ERRO_CHAVE_PRIMARIA
+                PARAMETER_ERROR_1,
+                ERROR_PRIMARY_KEY
    ---------------------------------------------------------------------------------------------*/
 int verificaChavePK(char *, column *, char *, char *);
 /* ----------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ int verificaChavePK(char *, column *, char *, char *);
     Parametros: Objeto da tabela, Tabela, Buffer e nome da tabela.
     Retorno:    INT
                 SUCCESS,
-                ERRO_DE_PARAMETRO,
+                PARAMETER_ERROR_1,
    ---------------------------------------------------------------------------------------------*/
 int iniciaAtributos(struct fs_objects *, tp_table **, tp_buffer **, char *);
 /* ----------------------------------------------------------------------------------------------

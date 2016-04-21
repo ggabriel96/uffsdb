@@ -40,7 +40,7 @@ int connectDB(char *dbname) {
     int status = 0;
     char *dbdir = NULL;
     FILE *DB = fopen("data/DB.dat", "rb");
-    if (DB == NULL) return ERRO_ABRIR_ARQUIVO;
+    if (DB == NULL) return ERROR_OPEN_FILE;
     dbdir = (char *) malloc(sizeof (char) * LEN_DB_DIR);
     status = seekdb(DB, dbname, dbdir);
     fclose(DB);
@@ -83,7 +83,7 @@ void createDB(char *dbname) { //Se dbname é NULL, vai ser criado o banco padrã
     // for maior ou igual ao limite, o banco não é criado
     // O first está ali para permitir a criação do banco padrão,
     // mesmo ultrapassando o limite
-    else if (qtdb >= QTD_DB && !first) printf("ERROR: the limit of %d databases has been reached.\n", QTD_DB);
+    else if (qtdb >= DATABASE_AMOUNT_LIMIT && !first) printf("ERROR: the limit of %d databases has been reached.\n", DATABASE_AMOUNT_LIMIT);
     else if (qtdb >= 0) {
         SGBD = (data_base *) malloc(sizeof (data_base));;
         SGBD -> valid = 1;

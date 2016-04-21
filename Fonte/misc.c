@@ -32,7 +32,7 @@ int cabecalho(tp_table *s, int num_reg) {
 ///////
 int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, int num_page) {
     if (num_page > PAGES || p > SIZE) {
-        return ERRO_DE_PARAMETRO;
+        return PARAMETER_ERROR_1;
     }
     int *pos_ini, aux = (p * tamTupla(s,objeto)) , num_reg = objeto.qtdCampos;
     pos_ini = &aux;
@@ -57,7 +57,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                 x++;
                 }
 
-                cria_campo((TAMANHO_NOME_CAMPO - (bit_pos)), 0, (char*)' ', (30 - x));
+                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', (30 - x));
                 break;
 
             case 'I':
@@ -65,7 +65,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                     ci.cnum[bit_pos++] = buffpoll[num_page].data[pos_aux++];
                 }
                 printf("%d", ci.num); //Controla o número de casas até a centena
-                cria_campo((TAMANHO_NOME_CAMPO - (bit_pos)), 0, (char*)' ', 28);
+                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 28);
                 break;
 
             case 'D':
@@ -73,7 +73,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                     cd.double_cnum[bit_pos++] = buffpoll[num_page].data[pos_aux++]; // Cópias os bytes do double para área de memória da union
                 }
                 printf("%.3lf", cd.dnum);
-                cria_campo((TAMANHO_NOME_CAMPO - (bit_pos)), 0, (char*)' ', 24);
+                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 24);
                 break;
 
             case 'C':
@@ -88,7 +88,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                 break;
 
             default:
-                return ERRO_IMPRESSAO;
+                return PRINT_ERROR;
                 break;
         }
         *(pos_ini) += s[count].tam;
@@ -137,10 +137,10 @@ int objcmp(char *obj, char *str) {
 	char *object, *string;
 	int i;
 
-	object = (char *) malloc(sizeof (char) * TAMANHO_NOME_CAMPO);
-	string = (char *) malloc(sizeof (char) * TAMANHO_NOME_CAMPO);
-	memset(object, '\0', TAMANHO_NOME_CAMPO);
-	memset(string, '\0', TAMANHO_NOME_CAMPO);
+	object = (char *) malloc(sizeof (char) * FIELD_NAME_SIZE);
+	string = (char *) malloc(sizeof (char) * FIELD_NAME_SIZE);
+	memset(object, '\0', FIELD_NAME_SIZE);
+	memset(string, '\0', FIELD_NAME_SIZE);
 
 	for (i = 0; i < strlen(obj); i++)
 		object[i] = tolower(obj[i]);
@@ -178,9 +178,9 @@ void strcpylower(char *dest, char *src) {
 
 int TrocaArquivosObj(char *nomeTabela, char *linha){
     int x = 0;
-    char *tabela = (char *)malloc(sizeof(char) * TAMANHO_NOME_TABELA);
+    char *tabela = (char *)malloc(sizeof(char) * TABLE_NAME_SIZE);
 
-    while(x < TAMANHO_NOME_TABELA){
+    while(x < TABLE_NAME_SIZE){
         tabela[x] = linha[x];
         x++;
     }

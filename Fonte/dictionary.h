@@ -6,7 +6,7 @@ int existeArquivo(const char* );
     Parametros: Nome da tabela, coluna C.
     Retorno:    INT
                 SUCCESS,
-                ERRO_DE_PARAMETRO
+                PARAMETER_ERROR_1
    ---------------------------------------------------------------------------------------------*/
 int existeAtributo(char *, column *);
 /* ----------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ tp_table *procuraAtributoFK(fs_objects);
     Parametros: Nome da tabela que será removida do object.dat.
     Retorno:    INT
                 SUCCESS,
-                ERRO_ABRIR_ARQUIVO
+                ERROR_OPEN_FILE
    ---------------------------------------------------------------------------------------------*/
 int procuraObjectArquivo(char *);
 /*
@@ -66,7 +66,7 @@ int verificaNomeTabela(char *);
     Esta função inicia um estrutura do tipo table, como nome de tabela passado.
     Retorna:
         -> a estrutura do tipo table iniciada;
-        -> ERRO_NOME_TABELA_INVALIDO se o nome passado já existir no dicionário.
+        -> INVALID_TABLE_NAME se o nome passado já existir no dicionário.
     *nomeTabela - Nome de uma tabela, a qual deseja-se inserir.
 */
 table *iniciaTabela(char *);
@@ -75,7 +75,7 @@ table *iniciaTabela(char *);
     Retorna:
         SUCSSES(0), se não ocorreu erro
         MALLOC_FAILED(73), não conseguiu alocar memória
-        ERRO_ESTRUTURA_TABELA_NULA(74), se a tabela passada for nula
+        ERROR_STRUCTURE_TABLE_NULL(74), se a tabela passada for nula
     *t - Estrutura da tabela à ser criada.
     *nomeCampo - Nome do campo que irá ser inserido na lista de campos.
     tipoCampo - Tipo do campo que irá ser inserido na lista de campos.
@@ -88,8 +88,8 @@ int adicionaCampo(table *,char *, char , int , int , char *, char *);
     Escreve nos arquivos fs_object.dat e fs_schema.dat, a estrutura passada.
     Retorna:
         -> SUCCESS quando teve sucesso na sua operaçãoç;
-        -> ERRO_ABRIR_ARQUIVO quando teve problemas ao abrir os arquivos fs_object.dat e fs_schema.dat;
-        -> ERRO_PARAMETRO quando a estrutura passada é inválida.
+        -> ERROR_OPEN_FILE quando teve problemas ao abrir os arquivos fs_object.dat e fs_schema.dat;
+        -> PARAMETER_ERROR_2 quando a estrutura passada é inválida.
     *t - Estrutura da tabela à ser criada.
 */
 int finalizaTabela(table *);
@@ -97,7 +97,7 @@ int finalizaTabela(table *);
     Esta função inicia e aloca dinâmicamente uma lista de valores que vão ser inseridos em uma tabela.
     Retorna:
         -> estrutura iniciada e alocad com o valor passado por parâmetro.
-        -> ERRO_DE_PARAMETRO, quando a estrutura enviada for inválida.
+        -> PARAMETER_ERROR_1, quando a estrutura enviada for inválida.
     *c - Estrutura de valores que vão ser inseridos em uma tabela.
     *nomeCampo - Nome do campo que o usuário vai inserir um valor.
     *valorCampo - Valor do campo que vai ser inserido.

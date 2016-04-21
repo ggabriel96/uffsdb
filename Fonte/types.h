@@ -2,31 +2,31 @@
 #define FTYPES 1 // flag para identificar se types.h já foi incluída
 
 typedef struct fs_objects { // Estrutura usada para carregar fs_objects.dat
-    char nome[TAMANHO_NOME_TABELA];     //  Nome da tabela.
+    char nome[TABLE_NAME_SIZE];     //  Nome da tabela.
     int cod;                            // Código da tabela.
-    char nArquivo[TAMANHO_NOME_ARQUIVO];// Nome do arquivo onde estão armazenados os dados da tabela.
+    char nArquivo[FILE_NAME_SIZE];// Nome do arquivo onde estão armazenados os dados da tabela.
     int qtdCampos;                      // Quantidade de campos da tabela.
 }fs_objects;
 
 typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
-    char nome[TAMANHO_NOME_CAMPO];  // Nome do Campo.                    40bytes
+    char nome[FIELD_NAME_SIZE];  // Nome do Campo.                    40bytes
     char tipo;                      // Tipo do Campo.                     1bytes
     int tam;                        // Tamanho do Campo.                  4bytes
     int chave;                      // Tipo da chave                      4bytes
-    char tabelaApt[TAMANHO_NOME_TABELA]; //Nome da Tabela Apontada        20bytes
-    char attApt[TAMANHO_NOME_CAMPO];    //Nome do Atributo Apontado       40bytes
+    char tabelaApt[TABLE_NAME_SIZE]; //Nome da Tabela Apontada        20bytes
+    char attApt[FIELD_NAME_SIZE];    //Nome do Atributo Apontado       40bytes
     struct tp_table *next;          // Encadeamento para o próximo campo.
 }tp_table;
 
 typedef struct column{ // Estrutura utilizada para inserir em uma tabela, excluir uma tupla e retornar valores de uma página.
     char tipoCampo;                     // Tipo do Campo.
-    char nomeCampo[TAMANHO_NOME_CAMPO]; //Nome do Campo.
+    char nomeCampo[FIELD_NAME_SIZE]; //Nome do Campo.
     char *valorCampo;                   // Valor do Campo.
     struct column *next;                // Encadeamento para o próximo campo.
 }column;
 
 typedef struct table{ // Estrutura utilizada para criar uma tabela.
-    char nome[TAMANHO_NOME_TABELA]; // Nome da tabela.
+    char nome[TABLE_NAME_SIZE]; // Nome da tabela.
     tp_table *esquema;              // Esquema de campos da tabela.
 }table;
 
