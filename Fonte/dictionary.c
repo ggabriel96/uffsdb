@@ -28,7 +28,7 @@
     Retorno:    INT 1 (existe) , 0 (não existe).
    ---------------------------------------------------------------------------------------------*/
 
-int existeArquivo(const char* filename){
+int fileExists(const char* filename){
     char directory[LEN_DB_NAME * 2];
     strcpy(directory, connected.db_directory);
     strcat(directory, filename);
@@ -47,7 +47,7 @@ int existeArquivo(const char* filename){
                 PARAMETER_ERROR_1
    ---------------------------------------------------------------------------------------------*/
 
-int existeAtributo(char *nomeTabela, column *c){
+int attributeExists(char *nomeTabela, column *c){
     int x, count;
     fs_objects objeto;
     memset(&objeto, 0, sizeof(fs_objects));
@@ -88,7 +88,7 @@ int existeAtributo(char *nomeTabela, column *c){
     return SUCCESS;
 }
 //////
-int verificaNomeTabela(char *nomeTabela) {
+int verifyTableName(char *nomeTabela) {
     FILE *dicionario;
     char tupla[TABLE_NAME_SIZE], directory[LEN_DB_NAME * 2];
 
@@ -111,7 +111,7 @@ int verificaNomeTabela(char *nomeTabela) {
     return 0;
 }
 ////
-int quantidadeTabelas(){
+int quantityTable(){
 
     FILE *dicionario;
     int codTbl = 0;
@@ -136,7 +136,7 @@ int quantidadeTabelas(){
     return codTbl;
 }
 ////
-int retornaTamanhoValorCampo(char *nomeCampo, table  *tab) {
+int returnsSizeValueField(char *nomeCampo, table  *tab) {
 
     int tam = 0;
 
@@ -157,7 +157,7 @@ int retornaTamanhoValorCampo(char *nomeCampo, table  *tab) {
 }
 ////
 
-char retornaTamanhoTipoDoCampo(char *nomeCampo, table  *tab) {
+char returnsSizeTypeField(char *nomeCampo, table  *tab) {
 
     char tipo = 0;
 
@@ -183,7 +183,7 @@ char retornaTamanhoTipoDoCampo(char *nomeCampo, table  *tab) {
     Retorno:    Vetor de esquemas vetEsqm
    ---------------------------------------------------------------------------------------------*/
 
-tp_table *procuraAtributoFK(fs_objects objeto){
+tp_table *searchAttributeskeys(fs_objects objeto){
     FILE *schema;
     int cod = 0, chave, i = 0;
     char *tupla = (char *)malloc(sizeof(char) * 109);
@@ -249,7 +249,7 @@ tp_table *procuraAtributoFK(fs_objects objeto){
                 ERROR_OPEN_FILE
    ---------------------------------------------------------------------------------------------*/
 
-int procuraObjectArquivo(char *nomeTabela){
+int searchObjectFile(char *nomeTabela){
     int teste        = 0,
         cont         = 0,
         achou        = 0,
@@ -278,7 +278,7 @@ int procuraObjectArquivo(char *nomeTabela){
     fseek(dicionario, 0, SEEK_SET);
     fseek(fp, 0, SEEK_SET);
 
-    while(cont < quantidadeTabelas()){
+    while(cont < quantityTable()){
         fread(table, sizeof(char), tamanhoTotal, dicionario);
         teste = TrocaArquivosObj(nomeTabela, table);
 
@@ -313,7 +313,7 @@ int procuraObjectArquivo(char *nomeTabela){
     return SUCCESS;
 }
 //
-fs_objects leObjeto(char *nTabela) {
+fs_objects readObject(char *nTabela) {
     int cod;
     fs_objects objeto;
     char directory[LEN_DB_NAME * 2];
@@ -323,7 +323,7 @@ fs_objects leObjeto(char *nTabela) {
     strcat(directory, "fs_object.dat");
     FILE *dicionario = fopen(directory, "a+b"); // Abre o dicionario de dados
 
-    if (!verificaNomeTabela(nTabela)) {
+    if (!verifyTableName(nTabela)) {
         printf("ERROR: relation \"%s\" was not found.\n", nTabela);
         if (dicionario) fclose(dicionario);
         free(tupla);
@@ -361,7 +361,7 @@ fs_objects leObjeto(char *nTabela) {
 }
 //
 // LEITURA DE DICIONARIO E ESQUEMA
-tp_table *leSchema (fs_objects objeto){
+tp_table *readSchema (fs_objects objeto){
     FILE *schema;
     int i = 0, cod = 0;
     char *tupla = (char *)malloc(sizeof(char)*FIELD_NAME_SIZE);
@@ -433,7 +433,7 @@ tp_table *leSchema (fs_objects objeto){
     return esquema;
 }
 ////
-int tamTupla(tp_table *esquema, fs_objects objeto) {// Retorna o tamanho total da tupla da tabela.
+int tupleSize(tp_table *esquema, fs_objects objeto) {// Retorna o tamanho total da tupla da tabela.
 
     int qtdCampos = objeto.qtdCampos, i, tamanhoGeral = 0;
 
@@ -448,8 +448,8 @@ int tamTupla(tp_table *esquema, fs_objects objeto) {// Retorna o tamanho total d
 
 
 // CRIA TABELA
-table *iniciaTabela(char *nome){
-    if(verificaNomeTabela(nome)){   // Se o nome já existir no dicionario, retorna erro.
+table *initTable(char *nome){
+    if(verifyTableName(nome)){   // Se o nome já existir no dicionario, retorna erro.
         return INVALID_TABLE_NAME;
     }
 
@@ -461,7 +461,7 @@ table *iniciaTabela(char *nome){
 }
 ////
 ////
-int adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, int tChave, char *tabelaApt, char *attApt){
+int addField(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, int tChave, char *tabelaApt, char *attApt){
     tp_table *e = NULL;
 
     // Se a estrutura passada for nula, retorna erro.
@@ -533,12 +533,12 @@ int adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, in
 }
 
 ///
-int finalizaTabela(table *t){
+int finishTable(table *t){
     if(t == NULL) return PARAMETER_ERROR_1;
 
     tp_table *aux;
     FILE *esquema, *dicionario, *arquivo;
-    int codTbl = quantidadeTabelas() + 1, qtdCampos = 0; // Conta a quantidade de tabelas já no dicionario e soma 1 no codigo dessa nova tabela.
+    int codTbl = quantityTable() + 1, qtdCampos = 0; // Conta a quantidade de tabelas já no dicionario e soma 1 no codigo dessa nova tabela.
     char nomeArquivo[FILE_NAME_SIZE];
     memset(nomeArquivo, 0, FILE_NAME_SIZE);
 
@@ -589,7 +589,7 @@ int finalizaTabela(table *t){
 }
 ////
 // INSERE NA TABELA
-column *insereValor(table  *tab, column *c, char *nomeCampo, char *valorCampo) {
+column *insertValue(table  *tab, column *c, char *nomeCampo, char *valorCampo) {
     int i;
 
     column *aux;
@@ -605,8 +605,8 @@ column *insereValor(table  *tab, column *c, char *nomeCampo, char *valorCampo) {
 
         memset(e, 0, sizeof(column));
 
-        int tam = retornaTamanhoValorCampo(nomeCampo, tab);
-        char tipo = retornaTamanhoTipoDoCampo(nomeCampo,tab);
+        int tam = returnsSizeValueField(nomeCampo, tab);
+        char tipo = returnsSizeTypeField(nomeCampo,tab);
 
         int nTam = strlen(valorCampo);
 
@@ -661,8 +661,8 @@ column *insereValor(table  *tab, column *c, char *nomeCampo, char *valorCampo) {
 
                 memset(e, 0, sizeof(column));
 
-                int tam = retornaTamanhoValorCampo(nomeCampo, tab);
-                char tipo = retornaTamanhoTipoDoCampo(nomeCampo,tab);
+                int tam = returnsSizeValueField(nomeCampo, tab);
+                char tipo = returnsSizeTypeField(nomeCampo,tab);
 
                 int nTam = strlen(valorCampo);
 
@@ -749,7 +749,7 @@ void printTable(char *tbl){
 		printf("(%d %s)\n\n", i, (i<=1)? "row": "rows");
 	} else{               //mostra todos atributos da tabela *tbl
 
-		if(!verificaNomeTabela(tbl)) {
+		if(!verifyTableName(tbl)) {
 			printf("Did not find any relation named \"%s\".\n", tbl);
 			return;
 		}
@@ -764,7 +764,7 @@ void printTable(char *tbl){
 		abreTabela(tbl, &objeto1, &esquema1);
 
 		tp_table *tab3 = (tp_table *)malloc(sizeof(tp_table));
-		tab3 = procuraAtributoFK(objeto1); //retorna tp_table
+		tab3 = searchAttributeskeys(objeto1); //retorna tp_table
 		int l, ipk=0, ifk=0;
 
 		char **pk 			= (char**)malloc(objeto1.qtdCampos*sizeof(char**));

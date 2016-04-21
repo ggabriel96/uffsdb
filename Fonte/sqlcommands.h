@@ -82,7 +82,7 @@ int verificaChavePK(char *, column *, char *, char *);
    ---------------------------------------------------------------------------------------------*/
 int iniciaAtributos(struct fs_objects *, tp_table **, tp_buffer **, char *);
 /* ----------------------------------------------------------------------------------------------
-    Objetivo:   Recebe o nome de uma tabela e engloba as funções leObjeto() e leSchema().
+    Objetivo:   Recebe o nome de uma tabela e engloba as funções readObject() e readSchema().
     Parametros: Nome da Tabela, Objeto da Tabela e tabela.
     Retorno:    tp_table
    ---------------------------------------------------------------------------------------------*/

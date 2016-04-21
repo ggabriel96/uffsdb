@@ -110,7 +110,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
     if(buffer[page].nrec == 0) //Essa página não possui registros
         return PARAMETER_ERROR_2;
 
-    int i, tamTpl = tamTupla(campos, objeto), j=0, t=0;
+    int i, tamTpl = tupleSize(campos, objeto), j=0, t=0;
     i = tamTpl*nTupla; //Calcula onde começa o registro
 
     while(i < tamTpl*nTupla+tamTpl){
@@ -140,7 +140,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
 // INSERE UMA TUPLA NO BUFFER!
 char *getTupla(tp_table *campos,struct fs_objects objeto, int from){ //Pega uma tupla do disco a partir do valor de from
 
-    int tamTpl = tamTupla(campos, objeto);
+    int tamTpl = tupleSize(campos, objeto);
     char *linha=(char *)malloc(sizeof(char)*tamTpl);
     memset(linha, '\0', tamTpl);
 
@@ -192,10 +192,10 @@ int colocaTuplaBuffer(tp_buffer *buffer, int from, tp_table *campos, struct fs_o
     int i=0, found=0;
     while (!found && i < PAGES) {//Procura pagina com espaço para a tupla.
 
-        if(SIZE - buffer[i].position > tamTupla(campos, objeto)) {// Se na pagina i do buffer tiver espaço para a tupla, coloca tupla.
-            setTupla(buffer, tupla, tamTupla(campos, objeto), i);
+        if(SIZE - buffer[i].position > tupleSize(campos, objeto)) {// Se na pagina i do buffer tiver espaço para a tupla, coloca tupla.
+            setTupla(buffer, tupla, tupleSize(campos, objeto), i);
             found = 1;
-            buffer[i].position += tamTupla(campos, objeto); // Atualiza proxima posição vaga dentro da pagina.
+            buffer[i].position += tupleSize(campos, objeto); // Atualiza proxima posição vaga dentro da pagina.
             buffer[i].nrec += 1;
             break;
         }

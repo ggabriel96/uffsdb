@@ -23,13 +23,13 @@
 #endif
 
 /* ----------------------------------------------------------------------------------------------
-    Objetivo:   Recebe o nome de uma tabela e engloba as funções leObjeto() e leSchema().
+    Objetivo:   Recebe o nome de uma tabela e engloba as funções readObject() e readSchema().
     Parametros: Nome da Tabela, Objeto da Tabela e tabela.
     Retorno:    tp_table
    ---------------------------------------------------------------------------------------------*/
 tp_table *abreTabela(char *nomeTabela, struct fs_objects *objeto, tp_table **tabela) {
-    *objeto     = leObjeto(nomeTabela);
-    *tabela     = leSchema(*objeto);
+    *objeto     = readObject(nomeTabela);
+    *tabela     = readSchema(*objeto);
 
     return *tabela;
 }
@@ -39,7 +39,7 @@ int allColumnsExists(rc_insert *s_insert, table *tabela) {
 	if (!s_insert->columnName) return 0;
 
 	for (i = 0; i < s_insert->N; i++)
-		if (retornaTamanhoTipoDoCampo(s_insert->columnName[i], tabela) == 0) {
+		if (returnsSizeTypeField(s_insert->columnName[i], tabela) == 0) {
 			printf("ERROR: column \"%s\" of relation \"%s\" does not exist.\n", s_insert->columnName[i], tabela->nome);
 			return 0;
 		}
@@ -68,7 +68,7 @@ char getInsertedType(rc_insert *s_insert, char *columnName, table *tabela) {
 		}
 	}
 
-	noValue = retornaTamanhoTipoDoCampo(columnName, tabela);
+	noValue = returnsSizeTypeField(columnName, tabela);
 
 	return noValue;
 }
@@ -84,7 +84,7 @@ char *getInsertedValue(rc_insert *s_insert, char *columnName, table *tabela) {
 		}
 	}
 
-	tipo = retornaTamanhoTipoDoCampo(columnName, tabela);
+	tipo = returnsSizeTypeField(columnName, tabela);
 	noValue = (char *)malloc(sizeof(char)*3);
 
 	if (tipo == 'I') {
@@ -107,8 +107,8 @@ char *getInsertedValue(rc_insert *s_insert, char *columnName, table *tabela) {
 int iniciaAtributos(struct fs_objects *objeto, tp_table **tabela, tp_buffer **bufferpool, char *nomeT){
 
 
-    *objeto     = leObjeto(nomeT);
-    *tabela     = leSchema(*objeto);
+    *objeto     = readObject(nomeT);
+    *tabela     = readSchema(*objeto);
     *bufferpool = initbuffer();
 
     if(*tabela == ERROR_OPEN_SCHEMA) {
@@ -122,9 +122,9 @@ int iniciaAtributos(struct fs_objects *objeto, tp_table **tabela, tp_buffer **bu
 }
 ////
 int verifyFK(char *tableName, char *column){
-    if(verificaNomeTabela(tableName) == 1){
-        struct fs_objects objeto = leObjeto(tableName);
-        tp_table *esquema = leSchema(objeto);
+    if(verifyTableName(tableName) == 1){
+        struct fs_objects objeto = readObject(tableName);
+        tp_table *esquema = readSchema(objeto);
 		if(esquema == ERROR_OPEN_SCHEMA){
             printf("ERROR: cannot create schema.\n");
             return 0;
@@ -163,11 +163,11 @@ int verificaChaveFK(char *nomeTabela,column *c, char *nomeCampo, char *valorCamp
     strcpylower(str, tabelaApt);
     strcat(str, dat);              //Concatena e junta o nome com .dat
 
-    erro = existeAtributo(nomeTabela, c);
+    erro = attributeExists(nomeTabela, c);
     /*if(erro != SUCCESS )
         return PARAMETER_ERROR_1;*/
 
-    //if(existeAtributo(tabelaApt, c))
+    //if(attributeExists(tabelaApt, c))
         //return ERROR_FOREIGN_KEY;
 
     if(iniciaAtributos(&objeto, &tabela, &bufferpoll, tabelaApt) != SUCCESS) {
@@ -254,7 +254,7 @@ int verificaChavePK(char *nomeTabela, column *c, char *nomeCampo, char *valorCam
     tp_table *tabela;
     tp_buffer *bufferpoll;
 
-    erro = existeAtributo(nomeTabela, c);
+    erro = attributeExists(nomeTabela, c);
     if (erro != SUCCESS ) {
         free(bufferpoll);
         return PARAMETER_ERROR_1;
@@ -339,7 +339,7 @@ int finalizaInsert(char *nome, column *c){
     memset(tab2, 0, sizeof(tp_table));
 
     tab->esquema = abreTabela(nome, &objeto, &tab->esquema);
-    tab2 = procuraAtributoFK(objeto);
+    tab2 = searchAttributeskeys(objeto);
 
     for(j = 0, temp = c; j < objeto.qtdCampos && temp != NULL; j++, temp = temp->next){
         switch(tab2[j].chave){
@@ -540,7 +540,7 @@ void insert(rc_insert *s_insert) {
 		if (allColumnsExists(s_insert, tabela)) {
 			for (esquema = tabela -> esquema; esquema != NULL; esquema = esquema -> next) {
 				if (typesCompatible(esquema -> tipo, getInsertedType(s_insert, esquema -> nome, tabela))) {
-					colunas = insereValor(tabela, colunas, esquema -> nome, getInsertedValue(s_insert, esquema -> nome, tabela));
+					colunas = insertValue(tabela, colunas, esquema -> nome, getInsertedValue(s_insert, esquema -> nome, tabela));
 				}
                 else {
 					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", esquema -> nome, tabela -> nome, esquema -> tipo, getInsertedType(s_insert, esquema -> nome, tabela));
@@ -568,7 +568,7 @@ void insert(rc_insert *s_insert) {
 				}
 
 				if (s_insert -> type[i] == tabela -> esquema[i].tipo) {
-					colunas = insereValor(tabela, colunas, tabela -> esquema[i].nome, s_insert -> values[i]);
+					colunas = insertValue(tabela, colunas, tabela -> esquema[i].nome, s_insert -> values[i]);
                 }
 				else {
 					printf("ERROR: data type invalid to column '%s' of relation '%s' (expected: %c, received: %c).\n", tabela -> esquema[i].nome, tabela -> nome, tabela -> esquema[i].tipo, s_insert -> type[i]);
@@ -598,12 +598,12 @@ void imprime(char nomeTabela[]) {
     struct fs_objects objeto;
     int j, erro, x, p, cont = 0;
 
-    if (!verificaNomeTabela(nomeTabela)) {
+    if (!verifyTableName(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
     }
-    objeto = leObjeto(nomeTabela);
-    tp_table *esquema = leSchema(objeto);
+    objeto = readObject(nomeTabela);
+    tp_table *esquema = readSchema(objeto);
     if (esquema == ERROR_OPEN_SCHEMA){
         printf("ERROR: schema cannot be created.\n");
         free(esquema);
@@ -785,7 +785,7 @@ int excluirTabela(char *nomeTabela) {
     char dat[5] = ".dat";
     memset(str, '\0', TABLE_NAME_SIZE + 4);
 
-    if (!verificaNomeTabela(nomeTabela)) {
+    if (!verifyTableName(nomeTabela)) {
         printf("ERROR: table \"%s\" does not exist.\n", nomeTabela);
         return TABLE_NAME_ERROR;
     }
@@ -794,7 +794,7 @@ int excluirTabela(char *nomeTabela) {
     strcat(str, dat);              //Concatena e junta o nome com .dat
 
     abreTabela(nomeTabela, &objeto, &esquema);
-    qtTable = quantidadeTabelas();
+    qtTable = quantityTable();
 
     char **tupla = (char **)malloc(sizeof(char **)*qtTable);
     memset(tupla, 0, qtTable);
@@ -805,7 +805,7 @@ int excluirTabela(char *nomeTabela) {
     }
 
     tp_table *tab2 = (tp_table *)malloc(sizeof(struct tp_table));
-    tab2 = procuraAtributoFK(objeto);   //retorna o tipo de chave que e cada campo
+    tab2 = searchAttributeskeys(objeto);   //retorna o tipo de chave que e cada campo
 
     FILE *dicionario;
 
@@ -839,7 +839,7 @@ int excluirTabela(char *nomeTabela) {
                     abreTabela(tupla[j], &objeto1, &esquema1);
 
                     tp_table *tab3 = (tp_table *)malloc(sizeof(struct tp_table));
-                    tab3 = procuraAtributoFK(objeto1);
+                    tab3 = searchAttributeskeys(objeto1);
 
                     for(l=0; l<objeto1.qtdCampos; l++) {
                         if(tab3[l].chave == FK) { //verifica se a outra tabela possui chave estrangeira. se sim, verifica se e da tabela anterior.
@@ -873,7 +873,7 @@ int excluirTabela(char *nomeTabela) {
         return DELETE_SCHEMA_FILE_ERROR;
     }
 
-    if(procuraObjectArquivo(nomeTabela) != 0) {
+    if(searchObjectFile(nomeTabela) != 0) {
         free(bufferpoll);
         return DELETE_OBJECT_FILE_ERROR;
     }
@@ -917,9 +917,9 @@ void createTable(rc_insert *t) {
     strncpy(tableName, t->objName, TABLE_NAME_SIZE); //Faz o truncamento do nome da tabela
     strcat(tableName, ".dat\0");                  //tableName.dat
 
-    if(existeArquivo(tableName)){ printf("ERROR: table already exist\n"); return; }
+    if(fileExists(tableName)){ printf("ERROR: table already exist\n"); return; }
     table *tab = NULL;
-    tab = iniciaTabela(t->objName);    //cria a tabela
+    tab = initTable(t->objName);    //cria a tabela
 
     if(!verifyFieldName(t->columnName, t->N)){ freeTable(tab); return; }
 
@@ -941,7 +941,7 @@ void createTable(rc_insert *t) {
     		strcpy(fkColumn, "");
     	}
 
-        if((error = adicionaCampo(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn) != SUCCESS)){
+        if((error = addField(tab, t->columnName[i], t->type[i], size, t->attribute[i], fkTable, fkColumn) != SUCCESS)){
             printf("ERROR: %s\n", error == MALLOC_FAILED ? "malloc failed" : "could not initialize the table");
             return; //Por favor, mudem o printf. Não sei escrever!
         }
@@ -954,6 +954,6 @@ void createTable(rc_insert *t) {
         }
     }
 
-    printf("%s\n",(finalizaTabela(tab) == SUCCESS) ? "CREATE TABLE" : "ERROR: could not create data file"); //Por favor, mudem o printf. Não sei escrever!
+    printf("%s\n",(finishTable(tab) == SUCCESS) ? "CREATE TABLE" : "ERROR: could not create data file"); //Por favor, mudem o printf. Não sei escrever!
     if (tab != NULL) freeTable(tab);
 }

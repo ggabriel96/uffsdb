@@ -34,7 +34,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
     if (num_page > PAGES || p > SIZE) {
         return PARAMETER_ERROR_1;
     }
-    int *pos_ini, aux = (p * tamTupla(s,objeto)) , num_reg = objeto.qtdCampos;
+    int *pos_ini, aux = (p * tupleSize(s,objeto)) , num_reg = objeto.qtdCampos;
     pos_ini = &aux;
     int count, pos_aux, bit_pos;
     union c_double cd;
