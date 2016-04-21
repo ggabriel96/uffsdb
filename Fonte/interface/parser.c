@@ -242,7 +242,7 @@ int interface() {
                         else printf("WARNING: Nothing to be inserted. Command ignored.\n");
                         break;
                     case OP_SELECT_ALL:
-                        imprime(GLOBAL_DATA.objName);
+                        printing(GLOBAL_DATA.objName);
                         break;
                     case OP_CREATE_TABLE:
                         createTable(&GLOBAL_DATA);
@@ -251,7 +251,7 @@ int interface() {
                         createDB(GLOBAL_DATA.objName);
                         break;
                     case OP_DROP_TABLE:
-                        excluirTabela(GLOBAL_DATA.objName);
+                        deleteTable(GLOBAL_DATA.objName);
                         break;
                     case OP_DROP_DATABASE:
                         dropDatabase(GLOBAL_DATA.objName);

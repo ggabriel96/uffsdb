@@ -272,12 +272,12 @@ typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
 
 
 Foi também criado as seguintes funções:
--> IniciaAtributos,
+-> iniciaAtributos,
 -> ExisteAtributo,
--> VerificaChavePK,
--> VerificaChaveFK,
+-> verificaChavePK,
+-> verificaChaveFK,
 -> ExcluirArquivo,
--> AbreTabela.
+-> abreTabela.
 
 Juntamente com os arquivos do trabalho, foi criado também o "exemploMain.c". Trata-se de um modelo (exemplo) de uma maneira
 de criar a main(). Nessa exemplo de main() é necessário se atentar ao seguinte:

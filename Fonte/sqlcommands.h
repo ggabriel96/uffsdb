@@ -29,13 +29,13 @@ int typesCompatible(char , char);
     *nome - Nome da tabela que vai ser inserido os valores da estrutura *c.
     *c - Estrutura com o valores que vão ser inseridos na tabela *nome.
 */
-int finalizaInsert(char *, column *);
+int finishInsert(char *, column *);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Utilizada para impressão de tabelas.
     Parametros: Nome da tabela (char).
     Retorno:    void.
    ---------------------------------------------------------------------------------------------*/
-void imprime(char [] );
+void printing(char [] );
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Função para exclusão de tabelas.
     Parametros: Nome da tabela (char).
@@ -45,7 +45,7 @@ void imprime(char [] );
                 DELETE_SCHEMA_FILE_ERROR,
                 READING_DATA_ERROR.
    ---------------------------------------------------------------------------------------------*/
-int excluirTabela(char *);
+int deleteTable(char *);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Copia todas as informações menos a tabela do objeto, que será removida.
     Parametros: Objeto que será removido do schema.
@@ -53,7 +53,7 @@ int excluirTabela(char *);
                 SUCCESS,
                 DELETE_SCHEMA_FILE_ERROR
    ---------------------------------------------------------------------------------------------*/
-int procuraSchemaArquivo(struct fs_objects);
+int searchSchemaFile(struct fs_objects);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Gera as verificações em relação a chave FK.
     Parametros: Nome da Tabela, Coluna C, Nome do Campo, Valor do Campo, Tabela Apontada e Atributo Apontado.
@@ -62,7 +62,7 @@ int procuraSchemaArquivo(struct fs_objects);
                 PARAMETER_ERROR_1,
                 ERROR_FOREIGN_KEY
    ---------------------------------------------------------------------------------------------*/
-int verificaChaveFK(char *, column *, char *, char *, char *, char *);
+int verifyForeignKey(char *, column *, char *, char *, char *, char *);
 
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Gera as verificações em relação a chave pK.
@@ -72,7 +72,7 @@ int verificaChaveFK(char *, column *, char *, char *, char *, char *);
                 PARAMETER_ERROR_1,
                 ERROR_PRIMARY_KEY
    ---------------------------------------------------------------------------------------------*/
-int verificaChavePK(char *, column *, char *, char *);
+int verifyPrimaryKey(char *, column *, char *, char *);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Inicializa os atributos necessários para a verificação de FK e PK.
     Parametros: Objeto da tabela, Tabela, Buffer e nome da tabela.
@@ -80,13 +80,13 @@ int verificaChavePK(char *, column *, char *, char *);
                 SUCCESS,
                 PARAMETER_ERROR_1,
    ---------------------------------------------------------------------------------------------*/
-int iniciaAtributos(struct fs_objects *, tp_table **, tp_buffer **, char *);
+int initAttributes(struct fs_objects *, tp_table **, tp_buffer **, char *);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Recebe o nome de uma tabela e engloba as funções readObject() e readSchema().
     Parametros: Nome da Tabela, Objeto da Tabela e tabela.
     Retorno:    tp_table
    ---------------------------------------------------------------------------------------------*/
-tp_table *abreTabela(char *, struct fs_objects *, tp_table **);
+tp_table * openTable(char *, struct fs_objects *, tp_table **);
 /* createTable: Recebe uma estrutura contendo os parâmetros do CREATE TABLE
  *              e cria uma tabela no banco corrente
  */

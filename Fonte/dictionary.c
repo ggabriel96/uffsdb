@@ -56,7 +56,7 @@ int attributeExists(char *nomeTabela, column *c){
     column *aux = NULL;
     column *pagina = NULL;
 
-    if(iniciaAtributos(&objeto, &tabela, &bufferpoll, nomeTabela) != SUCCESS)
+    if(initAttributes(&objeto, &tabela, &bufferpoll, nomeTabela) != SUCCESS)
         return PARAMETER_ERROR_1;
 
     for(x = 0; colocaTuplaBuffer(bufferpoll, x, tabela, objeto) == SUCCESS; x++);
@@ -761,7 +761,7 @@ void printTable(char *tbl){
 		fs_objects objeto1;
 		tp_table *esquema1;
 
-		abreTabela(tbl, &objeto1, &esquema1);
+		openTable(tbl, &objeto1, &esquema1);
 
 		tp_table *tab3 = (tp_table *)malloc(sizeof(tp_table));
 		tab3 = searchAttributeskeys(objeto1); //retorna tp_table

@@ -27,7 +27,7 @@
     Parametros: Nome da Tabela, Objeto da Tabela e tabela.
     Retorno:    tp_table
    ---------------------------------------------------------------------------------------------*/
-tp_table *abreTabela(char *nomeTabela, struct fs_objects *objeto, tp_table **tabela) {
+tp_table *openTable(char *nomeTabela, struct fs_objects *objeto, tp_table **tabela) {
     *objeto     = readObject(nomeTabela);
     *tabela     = readSchema(*objeto);
 
@@ -104,7 +104,7 @@ char *getInsertedValue(rc_insert *s_insert, char *columnName, table *tabela) {
                 PARAMETER_ERROR_1,
    ---------------------------------------------------------------------------------------------*/
 
-int iniciaAtributos(struct fs_objects *objeto, tp_table **tabela, tp_buffer **bufferpool, char *nomeT){
+int initAttributes(struct fs_objects *objeto, tp_table **tabela, tp_buffer **bufferpool, char *nomeT){
 
 
     *objeto     = readObject(nomeT);
@@ -151,7 +151,7 @@ int verifyFK(char *tableName, char *column){
                 ERROR_FOREIGN_KEY
    ---------------------------------------------------------------------------------------------*/
 
-int verificaChaveFK(char *nomeTabela,column *c, char *nomeCampo, char *valorCampo, char *tabelaApt, char *attApt){
+int verifyForeignKey(char *nomeTabela,column *c, char *nomeCampo, char *valorCampo, char *tabelaApt, char *attApt){
     int x,j, erro, page;
     char str[20];
     char dat[5] = ".dat";
@@ -170,7 +170,7 @@ int verificaChaveFK(char *nomeTabela,column *c, char *nomeCampo, char *valorCamp
     //if(attributeExists(tabelaApt, c))
         //return ERROR_FOREIGN_KEY;
 
-    if(iniciaAtributos(&objeto, &tabela, &bufferpoll, tabelaApt) != SUCCESS) {
+    if(initAttributes(&objeto, &tabela, &bufferpoll, tabelaApt) != SUCCESS) {
         free(bufferpoll);
         free(tabela);
         return PARAMETER_ERROR_1;
@@ -246,7 +246,7 @@ int verificaChaveFK(char *nomeTabela,column *c, char *nomeCampo, char *valorCamp
                 ERROR_PRIMARY_KEY
    ---------------------------------------------------------------------------------------------*/
 
-int verificaChavePK(char *nomeTabela, column *c, char *nomeCampo, char *valorCampo) {
+int verifyPrimaryKey(char *nomeTabela, column *c, char *nomeCampo, char *valorCampo) {
     int j, x, erro, page;
     column *pagina = NULL;
 
@@ -261,7 +261,7 @@ int verificaChavePK(char *nomeTabela, column *c, char *nomeCampo, char *valorCam
     }
 
 
-    if (iniciaAtributos(&objeto, &tabela, &bufferpoll, nomeTabela) != SUCCESS) {
+    if (initAttributes(&objeto, &tabela, &bufferpoll, nomeTabela) != SUCCESS) {
         free(bufferpoll);
         free(tabela);
         return PARAMETER_ERROR_1;
@@ -325,20 +325,20 @@ int verificaChavePK(char *nomeTabela, column *c, char *nomeCampo, char *valorCam
 }
 
 /////
-int finalizaInsert(char *nome, column *c){
+int finishInsert(char *nome, column *c){
     column *auxC, *temp;
     int i = 0, x = 0, t, erro, j = 0;
     FILE *dados;
 
     struct fs_objects objeto,dicio; // Le dicionario
     tp_table *auxT ; // Le esquema
-    auxT = abreTabela(nome, &dicio, &auxT);
+    auxT = openTable(nome, &dicio, &auxT);
 
     table *tab     = (table *)malloc(sizeof(table));
     tp_table *tab2 = (tp_table *)malloc(sizeof(struct tp_table));
     memset(tab2, 0, sizeof(tp_table));
 
-    tab->esquema = abreTabela(nome, &objeto, &tab->esquema);
+    tab->esquema = openTable(nome, &objeto, &tab->esquema);
     tab2 = searchAttributeskeys(objeto);
 
     for(j = 0, temp = c; j < objeto.qtdCampos && temp != NULL; j++, temp = temp->next){
@@ -348,7 +348,7 @@ int finalizaInsert(char *nome, column *c){
                 break;
 
             case PK:
-                erro = verificaChavePK(nome, temp , temp->nomeCampo, temp->valorCampo);
+                erro = verifyPrimaryKey(nome, temp , temp->nomeCampo, temp->valorCampo);
                 if (erro == ERROR_PRIMARY_KEY){
                     printf("ERROR: duplicate key value violates unique constraint \"%s_pkey\"\nDETAIL:  Key (%s)=(%s) already exists.\n", nome, temp->nomeCampo, temp->valorCampo);
 
@@ -364,7 +364,7 @@ int finalizaInsert(char *nome, column *c){
             case FK:
                 if (tab2[j].chave == 2 && strlen(tab2[j].attApt) != 0 && strlen(tab2[j].tabelaApt) != 0){
 
-                    erro = verificaChaveFK(nome, temp, tab2[j].nome, temp->valorCampo, tab2[j].tabelaApt, tab2[j].attApt);
+                    erro = verifyForeignKey(nome, temp, tab2[j].nome, temp->valorCampo, tab2[j].tabelaApt, tab2[j].attApt);
 
                     if (erro != SUCCESS){
                         printf("ERROR: invalid reference to \"%s.%s\". The value \"%s\" does not exist.\n", tab2[j].tabelaApt,tab2[j].attApt,temp->valorCampo);
@@ -532,7 +532,7 @@ void insert(rc_insert *s_insert) {
 	tabela -> esquema = NULL;
 	memset(tabela, 0, sizeof (table));
 
-	abreTabela(s_insert -> objName, &objeto, &tabela -> esquema); //retorna o esquema para a insere valor
+	openTable(s_insert -> objName, &objeto, &tabela -> esquema); //retorna o esquema para a insere valor
 	// strcpylower(tabela->nome, s_insert->objName);
     strcpy(tabela -> nome, s_insert -> objName);
 
@@ -583,7 +583,7 @@ void insert(rc_insert *s_insert) {
 	}
 
 	if (!flag)
-		if (finalizaInsert(s_insert -> objName, colunas) == SUCCESS)
+		if (finishInsert(s_insert -> objName, colunas) == SUCCESS)
 			printf("INSERT 0 1\n");
 
 	//freeTp_table(&esquema, objeto.qtdCampos);
@@ -594,7 +594,7 @@ void insert(rc_insert *s_insert) {
 
 
 ///////////////
-void imprime(char nomeTabela[]) {
+void printing(char nomeTabela[]) {
     struct fs_objects objeto;
     int j, erro, x, p, cont = 0;
 
@@ -680,7 +680,7 @@ void imprime(char nomeTabela[]) {
                 DELETE_SCHEMA_FILE_ERROR
    ---------------------------------------------------------------------------------------------*/
 
-int procuraSchemaArquivo(struct fs_objects objeto){
+int searchSchemaFile(struct fs_objects objeto){
 
     FILE *schema, *newSchema;
     int cod = 0;
@@ -777,7 +777,7 @@ int procuraSchemaArquivo(struct fs_objects objeto){
                 READING_DATA_ERROR.
    ---------------------------------------------------------------------------------------------*/
 
-int excluirTabela(char *nomeTabela) {
+int deleteTable(char *nomeTabela) {
     struct fs_objects objeto, objeto1;
     tp_table *esquema, *esquema1;
     int x, erro, i, j, k, l, qtTable;
@@ -793,7 +793,7 @@ int excluirTabela(char *nomeTabela) {
     strncpy(str, nomeTabela, TABLE_NAME_SIZE - 1);
     strcat(str, dat);              //Concatena e junta o nome com .dat
 
-    abreTabela(nomeTabela, &objeto, &esquema);
+    openTable(nomeTabela, &objeto, &esquema);
     qtTable = quantityTable();
 
     char **tupla = (char **)malloc(sizeof(char **)*qtTable);
@@ -836,7 +836,7 @@ int excluirTabela(char *nomeTabela) {
             for(j=0; j<qtTable; j++) {                      //se tiver chave primaria verifica se ela e chave
                 if(objcmp(tupla[j], nomeTabela) != 0) {     //estrangeira em outra tabela
 
-                    abreTabela(tupla[j], &objeto1, &esquema1);
+                    openTable(tupla[j], &objeto1, &esquema1);
 
                     tp_table *tab3 = (tp_table *)malloc(sizeof(struct tp_table));
                     tab3 = searchAttributeskeys(objeto1);
@@ -868,7 +868,7 @@ int excluirTabela(char *nomeTabela) {
     for(x = 0; erro == SUCCESS; x++)
         erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 
-    if(procuraSchemaArquivo(objeto) != 0) {
+    if(searchSchemaFile(objeto) != 0) {
         free(bufferpoll);
         return DELETE_SCHEMA_FILE_ERROR;
     }
