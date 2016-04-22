@@ -281,8 +281,8 @@ Foi também criado as seguintes funções:
 -> ExcluirArquivo,
 -> abreTabela.
 
-Juntamente com os arquivos do trabalho, foi criado também o "exemploMain.c". Trata-se de um modelo (exemplo) de uma maneira
-de criar a main(). Nessa exemplo de main() é necessário se atentar ao seguinte:
+Juntamente com os arquivos do trabalho, foi criado também o "exemploMain.c". Trata-se de um modelo (exemplo) de uma maneira de criar a main(). Nessa exemplo de
+main() é necessário se atentar ao seguinte:
 -int nrTabelas;	->deve ser setado para a quantidades de tabelas a ser criadas;
 
 -   nTabela[0]  = existeArquivo("tabela1.dat"); 	// -> deve ser colocado aqui os nomes das tabelas
@@ -309,9 +309,9 @@ Professor: Dr. Denio Duarte
 Alunos: Igor Beilner, Eliton Traverssini, Régis T. Feyh.
 =================================================================================================================================================================
 
-O reconhecedor de comandos SQL foi implementado utilizando yacc e lex. Portanto, para aterá-los basta editar os arquivos .y e .l que se
-encontram em /Fonte/interface/. Toda vez que forem alterados esses arquivos é necessário gerar novamente os arquivos do reconhecedor.
-Para isso, basta executar o comando 'make' no bash quando estiver na pasta onde estão os arquivos.
+O reconhecedor de comandos SQL foi implementado utilizando yacc e lex. Portanto, para aterá-los basta editar os arquivos .y e .l que se encontram em
+/Fonte/interface/. Toda vez que forem alterados esses arquivos é necessário gerar novamente os arquivos do reconhecedor. Para isso, basta executar o comando
+'make' no bash quando estiver na pasta onde estão os arquivos.
 
 Para compilar o projeto inteiro basta executar o comando 'make' na pasta /Fonte/. Isso irá gerar o executável 'Ibetres'.
 
@@ -341,8 +341,8 @@ Além disso, interpreta os comandos:
 	\q 					// sai do shell do SGBD
 
 
-A ordem das colunas especificadas não precisa ser na mesma ordem da criação e não é necessário informar todas. Quando o usuário
-não especificar a coluna o SGBD colocará um valor nulo, de acordo com o tipo de dado.
+A ordem das colunas especificadas não precisa ser na mesma ordem da criação e não é necessário informar todas. Quando o usuário não especificar a coluna o SGBD
+colocará um valor nulo, de acordo com o tipo de dado.
 
 Os comandos SQL e os objetos das relações (i.e. <NomeTabelas>, <NomeCampos> ...) NÃO são case-sensitive.
 	ex:
