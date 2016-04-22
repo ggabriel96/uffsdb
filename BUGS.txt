@@ -6,11 +6,11 @@ RELAÇÃO DE ERROS:
 
 -----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
 
-#1) Ao ser alterado o nome do banco de 'ibetres' para 'uffsdb' o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o alinhamento
-das colunas no comando \l.
+#1) Ao ser alterado o nome do banco de 'ibetres' para 'uffsdb' o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o
+alinhamento das colunas no comando \l.
 
-#2) Quando uma tabela possuia somente um atributo, ao ser realizado um select * os dados não apareciam organizados de maneira colunar, mas sim de forma linear. Foi
-ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
+#2) Quando uma tabela possuia somente um atributo, ao ser realizado um select * os dados não apareciam organizados de maneira colunar, mas sim de forma linear.
+Foi ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
 
 #3) Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo,
 não gerava erro ou warning (e a string inserida era truncada para um char!):
@@ -32,8 +32,8 @@ Além disso, o truncamento não funcionava direito em casos diversos. Logo, foi 
 
 #5) Ao digitar vários ';' numa mesma linha e pressionar Enter, 'uffsdb=#' era printado tantas vezes quanto o número de ';' digitados..
 
-#6) Ao tentar excluir um banco no qual se está atualmente conectado, depois se conectar a outro banco e reexecutar o comando de exclusão, era apresentado que não havia sido possível remover o arquivo do banco a ser deletado ("Arquivo ou diretório não encontrado"), mas o banco era mesmo assim excluído.
-Por exemplo:
+#6) Ao tentar excluir um banco no qual se está atualmente conectado, depois se conectar a outro banco e reexecutar o comando de exclusão, era apresentado que não
+havia sido possível remover o arquivo do banco a ser deletado ("Arquivo ou diretório não encontrado"), mas o banco era mesmo assim excluído. Por exemplo:
 
     uffsdb=# \c a123456789b123456789
     You are now connected to database "a123456789b12345678" as user "uffsdb".
@@ -180,7 +180,7 @@ o erro indevido, pois deveria ser apresentado que a tabela já existe, não simp
 
 ** Foram padronizadas as macros do banco, as funções do dicionário, as funções do arquivo misc e as funções do arquivo sqlcommands.
 	
----------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]---------------------------------------------------------------------------
+---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]-----------------------------------------------------------------------
 
 #1) São exibidas mensagens de erro repetidas, em várias linhas. Acontece ao digitar uma sintaxe errada, como por exemplo:
 
