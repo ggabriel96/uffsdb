@@ -49,4 +49,4 @@ You can edit the following files: `parser.h`, `parser.c`, `lex.l`, and `yacc.y`.
       string1           |  varchar(1001) | null
       string2           |  varchar(3) | null
 
-5) Digitar várias aspas simples faz com que o banco pare de funcionar corretamente; algumas vezes espera que você digite um número par de aspas simples, em outras não faz mais nada do que é requisitado.
+5) Digitar várias aspas simples faz com que o banco pare de funcionar corretamente; algumas vezes espera que seja digitado um número par de aspas simples, em outras não faz mais nada do que é requisitado.
