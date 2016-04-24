@@ -170,7 +170,7 @@ No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char
 
 ------------------------------------------------------------------[MELHORIAS]------------------------------------------------------------------------------------
 
-** Foram padronizadas as macros do banco, as funções do dicionário, as funções do arquivo misc e as funções do arquivo sqlcommands para que tudo fique em inglês e não metade português, metade inglês, como estava antes. Da mesma forma, foi utilizado o padrão CamelCase em nomes de funções do arquivo misc, e no sqlcommands
+** Foram padronizadas as macros do banco utilizando uppercase, as funções do dicionário, as funções do arquivo misc utilizando-se do padrão CamelCase e as funções do arquivo sqlcommands, de forma que tudo no código fique em inglês e não metade português, metade inglês, como estava antes. 
 	
 ---------------------------------------------------------[IDENTIFICADOS E NÃO CONSERTADOS]-----------------------------------------------------------------------
 
