@@ -6,14 +6,11 @@ RELAÇÃO DE ERROS:
 
 -----------------------------------------------------------[IDENTIFICADOS E CONSERTADOS]-------------------------------------------------------------------------
 
-#1) Ao ser alterado o nome do banco de 'ibetres' para 'uffsdb' o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o
-alinhamento das colunas no comando \l.
+#1) Ao ser alterado o nome do banco de 'ibetres' para 'uffsdb' o alinhamento das colunas ao se executar um comando \l era perdido. Assim, foi arrumado o alinhamento das colunas no comando \l.
 
-#2) Quando uma tabela possuia somente um atributo, ao ser realizado um select * os dados não apareciam organizados de maneira colunar, mas sim de forma linear.
-Foi ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
+#2) Quando uma tabela possuia somente um atributo, ao ser realizado um select * os dados não apareciam organizados de maneira colunar, mas sim de forma linear. Foi ajustado para os dados aparecerem sob a mesma coluna, pois essa é a forma correta.
 
-#3) Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo,
-não gerava erro ou warning (e a string inserida era truncada para um char!):
+#3) Mesmo um atributo sendo char era possível enviar uma string na inserção de um dado sem que fosse apresentado um erro ou warning. O insert abaixo, por exemplo, não gerava erro ou warning (e a string inserida era truncada para um char!):
 
     CREATE TABLE tbl(
 	   cod INTEGER PRIMARY KEY,
@@ -47,8 +44,7 @@ havia sido possível remover o arquivo do banco a ser deletado ("Arquivo ou dire
     DROP DATABASE
     uffsdb=#
 
-#7) Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o
-diretório, pois o arquivo já existia:
+#7) Ao tentar recriar o banco deletado da forma descrita no problema 6, o banco era criado, mas era apresentado um erro informando que era impossível criar o diretório, pois o arquivo já existia:
 
 	uffsdb=# create database a123456789b12345678
 	uffsdb-# ;
@@ -104,8 +100,7 @@ diretório, pois o arquivo já existia:
 	
 #10) Ao criar um banco chamado uffsdb, não era retornada a mensagem de sucesso que deve aparecer quando ocorre a criação de um novo banco: CREATE DATABASE.
 
-#11) Caso fosse excluído o banco padrão e criados bancos o suficiente para ocupar o limite máximo definido, na próxima vez que o banco era executado um erro era
-gerado.
+#11) Caso fosse excluído o banco padrão e criados bancos o suficiente para ocupar o limite máximo definido, na próxima vez que o banco era executado um erro era gerado.
 
 #12) Havia um problema com os atributos de uma tabela, pois os DEFINEs não eram usados corretamente. Ao ser executado:
 
@@ -138,8 +133,7 @@ A utilização dos DEFINEs foi ajustada.
 
 No exemplo acima o i do nome vem de integer, se criar a mesma tabela com um char, aparece um c;
 
-#14) Ao tentar excluir o nome de uma coluna com o comando drop table era apresentado um erro, como esperado. Contudo, se depois fosse tentado excluir a tabela
-com o mesmo comando ocorria uma falha de segmentação:
+#14) Ao tentar excluir o nome de uma coluna com o comando drop table era apresentado um erro, como esperado. Contudo, se depois fosse tentado excluir a tabela com o mesmo comando ocorria uma falha de segmentação:
 
     // Note que a tabela tem nome tbl, mas mandei excluir o nome da coluna
     uffsdb=# create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
@@ -165,8 +159,7 @@ com o mesmo comando ocorria uma falha de segmentação:
     *** Error in `./uffsdb': free(): invalid size: 0x0000000000f842e0 ***
     Abortado (imagem do núcleo gravada)
 
-#16) O arquivo da tabela só era criado depois que se adicionava alguma tupla, então se fosse tentado criar duas tabelas vazias com o mesmo nome era retornado
-o erro indevido, pois deveria ser apresentado que a tabela já existe, não simplesmente que ela não pode ser criada:
+#16) O arquivo da tabela só era criado depois que se adicionava alguma tupla, então se fosse tentado criar duas tabelas vazias com o mesmo nome era retornado o erro indevido, pois deveria ser apresentado que a tabela já existe, não simplesmente que ela não pode ser criada:
 
     uffsdb=#  create table tbl ( a123456789b123456789c123456789a123456789b123456789c123456789a123456789b123456789c123456789 integer );
     CREATE TABLE
