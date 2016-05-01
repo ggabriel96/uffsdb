@@ -60,4 +60,4 @@ char *getTupla(tp_table *campos,struct fs_objects objeto, int from);
 
 void setTupla(tp_buffer *buffer,char *tupla, int tam, int pos);
 ////
-void cria_campo(int , int , char *, int );
+void createField(int , int , char *, int );

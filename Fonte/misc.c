@@ -23,7 +23,7 @@ int header(tp_table *s, int num_reg) {
     int count, aux;
     aux = 0;
     for(count = 0; count < num_reg; count++) {
-        cria_campo(s[count].tam, 1, s[count].nome, 0); // O segundo parâmetro significa se = 1 header se = 0 é valor daquele campo
+        createField(s[count].tam, 1, s[count].nome, 0); // O segundo parâmetro significa se = 1 header se = 0 é valor daquele campo
         aux += s[count].tam;
     }
     printf("\n");
@@ -57,7 +57,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                 x++;
                 }
 
-                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', (30 - x));
+                createField((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', (30 - x));
                 break;
 
             case 'I':
@@ -65,7 +65,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                     ci.cnum[bit_pos++] = buffpoll[num_page].data[pos_aux++];
                 }
                 printf("%d", ci.num); //Controla o número de casas até a centena
-                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 28);
+                createField((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 28);
                 break;
 
             case 'D':
@@ -73,7 +73,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                     cd.double_cnum[bit_pos++] = buffpoll[num_page].data[pos_aux++]; // Cópias os bytes do double para área de memória da union
                 }
                 printf("%.3lf", cd.dnum);
-                cria_campo((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 24);
+                createField((FIELD_NAME_SIZE - (bit_pos)), 0, (char*)' ', 24);
                 break;
 
             case 'C':
@@ -84,7 +84,7 @@ int drawline(tp_buffer *buffpoll, tp_table *s, struct fs_objects objeto, int p, 
                 else{
                     bit_pos = s[count].tam;
                 }
-                cria_campo((bit_pos - 1), 0, (char*)' ', 29);
+                createField((bit_pos - 1), 0, (char*)' ', 29);
                 break;
 
             default:

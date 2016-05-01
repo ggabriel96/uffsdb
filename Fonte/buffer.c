@@ -213,7 +213,7 @@ int colocaTuplaBuffer(tp_buffer *buffer, int from, tp_table *campos, struct fs_o
 }
 ////////
 
-void cria_campo(int tam, int header, char *val, int x) {
+void createField(int tam, int header, char *val, int x) {
     int i;
     char aux[30];
 
