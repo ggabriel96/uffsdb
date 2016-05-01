@@ -15,7 +15,7 @@ Introdução:
 
 Sobre o dicionário de dados e o esquema:
 	Por definição, o dicionário de dados está no aquivo fs_object.dat e o esquema em fs_schema.dat, os mesmos serão criados no diretório raiz da pasta dos fontes.
-	São carregados na memória pelas funçõe leObjeto(nTabela) e leSchema(objeto) e tem a seguinte estrutura:
+	São carregados na memória pelas funçõe readObject(nTabela) e readSchema(objeto) e tem a seguinte estrutura:
 
 	struct fs_objects { // Estrutura usada para carregar fs_object.dat
 		char nome[20];
@@ -25,7 +25,7 @@ Sobre o dicionário de dados e o esquema:
 	};
 
 	typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
-		char nome[TAMANHO_NOME_CAMPO];
+		char nome[FIELD_NAME_SIZE];
 		char tipo;
 		int tam;
 		struct tp_table *next;
@@ -44,37 +44,37 @@ Sobre o dicionário de dados e o esquema:
 		1B que representa o tipo do campo;
 		4B que representa o tamanho do campo.
 
-	Caso os arquivos fs_object.dat e fs_schema.dat não existam ainda, quando chamada, a função finalizaTabela(...) criará os mesmos adicionando os dados da
+	Caso os arquivos fs_object.dat e fs_schema.dat não existam ainda, quando chamada, a função finishTable(...) criará os mesmos adicionando os dados da
 	tabela criada.
 
 Sobre a criação e inserção em tabelas:
 	Para criar uma tabela é necessário uma estrutura do tipo 'table'. Esta estrutura armazenará os dados da tabela a ser criada.
-	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabela a ser criada usando a função iniciaTabela(nomeTabela):
+	Após a criação de uma instância de 'table' é necessário iniciá-la com o nome da tabela a ser criada usando a função initTable(nomeTabela):
 
 		table *t = NULL;
-		t = iniciaTabela("Pessoa");
+		t = initTable("Pessoa");
 
-	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(t, nomeCampo, tipoCampo, tamanhoCampo):
+	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função addField(t, nomeCampo, tipoCampo, tamanhoCampo):
 
-		t = adicionaCampo(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
-		t = adicionaCampo(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
+		t = addField(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
+		t = addField(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
 
-	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finalizaTabela(t);
+	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finishTable(t);
 
 	Criada a tabela, pode-se inserir os dados.
 	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados à tabela.
-	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo):
+	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insertValue(c, nomeCampo, valorCampo):
 
 		column *c = NULL;
-		c = insereValor(c, "Nome", "Joana");
-		c = insereValor(c, "Idade", "40");
+		c = insertValue(c, "Nome", "Joana");
+		c = insertValue(c, "Idade", "40");
 
 	OBS: A inserção dos dados deve ocorrer na sequência de criação de campo, sendo que não é possível realizar a inserção incompleta de uma tupla
 
-	Assim, com os dados já adicionados na tabela, basta chamar a função finalizaInsert(nomeTabela, c) para gravar as tuplas no arquivo nomeTabela.dat, que
+	Assim, com os dados já adicionados na tabela, basta chamar a função finishInsert(nomeTabela, c) para gravar as tuplas no arquivo nomeTabela.dat, que
 	armazena os dados referente a esta tabela:
 
-		finalizaInsert("Pessoa", c);
+		finishInsert("Pessoa", c);
 
 Sobre inserir uma tupla no buffer:
 	Para adicionar uma tupla no buffer, realize o seguinte tendo já o bufferpoll, o esquema e o objeto devidamete inicializados:
@@ -119,7 +119,7 @@ Introdução:
 
 Sobre o dicionário de dados e o esquema:
 	Por definição, o dicionário de dados está no aquivo fs_object.dat e o esquema em fs_schema.dat, os mesmos serão criados no diretório raiz da pasta dos fontes.
-	São carregados na memória pelas funçõe leObjeto(nTabela) e leSchema(objeto) e tem a seguinte estrutura:
+	São carregados na memória pelas funçõe readObject(nTabela) e readSchema(objeto) e tem a seguinte estrutura:
 
 	struct fs_objects { // Estrutura usada para carregar fs_object.dat
 		char nome[20];
@@ -129,7 +129,7 @@ Sobre o dicionário de dados e o esquema:
 	};
 
 	typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
-		char nome[TAMANHO_NOME_CAMPO];
+		char nome[FIELD_NAME_SIZE];
 		char tipo;
 		int tam;
 		struct tp_table *next;
@@ -148,37 +148,37 @@ Sobre o dicionário de dados e o esquema:
 		1B que representa o tipo do campo;
 		4B que representa o tamanho do campo.
 
-	Caso os arquivos fs_object.dat e fs_schema.dat não existam ainda, quando chamada, a função finalizaTabela(...) criará os mesmos adicionando os dados da
+	Caso os arquivos fs_object.dat e fs_schema.dat não existam ainda, quando chamada, a função finishTable(...) criará os mesmos adicionando os dados da
 	tabela criada.
 
 Sobre a criação e inserção em tabelas:
 	Para criar uma tabela é necessário uma estrutura do tipo 'table'. Esta estrutura armazenará os dados da tabela a ser criada.
-	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabla a ser criada usando a função iniciaTabela(nomeTabela):
+	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabla a ser criada usando a função initTable(nomeTabela):
 
 		table *t = NULL;
-		t = iniciaTabela("Pessoa");
+		t = initTable("Pessoa");
 
-	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(t, nomeCampo, tipoCampo, tamanhoCampo):
+	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função addField(t, nomeCampo, tipoCampo, tamanhoCampo):
 
-		t = adicionaCampo(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
-		t = adicionaCampo(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
+		t = addField(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
+		t = addField(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
 
-	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finalizaTabela(t);
+	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finishTable(t);
 
 	Criada a tabela, pode-se inserir os dados.
 	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados a tabela.
-	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo):
+	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insertValue(c, nomeCampo, valorCampo):
 
 		column *c = NULL;
-		c = insereValor(c, "Nome", "Joana");
-		c = insereValor(c, "Idade", "40");
+		c = insertValue(c, "Nome", "Joana");
+		c = insertValue(c, "Idade", "40");
 
 	OBS: A inserção dos dados deve ocorrer na sequência de criação de campo, sendo que não é possível realizar a inserção incompleta de uma tupla
 
-	Assim, com os dados já adicionados na tabela, basta chamar a função finalizaInsert(nomeTabela, c) para gravar as tuplas no arquivo nomeTabela.dat, que
+	Assim, com os dados já adicionados na tabela, basta chamar a função finishInsert(nomeTabela, c) para gravar as tuplas no arquivo nomeTabela.dat, que
 	armazena os dados referente a esta tabela:
 
-		finalizaInsert("Pessoa", c);
+		finishInsert("Pessoa", c);
 
 Sobre inserir uma tupla no buffer:
 	Para adicionar uma tupla no buffer, realize o seguinte tendo já o bufferpoll, o esquema e o objeto devidamete inicializados:
@@ -217,7 +217,7 @@ Alunos: Natan J. Mai, Ricardo Zanuzzo, Rogerio T. Schmidt
 Introdução:
 
 - Ao criar uma tabela, ter a possibilidade de definir chaves primárias e estrangeiras.
-- Fazer uma funcionalidade para abrir uma tabela para trabalhar (uma função que englobe leObjeto e leSchema)
+- Fazer uma funcionalidade para abrir uma tabela para trabalhar (uma função que englobe readObject e readSchema)
 - Fazer uma funcionalidade que exclua uma tabela (um drop table). A tabela deve ser excluída do disco e do dicionário.
 - Atualizar o txt com as instruções e comentar o código para facilitar as futuras manutenções.
 
@@ -228,23 +228,23 @@ A definição de chave primária ou chave estrangeira de um atributo é represen
 - FK (Chave estrangeira)
 
 Da criação das tabelas:
-	iniciaTabela("tabela");
-	adicionaCampo(tabela, "atrib11" , 'I', (sizeof(int))	,PK	," "		," ");
-	adicionaCampo(tabela, "atrib12" , 'I', (sizeof(int))	,NPK	," "		," ");
-	adicionaCampo(tabela, "atrib13" , 'S', 10		,NPK	," "		," ");
-	adicionaCampo(tabela, "atrib14" , 'D', (sizeof(double))	,NPK	," "		," ");
-	adicionaCampo(tabela, "atrib11" , 'I', (sizeof(int))	,FK	,"tabRefer"	,"atribRefer");
-	finalizaTabela(tabela);
+	initTable("tabela");
+	addField(tabela, "atrib11" , 'I', (sizeof(int))	,PK	," "		," ");
+	addField(tabela, "atrib12" , 'I', (sizeof(int))	,NPK	," "		," ");
+	addField(tabela, "atrib13" , 'S', 10		,NPK	," "		," ");
+	addField(tabela, "atrib14" , 'D', (sizeof(double))	,NPK	," "		," ");
+	addField(tabela, "atrib11" , 'I', (sizeof(int))	,FK	,"tabRefer"	,"atribRefer");
+	finishTable(tabela);
 
-Foi adicionado mais um parâmetro, que é passado para a função adicionaCampo. Trata-se do "flag" que indica o tipo de atributo.
+Foi adicionado mais um parâmetro, que é passado para a função addField. Trata-se do "flag" que indica o tipo de atributo.
 No caso de se tratar de uma chave estrangeira, é necessário apontar a tabela referenciada (tabRefer) e o atributo referenciado (atribRefer).
 
 Obsevação Inserção: Se tabela tiver chave estrangeira FK, o primeiro atributo deve ser PK.
 
 Da inserção de Tuplas:
-	insereValor(colunas, "nomeAtrib1", "value1");
-	insereValor(colunas, "nomeAtrib2", "value2");
-	erro = finalizaInsert("tabela", colunas);
+	insertValue(colunas, "nomeAtrib1", "value1");
+	insertValue(colunas, "nomeAtrib2", "value2");
+	erro = finishInsert("tabela", colunas);
 
 -> Variável colunas do tipo column,
 -> Nome do atributo "nomeAtrib" a ser adicionado o valor,
@@ -252,9 +252,9 @@ Da inserção de Tuplas:
 
 
 Dos retornos - Tratamento de PK e FK:
-	ERRO_CHAVE_PRIMARIA -> -14
-	ERRO_CHAVE_ESTRANGEIRA -> -15
-	ERRO_CRIACAO_TABELA -> -16
+	ERROR_PRIMARY_KEY -> -14
+	ERROR_FOREIGN_KEY -> -15
+	ERROR_CREATE_TABLE -> -16
 
 Estes podem ser tratados na main.
 
@@ -263,33 +263,33 @@ Estes podem ser tratados na main.
 Foi alterado a struct tp_table para podermos trabalhar com as chaves:
 
 typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
-	char nome[TAMANHO_NOME_CAMPO];		// Nome do Campo.
+	char nome[FIELD_NAME_SIZE];		// Nome do Campo.
 	char tipo;				// Tipo do Campo.
 	int tam;				// Tamanho do Campo.
 	int chave;				// Tipo da chave
-	char tabelaApt[TAMANHO_NOME_TABELA]; 	//Nome da Tabela Apontada
-	char attApt[TAMANHO_NOME_CAMPO];	//Nome do Atributo Apontado
+	char tabelaApt[TABLE_NAME_SIZE]; 	//Nome da Tabela Apontada
+	char attApt[FIELD_NAME_SIZE];	//Nome do Atributo Apontado
 	struct tp_table *next;			// Encadeamento para o próximo campo.
 }tp_table;
 
 
 Foi também criado as seguintes funções:
--> iniciaAtributos,
--> ExisteAtributo,
--> verificaChavePK,
--> verificaChaveFK,
+-> initAttributes,
+-> attributeExists,
+-> verifyPrimaryKey,
+-> verifyForeignKey,
 -> ExcluirArquivo,
--> abreTabela.
+-> openTable.
 
 Juntamente com os arquivos do trabalho, foi criado também o "exemploMain.c". Trata-se de um modelo (exemplo) de uma maneira de criar a main(). Nessa exemplo de
 main() é necessário se atentar ao seguinte:
 -int nrTabelas;	->deve ser setado para a quantidades de tabelas a ser criadas;
 
--   nTabela[0]  = existeArquivo("tabela1.dat"); 	// -> deve ser colocado aqui os nomes das tabelas
-    nTabela[1]  = existeArquivo("tabela2.dat");
-    nTabela[2]  = existeArquivo("tabela3.dat");
+-   nTabela[0]  = fileExists("tabela1.dat"); 	// -> deve ser colocado aqui os nomes das tabelas
+    nTabela[1]  = fileExists("tabela2.dat");
+    nTabela[2]  = fileExists("tabela3.dat");
 
-- ao final, foi chamado a função imprime("tabela1") que realiza a impressão das tabelas.
+- ao final, foi chamado a função printing("tabela1") que realiza a impressão das tabelas.
 
 Também pode ser utilizado a função excluirArquivo. A mesma apaga fisicamente tabela e os registros do dicionário de dados.
 
