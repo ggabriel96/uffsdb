@@ -23,8 +23,8 @@
 (?i:SELECT)						return SELECT;
 (?i:FROM)						return FROM;
 (?i:WHERE)						return WHERE;
-(?i:AND)              return AND;
-(?i:OR)              return OR;
+(?i:AND)              return LOP;
+(?i:OR)               return LOP;
 (?i:CREATE)						return CREATE;
 (?i:TABLE)						return TABLE;
 (?i:INTEGER)					return INTEGER;
@@ -48,12 +48,12 @@ help							return HELP;
 [*]       |
 [(]       |
 [)]       return *yytext;
-[<][=]    return LE;
-[<]       return LT;
-[=]       return EQ;
-[!][=]    return NE;
-[>][=]    return GE;
-[>]       return GT;
+[<][=]    |
+[<]       |
+[=]       |
+[!][=]    |
+[>][=]    |
+[>]       return COP;
 
 ([a-zA-Z_]+[0-9_]*)+			{yylval.strval = yytext; return OBJECT;};
 [\']([^'])+[\']			  		{yylval.strval = yytext; return ALPHANUM;};

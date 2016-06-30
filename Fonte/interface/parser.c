@@ -54,9 +54,9 @@ void notConnected() {
     printf("ERROR: you are not connected to any database.\n");
 }
 
-void setCop(char *cop) {
-  printf("cop: %s\n", cop);
-  // if (GLOBAL_PARSER.mode != 0) {
+void setCop(char **cop) {
+  printf("cop: %s\n", *cop);
+    // if (GLOBAL_PARSER.mode != 0) {
   //   GLOBAL_DATA.cop = malloc(sizeof (int));
   //   // "<=" | '<' | '=' | "!=" | ">=" | '>'
   //   switch(cop[0]) {
@@ -71,8 +71,8 @@ void setCop(char *cop) {
   // }
 }
 
-void setLop(char *lop) {
-  printf("lop: %s\n", lop);
+void setLop(char **lop) {
+  printf("lop: %s\n", *lop);
   // if (GLOBAL_PARSER.mode != 0) {
   //     GLOBAL_DATA.lop = malloc(sizeof (int));
   //     // "and" | "or"

@@ -44,7 +44,7 @@ int yywrap() {
 
 
 %token  INSERT      INTO        VALUES      SELECT      FROM        WHERE
-        LE          LT          EQ          NE          GE          GT          AND           OR
+        LOP         COP
         CREATE      TABLE       INTEGER     VARCHAR     DOUBLE
         CHAR        PRIMARY     KEY         REFERENCES  DATABASE
         DROP        OBJECT      NUMBER      VALUE       QUIT
@@ -184,13 +184,9 @@ opt_where: /*optional*/ | WHERE exp;
 
 exp: column cop column lop exp | column cop column;
 
-cop: LE | LT | EQ | NE | GE | GT {
-  setCop(*yytext);
-};
+cop: COP { setCop(yytext); };
 
-lop: AND | OR {
-  setLop(*yytext);
-};
+lop: LOP { setLop(yytext); };
 
 select: SELECT {setMode(OP_SELECT_ALL);} '*' FROM table_select semicolon {return 0;};
 
