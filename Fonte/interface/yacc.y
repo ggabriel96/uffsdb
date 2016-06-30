@@ -175,12 +175,14 @@ create_database: CREATE DATABASE {setMode(OP_CREATE_DATABASE);} OBJECT {setObjNa
 drop_database: DROP DATABASE {setMode(OP_DROP_DATABASE);} OBJECT {setObjName(yytext);} semicolon {return 0;};
 
 /* SELECT */
-select: SELECT {setMode(OP_SELECT);} column_list FROM table_select opt_where semicolon {
+select: SELECT {setMode(OP_SELECT);} info FROM table_select opt_where semicolon {
   GLOBAL_DATA.N = GLOBAL_PARSER.col_count;
   return 0;
 };
 
 opt_where: /*optional*/ | WHERE exp;
+/*Esse setMode está feio, é temporário para continuar funcionando o select antigo*/
+info: column_list | '*'{setMode(OP_SELECT_ALL);};
 
 exp: column cop column lop exp | column cop column;
 
@@ -188,7 +190,9 @@ cop: COP { setCop(yytext); };
 
 lop: LOP { setLop(yytext); };
 
+/*--------Select antigo---------
 select: SELECT {setMode(OP_SELECT_ALL);} '*' FROM table_select semicolon {return 0;};
+--------------------------------*/
 
 table_select: OBJECT {setObjName(yytext);};
 

@@ -631,8 +631,7 @@ void printing(char nomeTabela[]) {
 
     erro = SUCCESS;
     for (x = 0; erro == SUCCESS; x++)
-        erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
-
+      erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 	  p = 0;
     int ntuples = --x;
 	  while (x) {
