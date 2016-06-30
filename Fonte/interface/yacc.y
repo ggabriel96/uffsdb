@@ -43,7 +43,8 @@ int yywrap() {
 }
 
 
-%token  INSERT      INTO        VALUES      SELECT      FROM
+%token  INSERT      INTO        VALUES      SELECT      FROM        WHERE
+        LE          LT          EQ          NE          GE          GT          AND           OR
         CREATE      TABLE       INTEGER     VARCHAR     DOUBLE
         CHAR        PRIMARY     KEY         REFERENCES  DATABASE
         DROP        OBJECT      NUMBER      VALUE       QUIT
@@ -53,8 +54,9 @@ int yywrap() {
 %%
 
 start: insert | select | create_table | create_database | drop_table | drop_database
-     | table_attr | list_tables | connection | exit_program | semicolon {GLOBAL_PARSER.consoleFlag = 1; return 0;}
-     | parentesis_open | parentesis_close| help_pls | list_databases | clear | contributors
+     | table_attr | list_tables | connection | exit_program
+     | semicolon {GLOBAL_PARSER.consoleFlag = 1; return 0;}
+     | parentesis_open | parentesis_close | help_pls | list_databases | clear | contributors
      | qualquer_coisa | /*nothing*/;
 
 /*--------------------------------------------------*/
@@ -173,6 +175,23 @@ create_database: CREATE DATABASE {setMode(OP_CREATE_DATABASE);} OBJECT {setObjNa
 drop_database: DROP DATABASE {setMode(OP_DROP_DATABASE);} OBJECT {setObjName(yytext);} semicolon {return 0;};
 
 /* SELECT */
+select: SELECT {setMode(OP_SELECT);} column_list FROM table_select opt_where semicolon {
+  GLOBAL_DATA.N = GLOBAL_PARSER.col_count;
+  return 0;
+};
+
+opt_where: /*optional*/ | WHERE exp;
+
+exp: column cop column lop exp | column cop column;
+
+cop: LE | LT | EQ | NE | GE | GT {
+  setCop(*yytext);
+};
+
+lop: AND | OR {
+  setLop(*yytext);
+};
+
 select: SELECT {setMode(OP_SELECT_ALL);} '*' FROM table_select semicolon {return 0;};
 
 table_select: OBJECT {setObjName(yytext);};

@@ -45,6 +45,10 @@ typedef struct rc_insert {
     int      N;                 // Número de colunas de valores
     char    *type;              // Tipo do dado da inserção ou criação de tabela
     int     *attribute;         // Utilizado na criação (NPK, PK,FK)
+    int    ncop;
+    int    *cop;                // Operadores de comparação
+    int    nlop;
+    int    *lop;                // Operadores lógicos
     char   **fkTable;           // Recebe o nome da tabela FK
     char   **fkColumn;          // Recebe o nome da coluna FK
 }rc_insert;

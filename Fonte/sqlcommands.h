@@ -95,3 +95,5 @@ void createTable(rc_insert *);
 int verifyFieldName(char **, int );
 ////
 int verifyFK(char *, char *);
+
+void ourselect(rc_insert *);

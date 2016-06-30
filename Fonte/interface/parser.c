@@ -54,6 +54,38 @@ void notConnected() {
     printf("ERROR: you are not connected to any database.\n");
 }
 
+void setCop(char *cop) {
+  printf("cop: %s\n", cop);
+  // if (GLOBAL_PARSER.mode != 0) {
+  //   GLOBAL_DATA.cop = malloc(sizeof (int));
+  //   // "<=" | '<' | '=' | "!=" | ">=" | '>'
+  //   switch(cop[0]) {
+  //     case '<': if (cop[1] == '=') *(GLOBAL_DATA.cop) = LE; else ; *(GLOBAL_DATA.cop) = LT; break;
+  //     case '=': *(GLOBAL_DATA.cop) = EQ; break;
+  //     case '!': *(GLOBAL_DATA.cop) = NE; break;
+  //     case '>': if (cop[1] == '=') *(GLOBAL_DATA.cop) = GE; else ; *(GLOBAL_DATA.cop) = GT; break;
+  //   }
+  //   GLOBAL_DATA.ncop++;
+  //   GLOBAL_PARSER.step++;
+  //   printf("GLOBAL_DATA.cop: %d\n", *(GLOBAL_DATA.cop));
+  // }
+}
+
+void setLop(char *lop) {
+  printf("lop: %s\n", lop);
+  // if (GLOBAL_PARSER.mode != 0) {
+  //     GLOBAL_DATA.lop = malloc(sizeof (int));
+  //     // "and" | "or"
+  //     switch(lop[0]) {
+  //       case 'a': *(GLOBAL_DATA.lop) = AND; break;
+  //       case 'o': *(GLOBAL_DATA.lop) = OR; break;
+  //     }
+  //     GLOBAL_DATA.nlop++;
+  //     GLOBAL_PARSER.step++;
+  //     printf("GLOBAL_DATA.lop: %d\n", *(GLOBAL_DATA.lop));
+  // }
+}
+
 void setObjName(char **nome) {
     if (GLOBAL_PARSER.mode != 0) {
         GLOBAL_DATA.objName = malloc(sizeof(char)*((strlen(*nome)+1)));
@@ -240,6 +272,9 @@ int interface() {
                     case OP_INSERT:
                         if (GLOBAL_DATA.N > 0) insert(&GLOBAL_DATA);
                         else printf("WARNING: Nothing to be inserted. Command ignored.\n");
+                        break;
+                    case OP_SELECT:
+                        ourselect(&GLOBAL_DATA);
                         break;
                     case OP_SELECT_ALL:
                         printing(GLOBAL_DATA.objName);

@@ -593,6 +593,16 @@ void insert(rc_insert *s_insert) {
 }
 
 
+void ourselect(rc_insert *select) {
+  int j;
+  printf("N: %d\n", select -> N);
+  printf("objName: %s\n", select -> objName);
+  for (j = 0; j < select -> N; j++)
+    printf("columnName: %s\n", select -> columnName[j]);
+  for (j = 0; j < select -> ncop; j++) printf("cop: %d\n", select -> cop[j]);
+  for (j = 0; j < select -> nlop; j++) printf("lop: %d\n", select -> lop[j]);
+}
+
 ///////////////
 void printing(char nomeTabela[]) {
     struct fs_objects objeto;
@@ -623,9 +633,9 @@ void printing(char nomeTabela[]) {
     for (x = 0; erro == SUCCESS; x++)
         erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 
-	p = 0;
+	  p = 0;
     int ntuples = --x;
-	while (x) {
+	  while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
 	    if (pagina == PARAMETER_ERROR_2){
             printf("ERROR: could not open the table.\n");

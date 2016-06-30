@@ -22,6 +22,9 @@
 (?i:VALUES)						return VALUES;
 (?i:SELECT)						return SELECT;
 (?i:FROM)						return FROM;
+(?i:WHERE)						return WHERE;
+(?i:AND)              return AND;
+(?i:OR)              return OR;
 (?i:CREATE)						return CREATE;
 (?i:TABLE)						return TABLE;
 (?i:INTEGER)					return INTEGER;
@@ -36,16 +39,21 @@
 (?i:DROP)						return DROP;
 (?i:CONTRIBUTORS)               return CONTR;
 help							return HELP;
-[\\][h]							return HELP;
-[\\][h]+[^\n]*					{invalidCommand(yytext);};
+^\\h$							return HELP;
 [\\][\?]						return HELP;
 (?i:CLEAR)						return CLEAR;
 
-[,]								return *yytext;
-[;]+							return *yytext;
-[*]								return *yytext;
-[(]								return *yytext;
-[)]								return *yytext;
+[,]       |
+[;]+      |
+[*]       |
+[(]       |
+[)]       return *yytext;
+[<][=]    return LE;
+[<]       return LT;
+[=]       return EQ;
+[!][=]    return NE;
+[>][=]    return GE;
+[>]       return GT;
 
 ([a-zA-Z_]+[0-9_]*)+			{yylval.strval = yytext; return OBJECT;};
 [\']([^'])+[\']			  		{yylval.strval = yytext; return ALPHANUM;};
