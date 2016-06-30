@@ -105,5 +105,6 @@ void clearGlobalStructs();
  */
 void setMode(char mode);
 
+void setSelect(void);
 void setCop(char **);
 void setLop(char **);

@@ -53,11 +53,11 @@
 #define TABLE_NAME_SIZE 20  // Tamanho do nome da tabela.
 #define FILE_NAME_SIZE 20   // Tamanho do nome do arquivo.
 
-// #define LE 0
-// #define LT 1
-// #define EQ 2
-// #define NE 3
-// #define GE 4
-// #define GT 5
-// #define AND 6
-// #define OR 7
+#define LE 0
+#define LT 1
+#define EQ 2
+#define NE 3
+#define GE 4
+#define GT 5
+#define AND 6
+#define OR 7

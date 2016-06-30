@@ -175,7 +175,7 @@ create_database: CREATE DATABASE {setMode(OP_CREATE_DATABASE);} OBJECT {setObjNa
 drop_database: DROP DATABASE {setMode(OP_DROP_DATABASE);} OBJECT {setObjName(yytext);} semicolon {return 0;};
 
 /* SELECT */
-select: SELECT {setMode(OP_SELECT);} info FROM table_select opt_where semicolon {
+select: SELECT {setMode(OP_SELECT); setSelect(); } info FROM table_select opt_where semicolon {
   GLOBAL_DATA.N = GLOBAL_PARSER.col_count;
   return 0;
 };
