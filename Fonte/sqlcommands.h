@@ -35,7 +35,7 @@ int finishInsert(char *, column *);
     Parametros: Nome da tabela (char).
     Retorno:    void.
    ---------------------------------------------------------------------------------------------*/
-void printing(char [] );
+void printing(rc_insert *);
 /* ----------------------------------------------------------------------------------------------
     Objetivo:   Função para exclusão de tabelas.
     Parametros: Nome da tabela (char).
@@ -95,5 +95,3 @@ void createTable(rc_insert *);
 int verifyFieldName(char **, int );
 ////
 int verifyFK(char *, char *);
-
-void ourselect(rc_insert *);

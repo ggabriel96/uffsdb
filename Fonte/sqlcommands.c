@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "shuntingyard.h"
 ////
 #ifndef FMACROS // garante que macros.h não seja reincluída
    #include "macros.h"
@@ -592,26 +593,25 @@ void insert(rc_insert *s_insert) {
 	freeTable(tabela);
 }
 
-
-void ourselect(rc_insert *select) {
-  int j;
-  printf("N: %d\n", select -> N);
-  printf("objName: %s\n", select -> objName);
-  for (j = 0; j < select -> N; j++)
-    printf("columnName: %s\n", select -> columnName[j]);
-  for (j = 0; j < select -> ncop; j++) printf("cop: %d\n", select -> cop[j]);
-  for (j = 0; j < select -> nlop; j++) printf("lop: %d\n", select -> lop[j]);
-}
-
 ///////////////
-void printing(char nomeTabela[]) {
+void printing(rc_insert *select) {
     struct fs_objects objeto;
     int j, erro, x, p, cont = 0;
-
+    char *nomeTabela = select -> objName;
+    char **queue = NULL; int *stack = NULL;
+    shuntingYard(queue, stack);
     if (!verifyTableName(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
     }
+
+    printf("N: %d\n", select -> N);
+    printf("objName: %s\n", select -> objName);
+    for (j = 0; j < select -> N; j++)
+      printf("columnName: %s\n", select -> columnName[j]);
+    for (j = 0; j < select -> ncond; j++)
+      printf("condition: %s\n", select -> condition[j]);
+
     objeto = readObject(nomeTabela);
     tp_table *esquema = readSchema(objeto);
     if (esquema == ERROR_OPEN_SCHEMA){

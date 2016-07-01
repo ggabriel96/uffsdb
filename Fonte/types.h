@@ -41,14 +41,12 @@ typedef struct tp_buffer{ // Estrutura utilizada para armazenar o buffer.
 typedef struct rc_insert {
     char    *objName;           // Nome do objeto (tabela, banco de dados, etc...)
     char   **columnName;        // Colunas da tabela
+    char   **condition;         // Tokens da condição do where
+    int      ncond;             // Número de tokens na condição do where
     char   **values;            // Valores da inserção ou tamanho das strings na criação
     int      N;                 // Número de colunas de valores
     char    *type;              // Tipo do dado da inserção ou criação de tabela
     int     *attribute;         // Utilizado na criação (NPK, PK,FK)
-    int    ncop;
-    int    *cop;                // Operadores de comparação
-    int    nlop;
-    int    *lop;                // Operadores lógicos
     char   **fkTable;           // Recebe o nome da tabela FK
     char   **fkColumn;          // Recebe o nome da coluna FK
 }rc_insert;
@@ -59,6 +57,7 @@ typedef struct rc_parser {
     int         step;           // Passo atual (token)
     int         noerror;        // Nenhum erro encontrado na identificação dos tokens
     int         col_count;      // Contador de colunas
+    int         cond_count;     // Contador de condições do where
     int         val_count;      // Contador de valores
     int         consoleFlag;   // Auxiliar para não imprimir duas vezes nome=#
 }rc_parser;

@@ -175,24 +175,23 @@ create_database: CREATE DATABASE {setMode(OP_CREATE_DATABASE);} OBJECT {setObjNa
 drop_database: DROP DATABASE {setMode(OP_DROP_DATABASE);} OBJECT {setObjName(yytext);} semicolon {return 0;};
 
 /* SELECT */
-select: SELECT {setMode(OP_SELECT); setSelect(); } info FROM table_select opt_where semicolon {
+select: SELECT {setMode(OP_SELECT_ALL); } info FROM table_select opt_where semicolon {
   GLOBAL_DATA.N = GLOBAL_PARSER.col_count;
+  GLOBAL_DATA.ncond = GLOBAL_PARSER.cond_count;
   return 0;
 };
 
 opt_where: /*optional*/ | WHERE exp;
-/*Esse setMode está feio, é temporário para continuar funcionando o select antigo*/
-info: column_list | '*'{setMode(OP_SELECT_ALL);};
+info: column_list | '*';
 
-exp: column cop column lop exp | column cop column;
+exp: op cop op lop exp | op cop op;
 
-cop: COP { setCop(yytext); };
+op: OBJECT {setWhereCondition(yytext);}; | ALPHANUM {setWhereCondition(yytext);}; |
+    VALUE {setWhereCondition(yytext);}; | NUMBER {setWhereCondition(yytext);};
 
-lop: LOP { setLop(yytext); };
+cop: COP {setWhereCondition(yytext);};
 
-/*--------Select antigo---------
-select: SELECT {setMode(OP_SELECT_ALL);} '*' FROM table_select semicolon {return 0;};
---------------------------------*/
+lop: LOP {setWhereCondition(yytext);};
 
 table_select: OBJECT {setObjName(yytext);};
 
