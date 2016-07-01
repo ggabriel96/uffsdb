@@ -249,6 +249,7 @@ void clearGlobalStructs() {
     GLOBAL_PARSER.noerror = 1;
     GLOBAL_PARSER.col_count = 0;
     GLOBAL_PARSER.val_count = 0;
+    GLOBAL_PARSER.cond_count = 0;
     GLOBAL_PARSER.parentesis = 0;
 }
 

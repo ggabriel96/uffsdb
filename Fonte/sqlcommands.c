@@ -605,13 +605,12 @@ void printing(rc_insert *select) {
         return;
     }
 
-    printf("N: %d\n", select -> N);
+    printf("N: %d   ncond: %d\n", select -> N, select -> ncond);
     printf("objName: %s\n", select -> objName);
     for (j = 0; j < select -> N; j++)
       printf("columnName: %s\n", select -> columnName[j]);
     for (j = 0; j < select -> ncond; j++)
       printf("condition: %s\n", select -> condition[j]);
-
     objeto = readObject(nomeTabela);
     tp_table *esquema = readSchema(objeto);
     if (esquema == ERROR_OPEN_SCHEMA){
