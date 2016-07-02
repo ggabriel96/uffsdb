@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "types.h"
 #include "macros.h"
 #include "interface/parser.h"
@@ -20,7 +22,12 @@ int precedence(int op) {
   return 0;
 }
 
-void shuntingYard(char **queue, int *stack) {
+char **shuntingYard(char **tokens, int n) {
   int i;
-  // for (i = 0; i < )
+  char **result = malloc(n * sizeof (char *));
+  for (i = 0; i < n; i++) {
+    result[i] = malloc(sizeof (char) * (strlen(tokens[i]) + 1));
+    strcpy(result[i], tokens[i]);
+  }
+  return result;
 }
