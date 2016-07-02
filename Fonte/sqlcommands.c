@@ -598,7 +598,6 @@ void printing(rc_insert *select) {
     struct fs_objects objeto;
     int j, erro, x, p, cont = 0;
     char *nomeTabela = select -> objName;
-    char **queue = NULL; int *stack = NULL;
     if (!verifyTableName(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
