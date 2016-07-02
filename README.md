@@ -1,3 +1,9 @@
+Students: 1411100001 - Vladimir Belinski
+          1411100003 - Gabriel Batista Galli
+          1411100031 - Acácia dos Campos da Terra
+          1411100044 - Harold Cristien Santos Becker
+          1411100046 - João Pedro Winckler Bernardi
+
 # uffsdb
 A simple teaching DBMS
 
