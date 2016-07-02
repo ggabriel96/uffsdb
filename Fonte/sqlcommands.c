@@ -596,9 +596,8 @@ void insert(rc_insert *s_insert) {
 ///////////////
 void printing(rc_insert *select) {
     struct fs_objects objeto;
-    int j, erro, x, p, cont = 0;
+    int j, erro, x, p, cont = 0, novaTupla = 1;
     char *nomeTabela = select -> objName;
-    char **queue = NULL; int *stack = NULL;
     if (!verifyTableName(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
@@ -641,12 +640,11 @@ void printing(rc_insert *select) {
         printf("ERROR: could not open the table.\n");
         free(bufferpoll); free(esquema); return;
 	    }
-      if (select -> ncond > 0 && testwhere(*pagina, )) { x -= bufferpoll[p++].nrec; continue; }
 	    if (!cont) {
 	      for (j = 0; j < objeto.qtdCampos; j++) {
 	        if (pagina[j].tipoCampo == 'S') printf(" %-20s ", pagina[j].nomeCampo);
 	        else printf(" %-10s ", pagina[j].nomeCampo);
-	        if (j < objeto.qtdCamposx -= bufferpoll[p++].nrec; - 1) printf("|");
+	        if (j < objeto.qtdCampos - 1) printf("|");
 	      }
 	      printf("\n");
 	      for (j = 0; j < objeto.qtdCampos; j++){
@@ -656,7 +654,10 @@ void printing(rc_insert *select) {
 	      printf("\n");
 	    }
 	    cont++;
-		  for(j = 0; j < objeto.qtdCampos*bufferpoll[p].nrec; j++) {
+		  for(j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
+        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto))
+          { x -= bufferpoll[p++].nrec; continue; }
+        novaTupla = 0;
         if(pagina[j].tipoCampo == 'S')
           printf(" %-20s ", pagina[j].valorCampo);
         else if(pagina[j].tipoCampo == 'I') {
@@ -668,7 +669,7 @@ void printing(rc_insert *select) {
           double *n = (double *)&pagina[j].valorCampo[0];
     	    printf(" %-10f ", *n);
         }
-        if(j >= 0 && ((j + 1)%objeto.qtdCampos) == 0) printf("\n");
+        if(j >= 0 && ((j + 1)%objeto.qtdCampos) == 0) { novaTupla = 1; printf("\n"); }
         else printf("|");
     	}
     	x -= bufferpoll[p++].nrec;

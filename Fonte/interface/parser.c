@@ -65,7 +65,7 @@ void setWhereCondition(char **nome) {
     GLOBAL_DATA.condition = realloc(GLOBAL_DATA.condition, (GLOBAL_PARSER.cond_count + 1) * sizeof (char *));
 
     GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count] = malloc(sizeof (char) * (strlen(*nome) + 1));
-    strcpy(GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count], *nome);
+    strcpylower(GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count], *nome);
 
     GLOBAL_PARSER.cond_count++;
 }

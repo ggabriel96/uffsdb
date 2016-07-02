@@ -61,3 +61,7 @@
 #define GT 5
 #define AND 6
 #define OR 7
+
+#define STRING 8
+#define COLUMN 9
+#define NUM 10
