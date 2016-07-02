@@ -1,1 +1,1 @@
-void shuntingYard(char **, int *);
+char **shuntingYard(char **, int n);

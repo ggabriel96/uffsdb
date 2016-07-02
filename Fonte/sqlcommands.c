@@ -599,12 +599,14 @@ void printing(rc_insert *select) {
     int j, erro, x, p, cont = 0;
     char *nomeTabela = select -> objName;
     char **queue = NULL; int *stack = NULL;
-    shuntingYard(queue, stack);
     if (!verifyTableName(nomeTabela)) {
         printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
         return;
     }
 
+    char **tokens = shuntingYard(select -> condition, select -> ncond);
+    for (j = 0; j < select -> ncond; j++)
+      printf("- token[%d] = %s\n", j, tokens[j]);
     printf("N: %d   ncond: %d\n", select -> N, select -> ncond);
     printf("objName: %s\n", select -> objName);
     for (j = 0; j < select -> N; j++)
