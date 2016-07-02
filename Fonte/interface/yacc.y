@@ -184,7 +184,10 @@ select: SELECT {setMode(OP_SELECT_ALL); } info FROM table_select opt_where semic
 opt_where: /*optional*/ | WHERE exp;
 info: column_list | '*';
 
-exp: op cop op lop exp | op cop op;
+exp: op cop op | op cop op lop exp;
+
+/*exp:  parentesis_open exp parentesis_close | op cop op | op lop op | op cop exp | op lop exp|
+         exp cop op | exp lop op | exp cop exp | exp lop exp; */
 
 op: OBJECT {setWhereCondition(yytext);}; | ALPHANUM {setWhereCondition(yytext);}; |
     VALUE {setWhereCondition(yytext);}; | NUMBER {setWhereCondition(yytext);};
