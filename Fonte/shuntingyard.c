@@ -24,3 +24,5 @@ void shuntingYard(char **queue, int *stack) {
   int i;
   // for (i = 0; i < )
 }
+
+int testwhere(collumn )
