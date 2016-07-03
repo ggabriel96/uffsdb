@@ -114,23 +114,31 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
   char *op1, *op2;
   if (ncond == 0) return 0;
   return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
-  //return 1; //Estou acabando a função, é só para vocês poderem continuar testando/codando normalmente
-  // for (i = 0; i < 100; i++) {
-  //   printf("%.10s", tokens[i]);
-  //   printf("   %d\n", i);
-  // }
-  //printf("-------------------\n");
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
       op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
-      operand1 = getCod(op1); operand2 = getCod(op2);
+      operand1 = getCod(op1); operand2 = getCod(op2); operator = getCod(tokens[i]);
       //printf("%d %d\n", operand1, operand2);
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
       if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); getCod(op1); }
       if (operand2 == COLUMN) { op1 = getValue(op2, tupla, objeto); getCod(op2); }
-      if (operand1 != operand2) return ERROR;
+      if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
+      //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       //Fazer operação e devolver para pilha
+      //char res[2]; res[1] = '\0';
+      // if (operand1 == STRING) {
+      //   switch (operator) {
+      //     case EQ: res[0] = !strcmp(op1, op2) + '0'; break;
+      //     case LT: res[0] = strcmp(op1, op2) < 0 + '0'; break;
+      //     case LE: res[0] = strcmp(op1, op2) <= 0 + '0'; break;
+      //     case GT: res[0] = strcmp(op1, op2) > 0 + '0'; break;
+      //     case GE: res[0] = strcmp(op1, op2) >= 0 + '0';
+      //   }
+      // } else if (operand1 == NUM) {
+      //    //Descobrir o valor dos números
+      // }
+      //push(&OP, res);
       push(&op, "TMP"); //Para não dar falha de segmentação :P
     } else push(&op, tokens[i]);
   }
