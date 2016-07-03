@@ -621,7 +621,7 @@ void printing(rc_insert *select) {
     }
 
     tp_buffer *bufferpoll = initbuffer();
-
+    // printf("--------------------\n");
     if (bufferpoll == ALLOCATION_ERROR){
         free(bufferpoll);
         free(esquema);
@@ -633,7 +633,10 @@ void printing(rc_insert *select) {
     for (x = 0; erro == SUCCESS; x++)
       erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 	  p = 0;
-    int ntuples = --x;
+    int ntuples = --x, flag, i, aux = 0; //Flag cuida quais colunas serão printadas
+    //Queria usar esses colunas printadas para não ter que repetir o código feio =(
+    char *colunasPrintada = malloc(objeto.qtdCampos * sizeof(char));
+    memset(colunasPrintada, 0, objeto.qtdCampos * sizeof(char));
 	  while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
 	    if (pagina == PARAMETER_ERROR_2){
@@ -641,22 +644,42 @@ void printing(rc_insert *select) {
         free(bufferpoll); free(esquema); return;
 	    }
 	    if (!cont) {
-	      for (j = 0; j < objeto.qtdCampos; j++) {
+	      for (aux = j = 0; j < objeto.qtdCampos; j++) {
+          // Código feio para fazer a projeção(??)
+          for (flag = i = 0; i < select -> N; i++) {
+            //printf("%s\n", select -> columnName[i]);
+            flag |= !strcmp(select -> columnName[i], pagina[j].nomeCampo);
+          }
+          if (!flag && select -> N > 0) continue;
+          colunasPrintada[j] = 1; aux++;
+          //Fim do código feio
 	        if (pagina[j].tipoCampo == 'S') printf(" %-20s ", pagina[j].nomeCampo);
 	        else printf(" %-10s ", pagina[j].nomeCampo);
-	        if (j < objeto.qtdCampos - 1) printf("|");
+	        if (aux < select -> N) printf("|");
 	      }
 	      printf("\n");
-	      for (j = 0; j < objeto.qtdCampos; j++){
+	      for (aux = j = 0; j < objeto.qtdCampos; j++){
+          if (!colunasPrintada[j]) continue;
 	        printf("%s",(pagina[j].tipoCampo == 'S')? "----------------------": "------------");
-	        if (j < objeto.qtdCampos - 1) printf("+");
+          aux++;
+	        if (aux < select -> N) printf("+");
 	      }
 	      printf("\n");
 	    }
-	    cont++;
-		  for(j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
-        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto))
-          { x -= bufferpoll[p++].nrec; continue; }
+	    cont++; novaTupla = 1;
+		  for(aux = j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
+        // Código feio para fazer a projeção(??)
+        //Fim do código feio
+        for (flag = i = 0; i < select -> N; i++) {
+        //  printf(">>%s    %s<<",select -> columnName[i], select -> columnName[i]);
+          flag |= !strcmp(select -> columnName[i], pagina[j].nomeCampo);
+        }
+        if (!flag && select -> N > 0) continue;
+        aux++;
+        // if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
+        //   //??
+        // }
+          //???x -= bufferpoll[p++].nrec; continue; }
         novaTupla = 0;
         if(pagina[j].tipoCampo == 'S')
           printf(" %-20s ", pagina[j].valorCampo);
@@ -669,7 +692,7 @@ void printing(rc_insert *select) {
           double *n = (double *)&pagina[j].valorCampo[0];
     	    printf(" %-10f ", *n);
         }
-        if(j >= 0 && ((j + 1)%objeto.qtdCampos) == 0) { novaTupla = 1; printf("\n"); }
+        if(j >= 0 && aux % select -> N == 0) { novaTupla = 1; printf("\n"); }
         else printf("|");
     	}
     	x -= bufferpoll[p++].nrec;

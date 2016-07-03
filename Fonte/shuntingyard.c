@@ -102,6 +102,7 @@ char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
   printf("´´´´´´´´´´´´´´´´´´´´\n");
   for(j = 0; j < objeto.qtdCampos; j++) {
     printf("%.10s = %.10s ? \n", attname, tupla[j].nomeCampo);
+    //Não funciona :)
     if(!strcmp(attname, tupla[j].nomeCampo)) return tupla[j].valorCampo;
   }
   return NULL;
@@ -125,8 +126,8 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
-      //Fazer operação e devolver para pilha
-      //char res[2]; res[1] = '\0';
+      // Fazer operação e devolver para pilha
+      // char res[2]; res[1] = '\0';
       // if (operand1 == STRING) {
       //   switch (operator) {
       //     case EQ: res[0] = !strcmp(op1, op2) + '0'; break;
@@ -136,9 +137,19 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       //     case GE: res[0] = strcmp(op1, op2) >= 0 + '0';
       //   }
       // } else if (operand1 == NUM) {
-      //    //Descobrir o valor dos números
+      //Descobrir o valor dos números (Sim, não funciona é um """"pseudo-código"""")
+      //   double v1 =  (int)op1, v2 = (int)op2; //Seria legal fazer com double que dai já tratariamos todos os casos :P
+      //   switch (operator) {
+      //     case EQ: res[0] = op1 == op2 + '0'; break;
+      //     case LT: res[0] = op1 < op2 + '0'; break;
+      //     case LE: res[0] = op1 <= op2+ '0'; break;
+      //     case GT: res[0] = op1 > op2+ '0'; break;
+      //     case GE: res[0] = op1 >= op2+ '0'; break;
+      //     case AND: res[0] = op1 == 1 && op2 == 1; break;
+      //     case OR: res[0] = op1 == 1 || op2 == 1; break;
+      //   }
       // }
-      //push(&OP, res);
+      // push(&OP, res);
       push(&op, "TMP"); //Para não dar falha de segmentação :P
     } else push(&op, tokens[i]);
   }
