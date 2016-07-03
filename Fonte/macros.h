@@ -32,6 +32,7 @@
 // #define EMPTY_ERROR -7   //---Não usado
 #define MALLOC_FAILED 73
 #define SUCCESS 0
+#define ERROR -1
 
 // seekdb
 #define SEEKDB_FOUND -1

@@ -10,11 +10,8 @@ int precedence(char *op) {
     case '!':
     case '>':
       return 2;
-    case 'a':
-    case 'o':
-      return 1;
   }
-  return 0;
+  return !strcmp(op, "and") || !strcmp(op, "or");
 }
 
 typedef struct Stack {
@@ -83,6 +80,10 @@ char **shuntingYard(char **tokens, int n) {
   return result;
 }
 
+int isOperator(char * tk) {
+  return tk[0] == '<'|| tk[0] == '<' || tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
+}
+
 int getCod(char * tk) {
   printf("TK = %s\n", tk);
   if (tk[0] == '<') return tk[1] == '=' ? LE : LT;
@@ -92,37 +93,47 @@ int getCod(char * tk) {
   if (!strcmp(tk, "and")) return AND;
   if (!strcmp(tk, "or")) return OR;
   if (tk[0] == '\'') return STRING;
-  if (tk[0] >= 'a' && tk[0] <='z' && tk[0] >='A' && tk[0] <= 'Z' ) return COLUMN;
+  if (tk[0] >= 'a' && tk[0] <='z') return COLUMN;
   return NUM;
 }
 
-int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objects objeto) {
-  int i, j;
-  int operand1, operand2, operator;
-  if (ncond == 0) return 0;
-  //return 1; //Estou acabando a função, é só para vocês poderem continuar testando/codando normalmente
-  operand1 = getCod(tokens[0]);
-  operand2 = getCod(tokens[1]);
-  printf(">>> WHERE: \n");
-  for (i = 0; i < ncond; i++) {
-    printf("-> %s\n", tokens[i]);
-  }
-  printf("Operand1 = %d    Operand2 = %d\n", operand1, operand2);
+char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
+  int j;
+  printf("´´´´´´´´´´´´´´´´´´´´\n");
   for(j = 0; j < objeto.qtdCampos; j++) {
-    if(tupla[j].tipoCampo == 'S')
-      printf(" %-20s ", tupla[j].valorCampo);
-    else if(tupla[j].tipoCampo == 'I') {
-      int *n = (int *)&tupla[j].valorCampo[0];
-      printf(" %-10d ", *n);
-    } else if(tupla[j].tipoCampo == 'C') {
-      printf(" %-10c ", tupla[j].valorCampo[0]);
-    } else if(tupla[j].tipoCampo == 'D') {
-      double *n = (double *)&tupla[j].valorCampo[0];
-      printf(" %-10f ", *n);
-    }
-    if(j >= 0 && ((j + 1)%objeto.qtdCampos) == 0) printf("\n");
-    else printf("|");
+    printf("%.10s = %.10s ? \n", attname, tupla[j].nomeCampo);
+    if(!strcmp(attname, tupla[j].nomeCampo)) return tupla[j].valorCampo;
   }
-  printf(">>>>>>>>>>>>>>>>>>>>>>\n");
-  return 0;
+  return NULL;
+}
+
+int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objects objeto) {
+  int i; //int j;
+  stack_t op; op.top = 0; op.tokens = NULL;
+  int operand1, operand2, operator;
+  char *op1, *op2;
+  if (ncond == 0) return 0;
+  return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
+  //return 1; //Estou acabando a função, é só para vocês poderem continuar testando/codando normalmente
+  // for (i = 0; i < 100; i++) {
+  //   printf("%.10s", tokens[i]);
+  //   printf("   %d\n", i);
+  // }
+  //printf("-------------------\n");
+  for (i = 0; i < ncond; i++) {
+    if (isOperator(tokens[i])) {
+      op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
+      operand1 = getCod(op1); operand2 = getCod(op2);
+      //printf("%d %d\n", operand1, operand2);
+      //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
+      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); getCod(op1); }
+      if (operand2 == COLUMN) { op1 = getValue(op2, tupla, objeto); getCod(op2); }
+      if (operand1 != operand2) return ERROR;
+      //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
+      //Fazer operação e devolver para pilha
+      push(&op, "TMP"); //Para não dar falha de segmentação :P
+    } else push(&op, tokens[i]);
+  }
+  if (!strcmp(top(&op), "1")) return 0; //Sucesso Weee
+  return 1; //Falha
 }
