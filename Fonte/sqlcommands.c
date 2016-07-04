@@ -637,28 +637,20 @@ void printing(rc_insert *select) {
     char *colunasPrintadas = malloc(objeto.qtdCampos * sizeof(char)); //Guarda as colunas que vão ser printadas
     memset(colunasPrintadas, 0, objeto.qtdCampos * sizeof(char)); //Por algum motivo, não pude fazer sizeof(colunasPrintadas)
 
-    /*SOLUÇÃO PARA FALHA DE SEGMENTAÇÃO (select * from)*/
-    // Colocar todas as colunas da tabela no select -> columnName...
-
-    // char * primeira = malloc((strlen(pagina[0].nomeCampo) + 1) * sizeof(char));
-    // strcpy(primeira, pagina[0].nomeCampo);
+    column *pagina = getPage(bufferpoll, esquema, objeto, p);
     if (!select -> N) {
-      column *pagina = getPage(bufferpoll, esquema, objeto, p);
       select -> N = objeto.qtdCampos;
       select -> columnName = malloc(select -> N * sizeof(char *));
       for (j = 0; j < objeto.qtdCampos; j++) {
         select -> columnName[j] = malloc((strlen(pagina[j].nomeCampo) + 1) * sizeof(char));
         strcpy(select -> columnName[j], pagina[j].nomeCampo);
       }
-      free(pagina); // Precisa disso?
     }
-
-
-
-    /*Fim da solução, não gostei.... Mas funciona =( */
-
-    /* IMPORTANTE!!! TEMOS QUE CHECAR SE NÃO TEM ERRO ENTRE OS TIPOS DAS VARIAVEIS SENDO COMPARADAS ANTES DE ENTRAR NESSE WHILE!! */
-
+    if(select -> ncond > 0 && testwhere(pagina, tokens, select -> ncond, bufferpoll[p].nrec, objeto) == ERROR) {
+      printf("ERROR: Invalid operand types for comparison!\n");
+      free(bufferpoll); free(esquema); free(pagina); return;
+    }
+    free(pagina);
 
 	  while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p); //Não preciso fazeer free dessa página?

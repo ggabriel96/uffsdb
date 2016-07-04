@@ -101,7 +101,7 @@ int getCod(char * tk) {
 }
 
 char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto) {
-  int j, i;
+  int j;
   //printf("´´´´´´´´´´´´´´´´´´´´\n");
   char * resp;
   for(j = 0; j < objeto.qtdCampos && tupla + j < tupla + objeto.qtdCampos * nrec; j++) {
@@ -110,13 +110,12 @@ char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto
       if (tupla[j].tipoCampo == 'S') {
         resp = malloc((strlen(tupla[j].valorCampo) + 3) * sizeof(char));
         sprintf(resp, "'%s'", tupla[j].valorCampo);
-        for(i = 0; resp[i] != '\0'; i++) resp[i] = tolower(resp[i]);
       } else if (tupla[j].tipoCampo == 'I') {
         resp = malloc(12 * sizeof(char)); //Maior valor de um int cabe em 12 caracteres
         sprintf(resp, "%d", *((int *)&tupla[j].valorCampo[0]));
       } else if(tupla[j].tipoCampo == 'C') {
         resp = malloc(4 * sizeof(char));
-        sprintf(resp, "'%c'", tolower(tupla[j].valorCampo[0]));
+        sprintf(resp, "'%c'", tupla[j].valorCampo[0]);
       } else if(tupla[j].tipoCampo == 'D') { //Esse valor pode ser grande... E agora?... 20 caracteres ta bom?
         resp = malloc(20 * sizeof(char));
         sprintf(resp, "%f", *((double *)&tupla[j].valorCampo[0]));
@@ -160,11 +159,10 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
       if (operand1 == COLUMN) { op1 = getValue(op1, tupla, nrec, objeto); operand1 = getCod(op1); }
       if (operand2 == COLUMN) { op2 = getValue(op2, tupla, nrec, objeto); operand2 = getCod(op2); }
-      if (op1 == NULL || op2 == NULL) return 0;
       // printf(">>>%s %s<<<\n", op1, op2);
       //return 0;
-      //if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
-      // printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
+      if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
+      //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos
       operator = getCod(tokens[i]);

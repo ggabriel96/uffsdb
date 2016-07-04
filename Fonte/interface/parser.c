@@ -65,7 +65,8 @@ void setWhereCondition(char **nome) {
     GLOBAL_DATA.condition = realloc(GLOBAL_DATA.condition, (GLOBAL_PARSER.cond_count + 1) * sizeof (char *));
 
     GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count] = malloc(sizeof (char) * (strlen(*nome) + 1));
-    strcpylower(GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count], *nome);
+
+    strcpy(GLOBAL_DATA.condition[GLOBAL_PARSER.cond_count], *nome);
 
     GLOBAL_PARSER.cond_count++;
 }
@@ -265,8 +266,14 @@ void strtolower(char *s) {
 }
 
 void lowerinput() {
+    int i;
     strtolower(GLOBAL_DATA.objName);
     if (GLOBAL_DATA.columnName != NULL) strtolower(*(GLOBAL_DATA.columnName));
+    if (GLOBAL_DATA.condition != NULL)
+      for (i = 0; i < GLOBAL_DATA.ncond; i++)
+        if (GLOBAL_DATA.condition[i][0] != '\'')
+          strtolower(GLOBAL_DATA.condition[i]);
+
     // não faz sentido dar lower nos dados que serão inseridos
     // no banco. Além disso, o tipo de dado é tratato com letra maiúscula...
     // if (GLOBAL_DATA.values != NULL) strtolower(*(GLOBAL_DATA.values));
