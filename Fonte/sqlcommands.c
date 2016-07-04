@@ -637,6 +637,22 @@ void printing(rc_insert *select) {
     //Queria usar esses colunas printadas para não ter que repetir o código feio =(
     char *colunasPrintada = malloc(objeto.qtdCampos * sizeof(char));
     memset(colunasPrintada, 0, objeto.qtdCampos * sizeof(char));
+
+    /*SOLUÇÃO PARA FALHA DE SEGMENTAÇÃO (select * from)*/
+    // Colocar todas as colunas da tabela no select -> columnName...
+    if (!select -> N) {
+      column *pagina = getPage(bufferpoll, esquema, objeto, p);
+      select -> N = objeto.qtdCampos;
+      select -> columnName = malloc(select -> N * sizeof(char *));
+      for (j = 0; j < objeto.qtdCampos; j++) {
+        select -> columnName[j] = malloc((strlen(pagina[j].nomeCampo) + 1) * sizeof(char));
+        strcpy(select -> columnName[j], pagina[j].nomeCampo);
+      }
+      free(pagina); // Precisa disso
+    }
+
+    /*Fim da solução, não gostei.... Mas funciona =( */
+
 	  while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
 	    if (pagina == PARAMETER_ERROR_2){
@@ -676,10 +692,8 @@ void printing(rc_insert *select) {
         }
         if (!flag && select -> N > 0) continue;
         aux++;
-        // if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
-        //   //??
-        // }
-          //???x -= bufferpoll[p++].nrec; continue; }
+        //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
+        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) continue;
         novaTupla = 0;
         if(pagina[j].tipoCampo == 'S')
           printf(" %-20s ", pagina[j].valorCampo);

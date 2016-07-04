@@ -111,14 +111,14 @@ char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
 int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objects objeto) {
   int i; //int j;
   stack_t op; op.top = 0; op.tokens = NULL;
-  int operand1, operand2, operator;
+  int operand1, operand2; //, operator;
   char *op1, *op2;
   if (ncond == 0) return 0;
   return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
       op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
-      operand1 = getCod(op1); operand2 = getCod(op2); operator = getCod(tokens[i]);
+      operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
       //printf("%d %d\n", operand1, operand2);
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
       if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); getCod(op1); }
