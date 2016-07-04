@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "shuntingyard.h"
 
 int precedence(char *op) {
@@ -85,7 +86,7 @@ int isOperator(char * tk) {
 }
 
 int getCod(char * tk) {
-  printf("TK = %s\n", tk);
+  //printf("TK = %s\n", tk);
   if (tk[0] == '<') return tk[1] == '=' ? LE : LT;
   if (tk[0] == '=') return EQ;
   if (tk[0] == '!') return NE;
@@ -98,59 +99,97 @@ int getCod(char * tk) {
 }
 
 char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
-  int j;
-  printf("´´´´´´´´´´´´´´´´´´´´\n");
+  int j, i;
+  //printf("´´´´´´´´´´´´´´´´´´´´\n");
+  char * resp;
   for(j = 0; j < objeto.qtdCampos; j++) {
-    printf("%.10s = %.10s ? \n", attname, tupla[j].nomeCampo);
-    //Não funciona :)
-    if(!strcmp(attname, tupla[j].nomeCampo)) return tupla[j].valorCampo;
+    //printf("%.10s = %.10s ? \n>", attname, tupla[j].nomeCampo);
+    if(!strcmp(attname, tupla[j].nomeCampo)) {
+      if (tupla[j].tipoCampo == 'S') {
+        resp = malloc((strlen(tupla[j].valorCampo) + 3) * sizeof(char));
+        sprintf(resp, "'%s'", tupla[j].valorCampo);
+        for(i = 0; resp[i] != '\0'; i++) resp[i] = tolower(resp[i]);
+      } else if (tupla[j].tipoCampo == 'I') {
+        resp = malloc(12 * sizeof(char)); //Maior valor de um int cabe em 12 caracteres
+        sprintf(resp, "%d", *((int *)&tupla[j].valorCampo[0]));
+      } else if(tupla[j].tipoCampo == 'C') {
+        resp = malloc(2 * sizeof(char));
+        sprintf(resp, "%c", tupla[j].valorCampo[0]);
+      } else if(tupla[j].tipoCampo == 'D') { //Esse valor pode ser grande... E agora?... 20 caracteres ta bom?
+        resp = malloc(20 * sizeof(char));
+        sprintf(resp, "%f", *((double *)&tupla[j].valorCampo[0]));
+      }
+      return resp;
+    }
   }
   return NULL;
+}
+
+double getNum(char *operand) {
+  double ret = 0; int i;
+  unsigned long long pot10 = 1; //Vai cagar se o double tiver mais que 19 casas decimais
+  //printf("Operand: %s\n", operand);
+  //for (i = 0; i < 1000; i++);
+  for (i = strlen(operand) - 1; i >= 0; i--) {
+    if (operand[i] == '-') ret *= -1;
+    else if (operand[i] == '+') continue;
+    else if (operand[i] == '.') { ret /= pot10;  pot10 = 1; }
+    else { ret += (operand[i] - '0') * pot10; pot10 *= 10; }
+  }
+  return ret;
 }
 
 int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objects objeto) {
   int i; //int j;
   stack_t op; op.top = 0; op.tokens = NULL;
-  int operand1, operand2; //, operator;
+  int operand1, operand2, operator;
   char *op1, *op2;
   if (ncond == 0) return 0;
-  return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
+  //return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
+  //printf("testwhere: \n");
+  // for (i = 0; i < ncond; i++)
+  //   printf("- token[%d] = %s\n", i, tokens[i]);
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
       op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
       operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
       //printf("%d %d\n", operand1, operand2);
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
-      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); getCod(op1); }
-      if (operand2 == COLUMN) { op1 = getValue(op2, tupla, objeto); getCod(op2); }
-      if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
+      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); operand1 = getCod(op1); }
+      if (operand2 == COLUMN) { op2 = getValue(op2, tupla, objeto); operand2 = getCod(op2); }
+      //printf(">>>%s %s<<<\n", op1, op2);
+      //return 0;
+      //if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       // Fazer operação e devolver para pilha
-      // char res[2]; res[1] = '\0';
-      // if (operand1 == STRING) {
-      //   switch (operator) {
-      //     case EQ: res[0] = !strcmp(op1, op2) + '0'; break;
-      //     case LT: res[0] = strcmp(op1, op2) < 0 + '0'; break;
-      //     case LE: res[0] = strcmp(op1, op2) <= 0 + '0'; break;
-      //     case GT: res[0] = strcmp(op1, op2) > 0 + '0'; break;
-      //     case GE: res[0] = strcmp(op1, op2) >= 0 + '0';
-      //   }
-      // } else if (operand1 == NUM) {
-      //Descobrir o valor dos números (Sim, não funciona é um """"pseudo-código"""")
-      //   double v1 =  (int)op1, v2 = (int)op2; //Seria legal fazer com double que dai já tratariamos todos os casos :P
-      //   switch (operator) {
-      //     case EQ: res[0] = op1 == op2 + '0'; break;
-      //     case LT: res[0] = op1 < op2 + '0'; break;
-      //     case LE: res[0] = op1 <= op2+ '0'; break;
-      //     case GT: res[0] = op1 > op2+ '0'; break;
-      //     case GE: res[0] = op1 >= op2+ '0'; break;
-      //     case AND: res[0] = op1 == 1 && op2 == 1; break;
-      //     case OR: res[0] = op1 == 1 || op2 == 1; break;
-      //   }
-      // }
-      // push(&OP, res);
-      push(&op, "TMP"); //Para não dar falha de segmentação :P
+      operator = getCod(tokens[i]);
+      char res[2]; res[1] = '\0';
+      if (operand1 == STRING) {
+        switch (operator) {
+          case EQ: res[0] = !strcmp(op1, op2) + '0'; break;
+          case LT: res[0] = strcmp(op1, op2) < 0 + '0'; break;
+          case LE: res[0] = strcmp(op1, op2) <= 0 + '0'; break;
+          case GT: res[0] = strcmp(op1, op2) > 0 + '0'; break;
+          case GE: res[0] = strcmp(op1, op2) >= 0 + '0';
+        }
+      } else if (operand1 == NUM) {
+        //printf("Laaaaa\n");
+        double v1 = getNum(op1), v2 = getNum(op2); //Seria legal fazer com double que dai já tratariamos todos os casos :P
+        //printf("Operator: %d\nv1: %.2lf\n v2:%.2lf\n", operator, v1, v2);
+        switch (operator) {
+          case EQ: res[0] = igualDouble(v1, v2) + '0'; break;
+          case LT: res[0] = v1 < v2 + '0'; break;
+          case LE: res[0] = menorIgualDouble(v1, v2) + '0'; break;
+          case GT: res[0] = v1 > v2 + '0'; break;
+          case GE: res[0] = maiorIgualDouble(v1, v2) + '0'; break;
+          case AND: res[0] = (op1[0] == '1' && op2[0] == '1') + '0'; break;
+          case OR: res[0] = (op1[0] == '1' || op2[0] == '1') + '0'; break;
+        }
+      }
+      //printf("resp: %s\n", res);
+      push(&op, res);
+      //push(&op, "TMP"); //Para não dar falha de segmentação :P
     } else push(&op, tokens[i]);
   }
   if (!strcmp(top(&op), "1")) return 0; //Sucesso Weee

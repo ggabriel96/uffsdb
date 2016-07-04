@@ -1,3 +1,5 @@
+#include <math.h>
+
 #define FMACROS 0 // flag para identificar se macros.h já foi incluída
 
 // ERRORS
@@ -66,3 +68,8 @@
 #define STRING 8
 #define COLUMN 9
 #define NUM 10
+
+#define EPS 1e-9
+#define igualDouble(x,y) (fabs ((x) - (y)) < EPS)
+#define menorIgualDouble(x,y) ((x) < (y) || igualDouble(x,y))
+#define maiorIgualDouble(x,y) ((x) > (y) || igualDouble(x,y))

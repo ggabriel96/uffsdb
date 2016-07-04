@@ -604,14 +604,14 @@ void printing(rc_insert *select) {
     }
 
     char **tokens = shuntingYard(select -> condition, select -> ncond);
-    for (j = 0; j < select -> ncond; j++)
-      printf("- token[%d] = %s\n", j, tokens[j]);
     printf("N: %d   ncond: %d\n", select -> N, select -> ncond);
     printf("objName: %s\n", select -> objName);
     for (j = 0; j < select -> N; j++)
       printf("columnName: %s\n", select -> columnName[j]);
     for (j = 0; j < select -> ncond; j++)
       printf("condition: %s\n", select -> condition[j]);
+    for (j = 0; j < select -> ncond; j++)
+      printf("- token[%d] = %s\n", j, tokens[j]);
     objeto = readObject(nomeTabela);
     tp_table *esquema = readSchema(objeto);
     if (esquema == ERROR_OPEN_SCHEMA){
@@ -652,8 +652,11 @@ void printing(rc_insert *select) {
 
     /*Fim da solução, não gostei.... Mas funciona =( */
 
+    /* IMPORTANTE!!! TEMOS QUE CHECAR SE NÃO TEM ERRO ENTRE OS TIPOS DAS VARIAVEIS SENDO COMPARADAS ANTES DE ENTRAR NESSE WHILE!! */
+
+
 	  while (x) {
-	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
+	    column *pagina = getPage(bufferpoll, esquema, objeto, p); //Não preciso fazeer free dessa página?
 	    if (pagina == PARAMETER_ERROR_2){
         printf("ERROR: could not open the table.\n");
         free(bufferpoll); free(esquema); return;
@@ -681,10 +684,13 @@ void printing(rc_insert *select) {
 	    }
 	    cont++; novaTupla = 1;
 		  for(aux = j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
+        //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
+        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
+          j += objeto.qtdCampos - 1; //Tem algo cagado aqui =(
+          continue;
+        }
         if (!colunasPrintadas[j % objeto.qtdCampos]) continue;
         aux++;
-        //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
-        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) continue;
         novaTupla = 0;
         if(pagina[j].tipoCampo == 'S')
           printf(" %-20s ", pagina[j].valorCampo);
