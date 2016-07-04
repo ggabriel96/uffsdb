@@ -596,7 +596,7 @@ void insert(rc_insert *s_insert) {
 ///////////////
 void printing(rc_insert *select) {
     struct fs_objects objeto;
-    int j, erro, x, p, cont = 0, novaTupla = 1;
+    int j, erro, x, p, cont = 0;
     char *nomeTabela = select -> objName;
     if (!verifyTableName(nomeTabela)) {
         printf("ERROR: relation \"%s\" was not found.\n", nomeTabela);
@@ -639,6 +639,9 @@ void printing(rc_insert *select) {
 
     /*SOLUÇÃO PARA FALHA DE SEGMENTAÇÃO (select * from)*/
     // Colocar todas as colunas da tabela no select -> columnName...
+
+    // char * primeira = malloc((strlen(pagina[0].nomeCampo) + 1) * sizeof(char));
+    // strcpy(primeira, pagina[0].nomeCampo);
     if (!select -> N) {
       column *pagina = getPage(bufferpoll, esquema, objeto, p);
       select -> N = objeto.qtdCampos;
@@ -649,6 +652,8 @@ void printing(rc_insert *select) {
       }
       free(pagina); // Precisa disso?
     }
+
+
 
     /*Fim da solução, não gostei.... Mas funciona =( */
 
@@ -682,16 +687,18 @@ void printing(rc_insert *select) {
 	      }
 	      printf("\n");
 	    }
-	    cont++; novaTupla = 1;
+	    cont++;
 		  for(aux = j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
         //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
-        if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
+        // if (novaTupla) {
+        //   printf("NOVA TUPLA: CAMPO -> %s\n", pagina[j].nomeCampo);
+        // }
+        if (j % objeto.qtdCampos == 0 && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
           j += objeto.qtdCampos - 1; //Tem algo cagado aqui =(
           continue;
         }
         if (!colunasPrintadas[j % objeto.qtdCampos]) continue;
         aux++;
-        novaTupla = 0;
         if(pagina[j].tipoCampo == 'S')
           printf(" %-20s ", pagina[j].valorCampo);
         else if(pagina[j].tipoCampo == 'I') {
@@ -703,7 +710,8 @@ void printing(rc_insert *select) {
           double *n = (double *)&pagina[j].valorCampo[0];
     	    printf(" %-10f ", *n);
         }
-        if(aux % select -> N == 0) { novaTupla = 1; printf("\n"); }
+        // if ( == 0) novaTupla = 1;
+        if(aux % select -> N == 0) printf("\n");
         else printf("|");
     	}
     	x -= bufferpoll[p++].nrec;

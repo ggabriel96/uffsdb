@@ -82,7 +82,7 @@ char **shuntingYard(char **tokens, int n) {
 }
 
 int isOperator(char * tk) {
-  return tk[0] == '<'|| tk[0] == '<' || tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
+  return tk[0] == '<'|| tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
 }
 
 int getCod(char * tk) {
@@ -98,11 +98,11 @@ int getCod(char * tk) {
   return NUM;
 }
 
-char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
+char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto) {
   int j, i;
   //printf("´´´´´´´´´´´´´´´´´´´´\n");
   char * resp;
-  for(j = 0; j < objeto.qtdCampos; j++) {
+  for(j = 0; j < objeto.qtdCampos && tupla + j < tupla + objeto.qtdCampos * nrec; j++) {
     //printf("%.10s = %.10s ? \n>", attname, tupla[j].nomeCampo);
     if(!strcmp(attname, tupla[j].nomeCampo)) {
       if (tupla[j].tipoCampo == 'S') {
@@ -153,14 +153,16 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
     if (isOperator(tokens[i])) {
       op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
       operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
-      //printf("%d %d\n", operand1, operand2);
+      //printf(">%s(%d) %s(%d)\n", op1, operand1, op2, operand2);
+
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
-      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, objeto); operand1 = getCod(op1); }
-      if (operand2 == COLUMN) { op2 = getValue(op2, tupla, objeto); operand2 = getCod(op2); }
-      //printf(">>>%s %s<<<\n", op1, op2);
+      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, nrec, objeto); operand1 = getCod(op1); }
+      if (operand2 == COLUMN) { op2 = getValue(op2, tupla, nrec, objeto); operand2 = getCod(op2); }
+      if (op1 == NULL || op2 == NULL) return 0;
+      // printf(">>>%s %s<<<\n", op1, op2);
       //return 0;
       //if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
-      //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
+      // printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos
       operator = getCod(tokens[i]);
