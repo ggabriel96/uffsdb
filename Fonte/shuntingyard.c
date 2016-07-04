@@ -162,26 +162,26 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       //if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
-      // Fazer operação e devolver para pilha
+      // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos
       operator = getCod(tokens[i]);
       char res[2]; res[1] = '\0';
       if (operand1 == STRING) {
         switch (operator) {
-          case EQ: res[0] = !strcmp(op1, op2) + '0'; break;
-          case LT: res[0] = strcmp(op1, op2) < 0 + '0'; break;
-          case LE: res[0] = strcmp(op1, op2) <= 0 + '0'; break;
-          case GT: res[0] = strcmp(op1, op2) > 0 + '0'; break;
-          case GE: res[0] = strcmp(op1, op2) >= 0 + '0';
+          case EQ: res[0] = !strcmp(op2, op1) + '0'; break;
+          case LT: res[0] = (strcmp(op2, op1) < 0) + '0'; break;
+          case LE: res[0] = (strcmp(op2, op1) <= 0) + '0'; break;
+          case GT: res[0] = (strcmp(op2, op1) > 0) + '0'; break;
+          case GE: res[0] = (strcmp(op2, op1) >= 0) + '0';
         }
       } else if (operand1 == NUM) {
         //printf("Laaaaa\n");
-        double v1 = getNum(op1), v2 = getNum(op2); //Seria legal fazer com double que dai já tratariamos todos os casos :P
+        double v1 = getNum(op2), v2 = getNum(op1); //Seria legal fazer com double que dai já tratariamos todos os casos :P
         //printf("Operator: %d\nv1: %.2lf\n v2:%.2lf\n", operator, v1, v2);
         switch (operator) {
           case EQ: res[0] = igualDouble(v1, v2) + '0'; break;
-          case LT: res[0] = v1 < v2 + '0'; break;
+          case LT: res[0] = (v1 < v2) + '0'; break;
           case LE: res[0] = menorIgualDouble(v1, v2) + '0'; break;
-          case GT: res[0] = v1 > v2 + '0'; break;
+          case GT: res[0] = (v1 > v2) + '0'; break;
           case GE: res[0] = maiorIgualDouble(v1, v2) + '0'; break;
           case AND: res[0] = (op1[0] == '1' && op2[0] == '1') + '0'; break;
           case OR: res[0] = (op1[0] == '1' || op2[0] == '1') + '0'; break;
