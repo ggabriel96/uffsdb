@@ -31,12 +31,14 @@ char *top(stack_t *s) {
   return NULL;
 }
 
-char *pop(stack_t *s) {
+char *pop(stack_t *s, int backup) {
   char *top = NULL;
   if (!empty(s)) {
     s -> top--;
-    top = malloc((1 + strlen(s -> tokens[s -> top])) * sizeof (char));
-    strcpy(top, s -> tokens[s -> top]);
+    if (backup) {
+      top = malloc((1 + strlen(s -> tokens[s -> top])) * sizeof (char));
+      strcpy(top, s -> tokens[s -> top]);
+    }
     free(s -> tokens[s -> top]);
     s -> tokens = realloc(s -> tokens, s -> top * sizeof (char *));
   }
@@ -68,20 +70,13 @@ char **shuntingYard(char **tokens, int n) {
       while (!empty(&op)) {
         ptop = precedence(top(&op));
         if (ptop < pi) break;
-        result[tcount++] = pop(&op);
-        // result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
-        // strcpy(result[tcount], pop(&op));
-        // tcount++;
+        result[tcount++] = pop(&op, 1);
       }
       push(&op, tokens[i]);
     }
   }
-  while (!empty(&op)) {
-    result[tcount++] = pop(&op);
-    // result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
-    // strcpy(result[tcount], pop(&op));
-    // tcount++;
-  }
+  while (!empty(&op))
+    result[tcount++] = pop(&op, 1);
   return result;
 }
 
@@ -106,7 +101,7 @@ int getCod(char * tk) {
 char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto) {
   int j;
   //printf("´´´´´´´´´´´´´´´´´´´´\n");
-  char * resp;
+  char * resp = NULL;
   for(j = 0; j < objeto.qtdCampos && tupla + j < tupla + objeto.qtdCampos * nrec; j++) {
     //printf("%.10s = %.10s ? \n>", attname, tupla[j].nomeCampo);
     if(!strcmp(attname, tupla[j].nomeCampo)) {
@@ -123,10 +118,10 @@ char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto
         resp = malloc(20 * sizeof(char));
         sprintf(resp, "%f", *((double *)&tupla[j].valorCampo[0]));
       }
-      return resp;
     }
   }
-  return NULL;
+  free(attname);
+  return resp;
 }
 
 double getNum(char *operand) {
@@ -155,7 +150,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
   //   printf("- token[%d] = %s\n", i, tokens[i]);
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
-      op1 = pop(&op); op2 = pop(&op);
+      op1 = pop(&op, 1); op2 = pop(&op, 1);
       operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
       //printf(">%s(%d) %s(%d)\n", op1, operand1, op2, operand2);
 
@@ -164,7 +159,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       if (operand2 == COLUMN) { op2 = getValue(op2, tupla, nrec, objeto); operand2 = getCod(op2); }
       // printf(">>>%s %s<<<\n", op1, op2);
       //return 0;
-      if (operand1 != operand2) return ERROR; //Deveriamos tratar esse tipo de erro fora daqui =/
+      if (operand1 != operand2) { free(op1); free(op2); return ERROR; }
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos
@@ -195,6 +190,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       //printf("resp: %s\n", res);
       push(&op, res);
       //push(&op, "TMP"); //Para não dar falha de segmentação :P
+      free(op1); free(op2);
     } else push(&op, tokens[i]);
   }
   if (!strcmp(top(&op), "1")) return 0; //Sucesso Weee
