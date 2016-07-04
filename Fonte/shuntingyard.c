@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "shuntingyard.h"
 
+// não colocar precedência 0, porque isso é usado
+// pra ver se é um operador ou não
 int precedence(char *op) {
   switch (op[0]) {
     case '<':
@@ -84,7 +86,8 @@ char **shuntingYard(char **tokens, int n) {
 }
 
 int isOperator(char * tk) {
-  return tk[0] == '<'|| tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
+  return precedence(tk) != 0;
+  // return tk[0] == '<'|| tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
 }
 
 int getCod(char * tk) {
