@@ -593,7 +593,10 @@ void insert(rc_insert *s_insert) {
 	freeTable(tabela);
 }
 
-///////////////
+/* ----------------------------------------------------------------------------------------------
+    Objetivo:   Realizar função select
+   ---------------------------------------------------------------------------------------------*/
+
 void printing(rc_insert *select) {
     struct fs_objects objeto;
     int j, erro, x, p, cont = 0;
@@ -604,14 +607,14 @@ void printing(rc_insert *select) {
     }
 
     char **tokens = shuntingYard(select -> condition, select -> ncond);
-    printf("N: %d   ncond: %d\n", select -> N, select -> ncond);
-    printf("objName: %s\n", select -> objName);
-    for (j = 0; j < select -> N; j++)
-      printf("columnName: %s\n", select -> columnName[j]);
-    for (j = 0; j < select -> ncond; j++)
-      printf("condition: %s\n", select -> condition[j]);
-    for (j = 0; j < select -> ncond; j++)
-      printf("- token[%d] = %s\n", j, tokens[j]);
+    // printf("N: %d   ncond: %d\n", select -> N, select -> ncond);
+    // printf("objName: %s\n", select -> objName);
+    // for (j = 0; j < select -> N; j++)
+    //   printf("columnName: %s\n", select -> columnName[j]);
+    // for (j = 0; j < select -> ncond; j++)
+    //   printf("condition: %s\n", select -> condition[j]);
+    // for (j = 0; j < select -> ncond; j++)
+    //   printf("- token[%d] = %s\n", j, tokens[j]);
     objeto = readObject(nomeTabela);
     tp_table *esquema = readSchema(objeto);
     if (esquema == ERROR_OPEN_SCHEMA){
@@ -621,7 +624,6 @@ void printing(rc_insert *select) {
     }
 
     tp_buffer *bufferpoll = initbuffer();
-    // printf("--------------------\n");
     if (bufferpoll == ALLOCATION_ERROR){
         free(bufferpoll);
         free(esquema);
@@ -632,12 +634,13 @@ void printing(rc_insert *select) {
     erro = SUCCESS;
     for (x = 0; erro == SUCCESS; x++)
       erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
-	  p = 0;
-    int ntuples = --x, flag, i, aux = 0; //Aux conta quantas colunas foram printadas
+	  p = 0; x--;
+    int ntuples = 0, i, tmp, aux = 0; //Aux conta quantas colunas foram printadas
     char *colunasPrintadas = malloc(objeto.qtdCampos * sizeof(char)); //Guarda as colunas que vão ser printadas
-    memset(colunasPrintadas, 0, objeto.qtdCampos * sizeof(char)); //Por algum motivo, não pude fazer sizeof(colunasPrintadas)
+    memset(colunasPrintadas, 0, objeto.qtdCampos * sizeof(char));
 
     column *pagina = getPage(bufferpoll, esquema, objeto, p);
+    if (pagina == NULL) { printf("Empty table!\n"); return; }
     if (!select -> N) {
       select -> N = objeto.qtdCampos;
       select -> columnName = malloc(select -> N * sizeof(char *));
@@ -646,65 +649,77 @@ void printing(rc_insert *select) {
         strcpy(select -> columnName[j], pagina[j].nomeCampo);
       }
     }
+
     if(select -> ncond > 0 && testwhere(pagina, tokens, select -> ncond, bufferpoll[p].nrec, objeto) == ERROR) {
       printf("ERROR: Invalid operand types for comparison!\n");
       free(bufferpoll); free(esquema); free(pagina); return;
     }
     free(pagina);
-
+    char **colunas = malloc(select -> N * sizeof(char *));
 	  while (x) {
-	    column *pagina = getPage(bufferpoll, esquema, objeto, p); //Não preciso fazeer free dessa página?
+	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
 	    if (pagina == PARAMETER_ERROR_2){
         printf("ERROR: could not open the table.\n");
         free(bufferpoll); free(esquema); return;
 	    }
 	    if (!cont) {
-	      for (aux = j = 0; j < objeto.qtdCampos; j++) {
-          // Código feio para fazer a projeção(??)
-          for (flag = i = 0; i < select -> N; i++)
-            flag |= !strcmp(select -> columnName[i], pagina[j].nomeCampo);
-          if (!flag) continue;
-          colunasPrintadas[j] = 1; aux++;
-          //Fim do código feio
-	        if (pagina[j].tipoCampo == 'S') printf(" %-20s ", pagina[j].nomeCampo);
-	        else printf(" %-10s ", pagina[j].nomeCampo);
-	        if (aux < select -> N) printf("|");
+	      for (j = 0; j < objeto.qtdCampos; j++) {
+          for (i = 0; i < select -> N; i++)
+            if (!strcmp(select -> columnName[i], pagina[j].nomeCampo)) { colunasPrintadas[j] = i + 1; break; }
+          if (!colunasPrintadas[j]) continue;
+	        if (pagina[j].tipoCampo == 'S' || pagina[j].tipoCampo == 'D') {
+            colunas[colunasPrintadas[j] - 1] = malloc(23 * sizeof(char));
+            sprintf(colunas[colunasPrintadas[j] - 1], " %-20s ", pagina[j].nomeCampo);
+	        } else {
+            colunas[colunasPrintadas[j] - 1] = malloc(13 * sizeof(char));
+            sprintf(colunas[colunasPrintadas[j] - 1], " %-10s ", pagina[j].nomeCampo);
+          }
 	      }
-	      printf("\n");
+        for (i = 0; i < select -> N; i++) {
+          printf("%s%s", colunas[i], i + 1 < select -> N ? "|" : "\n");
+          free(colunas[i]);
+        }
+
 	      for (aux = j = 0; j < objeto.qtdCampos; j++){
           if (!colunasPrintadas[j]) continue;
-	        printf("%s",(pagina[j].tipoCampo == 'S')? "----------------------": "------------");
+          colunas[colunasPrintadas[j] - 1] = malloc(23 * sizeof(char));
+	        sprintf(colunas[colunasPrintadas[j] - 1], "%s",(pagina[j].tipoCampo == 'S' || pagina[j].tipoCampo == 'D')? "----------------------": "------------");
           aux++;
-	        if (aux < select -> N) printf("+");
 	      }
-	      printf("\n");
+        for (i = 0; i < select -> N; i++) {
+          printf("%s%s", colunas[i], i + 1 < select -> N ? "+" : "\n");
+          free(colunas[i]);
+        }
 	    }
 	    cont++;
 		  for(aux = j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
-        //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
-        // if (novaTupla) {
-        //   printf("NOVA TUPLA: CAMPO -> %s\n", pagina[j].nomeCampo);
-        // }
         if (j % objeto.qtdCampos == 0 && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) {
-          j += objeto.qtdCampos - 1; //Tem algo cagado aqui =(
+          j += objeto.qtdCampos - 1;
           continue;
         }
         if (!colunasPrintadas[j % objeto.qtdCampos]) continue;
         aux++;
-        if(pagina[j].tipoCampo == 'S')
-          printf(" %-20s ", pagina[j].valorCampo);
-        else if(pagina[j].tipoCampo == 'I') {
+        colunas[colunasPrintadas[j % objeto.qtdCampos] - 1] = malloc(20 * sizeof(char));
+        if(pagina[j].tipoCampo == 'S') {
+          tmp = strlen(pagina[j].valorCampo) + 1; free(colunas[colunasPrintadas[j % objeto.qtdCampos] - 1]);
+          colunas[colunasPrintadas[j % objeto.qtdCampos] - 1] = malloc(tmp < 23 ? 23 : tmp * sizeof(char));
+          sprintf(colunas[colunasPrintadas[j % objeto.qtdCampos] - 1], " %-20s ", pagina[j].valorCampo);
+        } else if(pagina[j].tipoCampo == 'I') {
           int *n = (int *)&pagina[j].valorCampo[0];
-          printf(" %-10d ", *n);
+          sprintf(colunas[colunasPrintadas[j % objeto.qtdCampos] - 1], " %-10d ", *n);
         } else if(pagina[j].tipoCampo == 'C') {
-          printf(" %-10c ", pagina[j].valorCampo[0]);
+          sprintf(colunas[colunasPrintadas[j % objeto.qtdCampos] - 1], " %-10c ", pagina[j].valorCampo[0]);
         } else if(pagina[j].tipoCampo == 'D') {
           double *n = (double *)&pagina[j].valorCampo[0];
-    	    printf(" %-10f ", *n);
+    	    sprintf(colunas[colunasPrintadas[j % objeto.qtdCampos] - 1], " %-20f ", *n);
         }
-        // if ( == 0) novaTupla = 1;
-        if(aux % select -> N == 0) printf("\n");
-        else printf("|");
+        if(aux % select -> N == 0) {
+          ntuples++;
+          for (i = 0; i < select -> N; i++) {
+            printf("%s%s", colunas[i], i + 1 < select -> N ? "|" : "\n");
+            free(colunas[i]);
+          }
+        }
     	}
     	x -= bufferpoll[p++].nrec;
     }

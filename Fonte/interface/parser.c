@@ -54,13 +54,6 @@ void notConnected() {
     printf("ERROR: you are not connected to any database.\n");
 }
 
-// void setSelect(void) {
-  // if (GLOBAL_DATA.cop != NULL) free(GLOBAL_DATA.cop);
-  // if (GLOBAL_DATA.lop != NULL) free(GLOBAL_DATA.lop);
-  // GLOBAL_DATA.cop = GLOBAL_DATA.lop = NULL;
-  // GLOBAL_DATA.ncop = GLOBAL_DATA.nlop = 0;
-// }
-
 void setWhereCondition(char **nome) {
     GLOBAL_DATA.condition = realloc(GLOBAL_DATA.condition, (GLOBAL_PARSER.cond_count + 1) * sizeof (char *));
 
@@ -70,38 +63,6 @@ void setWhereCondition(char **nome) {
 
     GLOBAL_PARSER.cond_count++;
 }
-
-// void setCop(char **cop) {
-//   // printf("cop: %s\n", *cop);
-//   if (GLOBAL_PARSER.mode != 0) {
-//     GLOBAL_DATA.cop = realloc(GLOBAL_DATA.cop, (GLOBAL_DATA.ncop + 1) * sizeof(int));
-//     // "<=" | '<' | '=' | "!=" | ">=" | '>'
-//     switch((*cop)[0]) {
-//       case '<': if ((*cop)[1] == '=') (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = LE; else (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = LT; break;
-//       case '=': (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = EQ; break;
-//       case '!': (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = NE; break;
-//       case '>': if ((*cop)[1] == '=') (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = GE; else (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop] = GT; break;
-//     }
-//     GLOBAL_DATA.ncop++;
-//     GLOBAL_PARSER.step++;
-//     //printf("GLOBAL_DATA.cop: %d\n", (GLOBAL_DATA.cop)[GLOBAL_DATA.ncop - 1]);
-//   }
-// }
-//
-// void setLop(char **lop) {
-//   //printf("lop: %s\n", *lop);
-//   if (GLOBAL_PARSER.mode != 0) {
-//       GLOBAL_DATA.lop = realloc(GLOBAL_DATA.lop, (GLOBAL_DATA.nlop + 1) * sizeof(int));
-//       // "and" | "or"
-//       switch((* lop)[0]) {
-//         case 'a': (GLOBAL_DATA.lop)[GLOBAL_DATA.nlop] = AND; break;
-//         case 'o': (GLOBAL_DATA.lop)[GLOBAL_DATA.nlop] = OR; break;
-//       }
-//       GLOBAL_DATA.nlop++;
-//       GLOBAL_PARSER.step++;
-//       //printf("GLOBAL_DATA.lop: %d\n", (GLOBAL_DATA.lop)[GLOBAL_DATA.nlop - 1]);
-//   }
-// }
 
 void setObjName(char **nome) {
     if (GLOBAL_PARSER.mode != 0) {
