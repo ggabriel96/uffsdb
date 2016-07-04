@@ -66,17 +66,19 @@ char **shuntingYard(char **tokens, int n) {
       while (!empty(&op)) {
         ptop = precedence(top(&op));
         if (ptop < pi) break;
-        result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
-        strcpy(result[tcount], pop(&op));
-        tcount++;
+        result[tcount++] = pop(&op);
+        // result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
+        // strcpy(result[tcount], pop(&op));
+        // tcount++;
       }
       push(&op, tokens[i]);
     }
   }
   while (!empty(&op)) {
-    result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
-    strcpy(result[tcount], pop(&op));
-    tcount++;
+    result[tcount++] = pop(&op);
+    // result[tcount] = malloc((strlen(top(&op)) + 1) * sizeof (char));
+    // strcpy(result[tcount], pop(&op));
+    // tcount++;
   }
   return result;
 }
@@ -151,7 +153,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
   //   printf("- token[%d] = %s\n", i, tokens[i]);
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
-      op1 = pop(&op); op2 = pop(&op); //Hm... Segundo o que você fez na outra função, eu não poderia fazer isso
+      op1 = pop(&op); op2 = pop(&op);
       operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
       //printf(">%s(%d) %s(%d)\n", op1, operand1, op2, operand2);
 
