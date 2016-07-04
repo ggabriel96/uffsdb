@@ -599,7 +599,7 @@ void printing(rc_insert *select) {
     int j, erro, x, p, cont = 0, novaTupla = 1;
     char *nomeTabela = select -> objName;
     if (!verifyTableName(nomeTabela)) {
-        printf("\nERROR: relation \"%s\" was not found.\n\n\n", nomeTabela);
+        printf("ERROR: relation \"%s\" was not found.\n", nomeTabela);
         return;
     }
 
@@ -633,10 +633,9 @@ void printing(rc_insert *select) {
     for (x = 0; erro == SUCCESS; x++)
       erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 	  p = 0;
-    int ntuples = --x, flag, i, aux = 0; //Flag cuida quais colunas serão printadas
-    //Queria usar esses colunas printadas para não ter que repetir o código feio =(
-    char *colunasPrintada = malloc(objeto.qtdCampos * sizeof(char));
-    memset(colunasPrintada, 0, objeto.qtdCampos * sizeof(char));
+    int ntuples = --x, flag, i, aux = 0; //Aux conta quantas colunas foram printadas
+    char *colunasPrintadas = malloc(objeto.qtdCampos * sizeof(char)); //Guarda as colunas que vão ser printadas
+    memset(colunasPrintadas, 0, objeto.qtdCampos * sizeof(char)); //Por algum motivo, não pude fazer sizeof(colunasPrintadas)
 
     /*SOLUÇÃO PARA FALHA DE SEGMENTAÇÃO (select * from)*/
     // Colocar todas as colunas da tabela no select -> columnName...
@@ -648,7 +647,7 @@ void printing(rc_insert *select) {
         select -> columnName[j] = malloc((strlen(pagina[j].nomeCampo) + 1) * sizeof(char));
         strcpy(select -> columnName[j], pagina[j].nomeCampo);
       }
-      free(pagina); // Precisa disso
+      free(pagina); // Precisa disso?
     }
 
     /*Fim da solução, não gostei.... Mas funciona =( */
@@ -662,12 +661,10 @@ void printing(rc_insert *select) {
 	    if (!cont) {
 	      for (aux = j = 0; j < objeto.qtdCampos; j++) {
           // Código feio para fazer a projeção(??)
-          for (flag = i = 0; i < select -> N; i++) {
-            //printf("%s\n", select -> columnName[i]);
+          for (flag = i = 0; i < select -> N; i++)
             flag |= !strcmp(select -> columnName[i], pagina[j].nomeCampo);
-          }
-          if (!flag && select -> N > 0) continue;
-          colunasPrintada[j] = 1; aux++;
+          if (!flag) continue;
+          colunasPrintadas[j] = 1; aux++;
           //Fim do código feio
 	        if (pagina[j].tipoCampo == 'S') printf(" %-20s ", pagina[j].nomeCampo);
 	        else printf(" %-10s ", pagina[j].nomeCampo);
@@ -675,7 +672,7 @@ void printing(rc_insert *select) {
 	      }
 	      printf("\n");
 	      for (aux = j = 0; j < objeto.qtdCampos; j++){
-          if (!colunasPrintada[j]) continue;
+          if (!colunasPrintadas[j]) continue;
 	        printf("%s",(pagina[j].tipoCampo == 'S')? "----------------------": "------------");
           aux++;
 	        if (aux < select -> N) printf("+");
@@ -684,13 +681,7 @@ void printing(rc_insert *select) {
 	    }
 	    cont++; novaTupla = 1;
 		  for(aux = j = 0; j < objeto.qtdCampos * bufferpoll[p].nrec; j++) {
-        // Código feio para fazer a projeção(??)
-        //Fim do código feio
-        for (flag = i = 0; i < select -> N; i++) {
-        //  printf(">>%s    %s<<",select -> columnName[i], select -> columnName[i]);
-          flag |= !strcmp(select -> columnName[i], pagina[j].nomeCampo);
-        }
-        if (!flag && select -> N > 0) continue;
+        if (!colunasPrintadas[j % objeto.qtdCampos]) continue;
         aux++;
         //Acho que não é isso que esse if deveria fazer, mas como ainda não funciona a testwhere, não vou me preocupar ainda
         if (novaTupla && testwhere(pagina + j, tokens, select -> ncond, bufferpoll[p].nrec, objeto)) continue;
@@ -706,7 +697,7 @@ void printing(rc_insert *select) {
           double *n = (double *)&pagina[j].valorCampo[0];
     	    printf(" %-10f ", *n);
         }
-        if(j >= 0 && aux % select -> N == 0) { novaTupla = 1; printf("\n"); }
+        if(aux % select -> N == 0) { novaTupla = 1; printf("\n"); }
         else printf("|");
     	}
     	x -= bufferpoll[p++].nrec;
