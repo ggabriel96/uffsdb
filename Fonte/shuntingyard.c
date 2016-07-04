@@ -113,8 +113,8 @@ char * getValue(char *attname, column *tupla, struct fs_objects objeto) {
         resp = malloc(12 * sizeof(char)); //Maior valor de um int cabe em 12 caracteres
         sprintf(resp, "%d", *((int *)&tupla[j].valorCampo[0]));
       } else if(tupla[j].tipoCampo == 'C') {
-        resp = malloc(2 * sizeof(char));
-        sprintf(resp, "%c", tupla[j].valorCampo[0]);
+        resp = malloc(4 * sizeof(char));
+        sprintf(resp, "'%c'", tolower(tupla[j].valorCampo[0]));
       } else if(tupla[j].tipoCampo == 'D') { //Esse valor pode ser grande... E agora?... 20 caracteres ta bom?
         resp = malloc(20 * sizeof(char));
         sprintf(resp, "%f", *((double *)&tupla[j].valorCampo[0]));
