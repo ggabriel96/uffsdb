@@ -46,7 +46,6 @@ char *pop(stack_t *s, int backup) {
 }
 
 void push(stack_t *s, char *elem) {
-  // sim, funciona só o realloc :)
   s -> tokens = realloc(s -> tokens, (s -> top + 1) * sizeof (char *));
   s -> tokens[s -> top] = malloc((1 + strlen(elem)) * sizeof (char));
   strcpy(s -> tokens[s -> top], elem);
@@ -82,11 +81,9 @@ char **shuntingYard(char **tokens, int n) {
 
 int isOperator(char * tk) {
   return precedence(tk) != 0;
-  // return tk[0] == '<'|| tk[0] == '=' || tk[0] == '!' || tk[0] == '>' || !strcmp(tk, "and") || !strcmp(tk, "or");
 }
 
 int getCod(char * tk) {
-  //printf("TK = %s\n", tk);
   if (tk[0] == '<') return tk[1] == '=' ? LE : LT;
   if (tk[0] == '=') return EQ;
   if (tk[0] == '!') return NE;
@@ -100,10 +97,8 @@ int getCod(char * tk) {
 
 char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto) {
   int j;
-  //printf("´´´´´´´´´´´´´´´´´´´´\n");
   char * resp = NULL;
   for(j = 0; j < objeto.qtdCampos && tupla + j < tupla + objeto.qtdCampos * nrec; j++) {
-    //printf("%.10s = %.10s ? \n>", attname, tupla[j].nomeCampo);
     if(!strcmp(attname, tupla[j].nomeCampo)) {
       if (tupla[j].tipoCampo == 'S') {
         resp = malloc((strlen(tupla[j].valorCampo) + 3) * sizeof(char));
@@ -114,7 +109,7 @@ char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto
       } else if(tupla[j].tipoCampo == 'C') {
         resp = malloc(4 * sizeof(char));
         sprintf(resp, "'%c'", tupla[j].valorCampo[0]);
-      } else if(tupla[j].tipoCampo == 'D') { //Esse valor pode ser grande... E agora?... 20 caracteres ta bom?
+      } else if(tupla[j].tipoCampo == 'D') {
         resp = malloc(20 * sizeof(char));
         sprintf(resp, "%f", *((double *)&tupla[j].valorCampo[0]));
       }
@@ -126,9 +121,7 @@ char * getValue(char *attname, column *tupla, int nrec, struct fs_objects objeto
 
 double getNum(char *operand) {
   double ret = 0; int i;
-  unsigned long long pot10 = 1; //Vai cagar se o double tiver mais que 19 casas decimais
-  //printf("Operand: %s\n", operand);
-  //for (i = 0; i < 1000; i++);
+  unsigned long long pot10 = 1;
   for (i = strlen(operand) - 1; i >= 0; i--) {
     if (operand[i] == '-') ret *= -1;
     else if (operand[i] == '+') continue;
@@ -139,22 +132,15 @@ double getNum(char *operand) {
 }
 
 int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objects objeto) {
-  int i; //int j;
+  int i;
   stack_t op; op.top = 0; op.tokens = NULL;
   int operand1, operand2, operator;
   char *op1, *op2;
   if (ncond == 0) return 0;
-  //return 0; // -> Coloquei para não interferir com seus testes (DEVE SER APAGADO DEPOIS)
-  //printf("testwhere: \n");
-  // for (i = 0; i < ncond; i++)
-  //   printf("- token[%d] = %s\n", i, tokens[i]);
   for (i = 0; i < ncond; i++) {
     if (isOperator(tokens[i])) {
       op1 = pop(&op, 1); op2 = pop(&op, 1);
-      operand1 = getCod(op1); operand2 = getCod(op2); //operator = getCod(tokens[i]);
-      //printf(">%s(%d) %s(%d)\n", op1, operand1, op2, operand2);
-
-      //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
+      operand1 = getCod(op1); operand2 = getCod(op2);
       if (operand1 == COLUMN) {
         op1 = getValue(op1, tupla, nrec, objeto);
         if (op1 == NULL) return ERROR_COLUMN;
@@ -165,12 +151,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
         if (op2 == NULL) return ERROR_COLUMN;
         operand2 = getCod(op2);
       }
-      // printf(">>>%s %s<<<\n", op1, op2);
-      //return 0;
       if (operand1 != operand2) { free(op1); free(op2); return ERROR_COMPARISON; }
-      //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
-      //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
-      // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos
       operator = getCod(tokens[i]);
       char res[2]; res[1] = '\0';
       if (operand1 == STRING) {
@@ -182,9 +163,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
           case GE: res[0] = (strcmp(op2, op1) >= 0) + '0';
         }
       } else if (operand1 == NUM) {
-        //printf("Laaaaa\n");
-        double v1 = getNum(op2), v2 = getNum(op1); //Seria legal fazer com double que dai já tratariamos todos os casos :P
-        //printf("Operator: %d\nv1: %.2lf\n v2:%.2lf\n", operator, v1, v2);
+        double v1 = getNum(op2), v2 = getNum(op1); /
         switch (operator) {
           case EQ: res[0] = igualDouble(v1, v2) + '0'; break;
           case LT: res[0] = (v1 < v2) + '0'; break;
@@ -195,12 +174,10 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
           case OR: res[0] = (op1[0] == '1' || op2[0] == '1') + '0'; break;
         }
       }
-      //printf("resp: %s\n", res);
       push(&op, res);
-      //push(&op, "TMP"); //Para não dar falha de segmentação :P
       free(op1); free(op2);
     } else push(&op, tokens[i]);
   }
-  if (!strcmp(top(&op), "1")) return 0; //Sucesso Weee
-  return 1; //Falha
+  if (!strcmp(top(&op), "1")) return 0;
+  return 1;
 }
