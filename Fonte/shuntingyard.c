@@ -163,7 +163,7 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
           case GE: res[0] = (strcmp(op2, op1) >= 0) + '0';
         }
       } else if (operand1 == NUM) {
-        double v1 = getNum(op2), v2 = getNum(op1); /
+        double v1 = getNum(op2), v2 = getNum(op1);
         switch (operator) {
           case EQ: res[0] = igualDouble(v1, v2) + '0'; break;
           case LT: res[0] = (v1 < v2) + '0'; break;
