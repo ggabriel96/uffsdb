@@ -155,11 +155,19 @@ int testwhere(column *tupla, char **tokens, int ncond, int nrec, struct fs_objec
       //printf(">%s(%d) %s(%d)\n", op1, operand1, op2, operand2);
 
       //Precisa dar free nesse op aqui embaixo? Não sei colocar os valores da tupla em op1/op2 =(
-      if (operand1 == COLUMN) { op1 = getValue(op1, tupla, nrec, objeto); operand1 = getCod(op1); }
-      if (operand2 == COLUMN) { op2 = getValue(op2, tupla, nrec, objeto); operand2 = getCod(op2); }
+      if (operand1 == COLUMN) {
+        op1 = getValue(op1, tupla, nrec, objeto);
+        if (op1 == NULL) return ERROR_COLUMN;
+        operand1 = getCod(op1);
+      }
+      if (operand2 == COLUMN) {
+        op2 = getValue(op2, tupla, nrec, objeto);
+        if (op2 == NULL) return ERROR_COLUMN;
+        operand2 = getCod(op2);
+      }
       // printf(">>>%s %s<<<\n", op1, op2);
       //return 0;
-      if (operand1 != operand2) { free(op1); free(op2); return ERROR; }
+      if (operand1 != operand2) { free(op1); free(op2); return ERROR_COMPARISON; }
       //printf(">%s(%d) %s %s(%d)\n", op1, operand1, tokens[i], op2, operand2);
       //----------------------WIP(não sei nem se compila o que está comentado)--------------------/
       // Fazer operação e devolver para pilha //Boatos que tem que trocar os operandos

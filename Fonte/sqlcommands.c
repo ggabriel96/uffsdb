@@ -635,7 +635,7 @@ void printing(rc_insert *select) {
     for (x = 0; erro == SUCCESS; x++)
       erro = colocaTuplaBuffer(bufferpoll, x, esquema, objeto);
 	  p = 0; x--;
-    int ntuples = 0, i, tmp, aux = 0; //Aux conta quantas colunas foram printadas
+    int ntuples = 0, i, tmp, aux = 0, ret; //Aux conta quantas colunas foram printadas
     char *colunasPrintadas = malloc(objeto.qtdCampos * sizeof(char)); //Guarda as colunas que vão ser printadas
     memset(colunasPrintadas, 0, objeto.qtdCampos * sizeof(char));
 
@@ -649,12 +649,15 @@ void printing(rc_insert *select) {
         strcpy(select -> columnName[j], pagina[j].nomeCampo);
       }
     }
-
-    if(select -> ncond > 0 && testwhere(pagina, tokens, select -> ncond, bufferpoll[p].nrec, objeto) == ERROR) {
-      printf("ERROR: Invalid operand types for comparison!\n");
-      free(bufferpoll); free(esquema); free(pagina); return;
+    if(select -> ncond > 0) {
+      ret = testwhere(pagina, tokens, select -> ncond, bufferpoll[p].nrec, objeto);
+      if (ret == ERROR_COMPARISON || ret == ERROR_COLUMN) {
+        printf("%s\n", ret == ERROR_COMPARISON ? "ERROR: Invalid operand types for comparison!" : "ERROR: Column not found");
+        free(bufferpoll); free(esquema); free(pagina); return;
+      }
     }
     free(pagina);
+
     char **colunas = malloc(select -> N * sizeof(char *));
 	  while (x) {
 	    column *pagina = getPage(bufferpoll, esquema, objeto, p);
@@ -663,9 +666,9 @@ void printing(rc_insert *select) {
         free(bufferpoll); free(esquema); return;
 	    }
 	    if (!cont) {
-	      for (j = 0; j < objeto.qtdCampos; j++) {
+	      for (aux = j = 0; j < objeto.qtdCampos; j++) {
           for (i = 0; i < select -> N; i++)
-            if (!strcmp(select -> columnName[i], pagina[j].nomeCampo)) { colunasPrintadas[j] = i + 1; break; }
+            if (!strcmp(select -> columnName[i], pagina[j].nomeCampo)) { aux++; colunasPrintadas[j] = i + 1; break; }
           if (!colunasPrintadas[j]) continue;
 	        if (pagina[j].tipoCampo == 'S' || pagina[j].tipoCampo == 'D') {
             colunas[colunasPrintadas[j] - 1] = malloc(23 * sizeof(char));
@@ -675,6 +678,10 @@ void printing(rc_insert *select) {
             sprintf(colunas[colunasPrintadas[j] - 1], " %-10s ", pagina[j].nomeCampo);
           }
 	      }
+        if (aux != select -> N) {
+          printf("ERROR: Column not found\n");
+          free(bufferpoll); free(esquema); free(pagina); return;
+        }
         for (i = 0; i < select -> N; i++) {
           printf("%s%s", colunas[i], i + 1 < select -> N ? "|" : "\n");
           free(colunas[i]);

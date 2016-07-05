@@ -35,6 +35,8 @@
 #define MALLOC_FAILED 73
 #define SUCCESS 0
 #define ERROR -1
+#define ERROR_COLUMN -2
+#define ERROR_COMPARISON -3
 
 // seekdb
 #define SEEKDB_FOUND -1
